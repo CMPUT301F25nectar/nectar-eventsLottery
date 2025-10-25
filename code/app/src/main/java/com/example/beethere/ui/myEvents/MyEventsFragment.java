@@ -1,4 +1,4 @@
-package com.example.beethere.ui.account;
+package com.example.beethere.ui.myEvents;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,17 +10,18 @@ import androidx.fragment.app.Fragment;
 
 import com.example.beethere.R;
 
-public class AccountFragment extends Fragment {
+public class MyEventsFragment extends Fragment {
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_notifications, container, false);
+        View view = inflater.inflate(R.layout.fragment_my_events, container, false);
 
         /* TODO
          * write code here
          */
 
         return view;
-    }
 
+    }
 }

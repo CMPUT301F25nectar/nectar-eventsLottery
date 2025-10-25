@@ -3,23 +3,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_events">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.example.beethere.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/navigation_events"
+        android:name="com.example.beethere.ui.allEvents.AllEventsFragment"
+        android:label="@string/title_events"
+        tools:layout="@layout/fragment_all_events" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.beethere.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_myEvents"
+        android:name="com.example.beethere.ui.myEvents.MyEventsFragment"
+        android:label="@string/title_myEvents"
+        tools:layout="@layout/fragment_my_events" />
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.example.beethere.ui.account.AccountFragment"
+        android:name="com.example.beethere.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.example.beethere.ui.notifications.NotificationsFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_notifications" />
+
 </navigation>
