@@ -15,6 +15,7 @@ import com.example.beethere.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+    public String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
