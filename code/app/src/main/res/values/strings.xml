@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">BeeThere</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
+    <string name="title_events">Events</string>
+    <string name="title_myEvents">My Events</string>
     <string name="title_notifications">Notifications</string>
+    <string name="title_eventSignUps">Event Sign-Ups</string>
+    <string name="title_profile">Profile</string>
+    <string name="title_joined">Joined</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.beethere.ui.dashboard;
+package com.example.beethere.ui.profile;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,18 +10,15 @@ import androidx.fragment.app.Fragment;
 
 import com.example.beethere.R;
 
-public class DashboardFragment extends Fragment {
-
-
+public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         /* TODO
          * write code here
          */
 
         return view;
-
     }
 }
