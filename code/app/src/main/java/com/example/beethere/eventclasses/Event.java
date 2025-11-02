@@ -31,7 +31,7 @@ public class Event {
     // of adding and removing from waitlist
     // of randomly selecting from waitlist
     // etc?
-    
+
     private ArrayList<User> waitlist;
     private int waitlistMax;
 
