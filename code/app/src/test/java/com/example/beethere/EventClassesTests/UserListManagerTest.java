@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 public class UserListManagerTest {
 
     public User mockUser(){
-        User user = new User("Nour");
+        User user = new User("Nour", "email");
         return user;
     }
 
@@ -27,7 +27,7 @@ public class UserListManagerTest {
         UserListManager listManager = mockListManager();
         assertEquals(1, listManager.getWaitlist().size());
 
-        User user = new User("Hana");
+        User user = new User("Hana", "email");
         listManager.addWaitlist(user);
         assertEquals(2, listManager.getWaitlist().size());
     }
@@ -36,7 +36,7 @@ public class UserListManagerTest {
     void testRemoveWaitlist(){
         UserListManager listManager = mockListManager();
 
-        User user = new User("Riya");
+        User user = new User("Riya", "email");
         listManager.addWaitlist(user);
         assertEquals(2, listManager.getWaitlist().size());
 
@@ -47,7 +47,7 @@ public class UserListManagerTest {
     @Test
     void testAddInvite(){
         UserListManager listManager = mockListManager();
-        User user = new User("Chanelle");
+        User user = new User("Chanelle", "email");
         listManager.addWaitlist(user);
         listManager.addInvite(user);
         assertEquals(1, listManager.getWaitlist().size());
@@ -58,7 +58,7 @@ public class UserListManagerTest {
     @Test
     void testRemoveInvite(){
         UserListManager listManager = mockListManager();
-        User user = new User("Chanelle");
+        User user = new User("Chanelle", "email");
         listManager.addWaitlist(user);
         listManager.addInvite(user);
         assertEquals(1, listManager.getInviteList().size());
@@ -71,11 +71,11 @@ public class UserListManagerTest {
     void testAddRegistered(){
         UserListManager listManager = mockListManager();
 
-        User user = new User("Monika");
+        User user = new User("Monika", "email");
         listManager.addRegistered(user);
         assertEquals(1, listManager.getRegistered().size());
 
-        User user1 = new User("Hana");
+        User user1 = new User("Hana", "email");
         listManager.addRegistered(user1);
         assertEquals(2, listManager.getRegistered().size());
     }
@@ -84,9 +84,9 @@ public class UserListManagerTest {
     void testRemoveRegistered(){
         UserListManager listManager = mockListManager();
 
-        User user = new User("Riya");
+        User user = new User("Riya", "email");
         listManager.addRegistered(user);
-        User user1 = new User("Chanelle");
+        User user1 = new User("Chanelle", "email");
         listManager.addRegistered(user1);
         assertEquals(2, listManager.getRegistered().size());
 
@@ -98,7 +98,7 @@ public class UserListManagerTest {
     void testAcceptInvite(){
         UserListManager listManager = mockListManager();
 
-        User user = new User("Monika");
+        User user = new User("Monika", "email");
         listManager.addInvite(user);
         listManager.acceptInvite(user);
         assertEquals(0, listManager.getInviteList().size());
@@ -108,7 +108,7 @@ public class UserListManagerTest {
     @Test
     void testDeclineInvite(){
         UserListManager listManager = mockListManager();
-        User user = new User("Hana");
+        User user = new User("Hana", "email");
         listManager.addWaitlist(user);
         listManager.addInvite(user);
         listManager.declineInvite(user);

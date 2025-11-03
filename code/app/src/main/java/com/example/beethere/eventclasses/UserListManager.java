@@ -24,9 +24,9 @@ public class UserListManager {
     // Constructors
     /**
      * This initializes the 3 different types of user lists associated with an event
-     * and a random object
-     * It defines and saves the max number of people who can be registered
-     * It defines and saves the max number of people who can join the waitlist
+     * and a random object.
+     * It defines and saves the max number of people who can be registered.
+     * It defines and saves the max number of people who can join the waitlist.
      * @param maxRegistered The max number of people of who can register/enroll
      * @param maxWaitlist The max number of people who can join the waitlist
      */
@@ -44,9 +44,9 @@ public class UserListManager {
 
     /**
      * This initializes the 3 different types of user lists associated with an event
-     * and a random object
-     * It defines and saves the max number of people who can be registered
-     * It defines and saves the max number of people who can join the waitlist as the max Integer Value
+     * and a random object.
+     * It defines and saves the max number of people who can be registered.
+     * It defines and saves the max number of people who can join the waitlist as the max Integer Value.
      * @param maxRegistered the max number of people who can register/enroll
      */
     public UserListManager(int maxRegistered){
