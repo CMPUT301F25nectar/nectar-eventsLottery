@@ -5,5 +5,13 @@
     <string name="title_notifications">Notifications</string>
     <string name="title_eventSignUps">Event Sign-Ups</string>
     <string name="title_profile">Profile</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="email">email@domain.com</string>
+    <string name="phone">Phone (optional)</string>
+    <string name="device_id">Device ID: </string>
+    <string name="btn_save">Save information</string>
+    <string name="btn_delete">Delete account</string>
     <string name="title_joined">Joined</string>
+
 </resources>
