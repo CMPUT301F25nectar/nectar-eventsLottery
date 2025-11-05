@@ -1,4 +1,4 @@
-package com.example.beethere.ui.account;
+package com.example.beethere.ui.joined;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,11 +10,10 @@ import androidx.fragment.app.Fragment;
 
 import com.example.beethere.R;
 
-public class AccountFragment extends Fragment {
-
+public class JoinedFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_notifications, container, false);
+        View view = inflater.inflate(R.layout.fragment_joined, container, false);
 
         /* TODO
          * write code here
@@ -22,5 +21,4 @@ public class AccountFragment extends Fragment {
 
         return view;
     }
-
 }
