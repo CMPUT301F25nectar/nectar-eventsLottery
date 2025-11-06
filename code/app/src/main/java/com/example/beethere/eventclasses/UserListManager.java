@@ -31,7 +31,7 @@ public class UserListManager {
      * @param maxRegistered The max number of people of who can register/enroll
      * @param maxWaitlist The max number of people who can join the waitlist
      */
-    public UserListManager(int maxRegistered, int maxWaitlist){
+    public UserListManager(Boolean autoSelect,int maxRegistered, int maxWaitlist){
         this.maxWaitlist = maxWaitlist;
         this.waitlist = new ArrayList<User>();
 
@@ -50,7 +50,7 @@ public class UserListManager {
      * It defines and saves the max number of people who can join the waitlist as the max Integer Value.
      * @param maxRegistered the max number of people who can register/enroll
      */
-    public UserListManager(int maxRegistered){
+    public UserListManager(Boolean autoSelect, int maxRegistered){
         this.maxWaitlist = Integer.MAX_VALUE;
         this.waitlist = new ArrayList<User>();
 
