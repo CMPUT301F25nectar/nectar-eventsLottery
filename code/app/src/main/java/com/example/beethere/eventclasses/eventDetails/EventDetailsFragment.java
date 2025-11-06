@@ -35,7 +35,7 @@ public class EventDetailsFragment extends Fragment {
 
         // Event Name display
         TextView name = view.findViewById(R.id.text_event_name);
-        name.setText(event.getName());
+        name.setText(event.getTitle());
 
         // Event organizer display
         TextView organizer = view.findViewById(R.id.text_host_name);
@@ -71,17 +71,17 @@ public class EventDetailsFragment extends Fragment {
         time.setText(String
                 .format(
                         String.valueOf(R.string.event_time),
-                        event.getEventTimestart().toString(),
+                        event.getEventTimeStart().toString(),
                         event.getEventTimeEnd().toString())
         );
 
         // Max Registered display
         TextView maxEnroll = view.findViewById(R.id.text_max_enroll);
-        maxEnroll.setText(event.getListManager().getMaxRegistered());
+        maxEnroll.setText(event.getEntrantList().getMaxRegistered());
 
         // Number of people in waitlist
         TextView waitlist = view.findViewById(R.id.text_waitlist);
-        waitlist.setText(event.getListManager().waitlistSize().toString());
+        waitlist.setText(event.getEntrantList().waitlistSize().toString());
 
         // TODO
         // event image set up
@@ -119,7 +119,7 @@ public class EventDetailsFragment extends Fragment {
             // TODO
             // set text "waitlist period ended"
         }
-        else if (event.getListManager().inInvite(user)) {
+        else if (event.getEntrantList().inInvite(user)) {
             // TODO
             InviteButtons button = new InviteButtons();
             button.setEvent(event);

@@ -59,7 +59,7 @@ public class WaitlistButtons extends Fragment {
                 // dialog fragment
 
                 // toggle change state unable to be done if user cannot join waitlist bc of max
-                if (event.getListManager().getMaxWaitlist() > event.getListManager().waitlistSize()) {
+                if (event.getEntrantList().getMaxWaitlist() > event.getEntrantList().waitlistSize()) {
                     // TODO
                 }
 
@@ -68,11 +68,11 @@ public class WaitlistButtons extends Fragment {
 
 
                 // button toggle results
-                if (waitlistButton.isChecked() && event.getListManager().getMaxWaitlist() > event.getListManager().waitlistSize()){
+                if (waitlistButton.isChecked() && event.getEntrantList().getMaxWaitlist() > event.getEntrantList().waitlistSize()){
                     // TODO
                     // add user to event waitlist
                     // get user from device ID
-                    event.getListManager().addWaitlist(user);
+                    event.getEntrantList().addWaitlist(user);
                     Snackbar
                             .make(view, "You have joined the waitlist!", Snackbar.LENGTH_SHORT)
                             .show();
@@ -81,7 +81,7 @@ public class WaitlistButtons extends Fragment {
                     // TODO
                     // confirmation of removal diaglog fragment
                     // get user from device ID
-                    event.getListManager().removeWaitlist(user);
+                    event.getEntrantList().removeWaitlist(user);
                     Snackbar
                             .make(view, "", Snackbar.LENGTH_SHORT)
                             .show();

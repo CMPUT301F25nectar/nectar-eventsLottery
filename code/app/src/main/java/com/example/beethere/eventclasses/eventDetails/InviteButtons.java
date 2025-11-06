@@ -46,7 +46,7 @@ public class InviteButtons extends Fragment {
             public void onClick(View v) {
                 // TODO
                 // code
-                event.getListManager().acceptInvite(user);
+                event.getEntrantList().acceptInvite(user);
             }
         });
 
@@ -54,7 +54,7 @@ public class InviteButtons extends Fragment {
         decline.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                event.getListManager().declineInvite(user);
+                event.getEntrantList().declineInvite(user);
             }
         });
 
