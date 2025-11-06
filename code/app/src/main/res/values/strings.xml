@@ -5,5 +5,27 @@
     <string name="title_notifications">Notifications</string>
     <string name="title_eventSignUps">Event Sign-Ups</string>
     <string name="title_profile">Profile</string>
+
     <string name="title_joined">Joined</string>
+    <string name="placeholder">placeholder</string>
+    <string name="join_waitlist">Join Waitlist</string>
+    <string name="leave">Leave</string>
+
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+
+    <!-- Event Details Fragment Resources -->
+    <string name="event_name">%s</string>
+    <string name="event_organizer">Hosted by: %s</string>
+    <string name="event_description">%s</string>
+    <string name="event_registration">%s - %s</string>
+    <string name="event_date">%s - %s</string>
+    <string name="event_time">%s - %s</string>
+
+    <!-- Button titles -->
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
+
+
+
 </resources>

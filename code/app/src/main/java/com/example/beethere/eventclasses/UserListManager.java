@@ -15,6 +15,7 @@ public class UserListManager {
     private ArrayList<User> waitlist;
 
     private HashMap<User, Boolean> inviteList;
+    private Boolean autoSelect;
 
     private ArrayList<User> registered;
     private Integer maxRegistered;
@@ -110,7 +111,16 @@ public class UserListManager {
         this.random = random;
     }
 
-    // Waitlist Management
+    public Boolean getAutoSelect() {
+        return autoSelect;
+    }
+
+    public void setAutoSelect(Boolean autoSelect) {
+        this.autoSelect = autoSelect;
+    }
+
+
+// Waitlist Management
     /**
      * Finds and returns the size of the waitlist
      * @return the size of the waitlist
@@ -124,9 +134,8 @@ public class UserListManager {
      * @param user: the user to be added
      */
     public void addWaitlist(User user) {
-        // TODO
-        // check if user in waitlist
-        if (waitlistSize() < maxWaitlist) {
+
+        if (waitlistSize() < maxWaitlist && !inWaitlist(user)) {
             waitlist.add(user);
         }
     }
@@ -138,7 +147,7 @@ public class UserListManager {
     public void removeWaitlist(User user) {
         // TODO
         // check if user in waitlist
-        waitlist.remove(user);
+        if(inWaitlist(user)) {waitlist.remove(user);}
 
     }
 
@@ -150,19 +159,23 @@ public class UserListManager {
     // option to make this private
     public void addInvite(User user){
         // must be in waitlist to get invite in the first place
-        if(waitlist.contains(user)){
+        if(inWaitlist(user)){
             inviteList.put(user, Boolean.TRUE);
             removeWaitlist(user);
         }
-        // option to also automatically send the invite option
+        // option to also automatically send the invite notif
     }
 
     /**
      * This removes a user from the event's invite list
      * @param user the user to be removed
      */
-    public void removeInvite(User user){
+
+    private void removeInvite(User user){
         // check if user has been invited/in invite list
+        if(inInvite(user)){
+
+        }
         inviteList.remove(user);
     }
 
@@ -171,9 +184,9 @@ public class UserListManager {
      * This adds a user to the registered list
      * @param user the user to be added
      */
-    public void addRegistered(User user){
+    private void addRegistered(User user){
         // check if user is in registered
-        if(maxRegistered != registered.size()){
+        if(maxRegistered > registered.size()){
             registered.add(user);
         }
     }
@@ -193,7 +206,7 @@ public class UserListManager {
      * @param user the user who is move from one list to the other
      */
     public void acceptInvite(User user){
-        if(maxRegistered != registered.size()) {
+        if(maxRegistered > registered.size()) {
             addRegistered(user);
             removeInvite(user);
         }
@@ -207,6 +220,11 @@ public class UserListManager {
      */
     public void declineInvite(User user){
         inviteList.replace(user, Boolean.FALSE);
+
+        // TODO
+        if(autoSelect){
+            selectNewInvite();
+        }
     }
 
     /**
@@ -227,6 +245,22 @@ public class UserListManager {
         for(int i = 0; i < range; i++){
             selectNewInvite();
         }
+    }
+
+    public Boolean inWaitlist(User user) {
+        return waitlist.contains(user);
+    }
+
+    public boolean inInvite(User user) {
+        return inviteList.containsKey(user);
+    }
+
+    public Boolean isDeclined(User user) {
+        return inviteList.get(user);
+    }
+
+    public Boolean inRegistered(User user){
+        return registered.contains(user);
     }
 
     // TODO
