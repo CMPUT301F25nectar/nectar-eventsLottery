@@ -131,7 +131,6 @@ public class CreateEventFragment1 extends Fragment {
             if (regStartDate.after(regEndDate) || eventStartDate.after(eventEndDate) || startTime.after(endTime)) {//i dont event think this works because im using date instead of local date
                 errorMessage.setText("Ensure start dates/times are before end dates/times.");
                 errorMessage.setVisibility(View.VISIBLE);
-                return;
             }
 
         } catch (Exception e) {
@@ -140,6 +139,7 @@ public class CreateEventFragment1 extends Fragment {
         }
 
         //TODO: Add event to database once all tests are passed
+        // if the switches are true, apply seperate field
     }
 }
 

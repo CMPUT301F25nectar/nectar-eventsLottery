@@ -6,6 +6,9 @@ plugins {
 android {
     namespace = "com.example.beethere"
     compileSdk = 36
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
 
     defaultConfig {
         applicationId = "com.example.beethere"
@@ -51,4 +54,7 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
     implementation("com.google.firebase:firebase-firestore")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.1")
+
 }
