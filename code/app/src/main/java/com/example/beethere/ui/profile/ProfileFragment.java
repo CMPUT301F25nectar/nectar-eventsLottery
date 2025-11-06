@@ -1,66 +1,92 @@
 package com.example.beethere.ui.profile;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.provider.Settings;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.example.beethere.DeviceId;
 import com.example.beethere.R;
-import com.example.beethere.Session;
-import com.example.beethere.User;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 
 public class ProfileFragment extends Fragment {
+    private EditText firstname, lastname, emailid, phone;
+    private TextView userdeviceId;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        TextView DeviceId =  view.findViewById(R.id.DeviceId);
-        String androidId = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        if (androidId==null) androidId="unknown";
-        DeviceId.setText("Device Id: "+androidId);
 
-        EditText firstname = view.findViewById(R.id.first_name);
-        EditText lastname = view.findViewById(R.id.last_name);
-        EditText emailid = view.findViewById(R.id.email);
-        EditText phone = view.findViewById(R.id.phone);
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        firstname = view.findViewById(R.id.first_name);
+        lastname = view.findViewById(R.id.last_name);
+        emailid = view.findViewById(R.id.email);
+        phone = view.findViewById(R.id.phone);
+        userdeviceId = view.findViewById(R.id.DeviceId);
+
         Button btnsave = view.findViewById(R.id.savebtn);
         Button btndelete = view.findViewById(R.id.deletebtn);
 
-        String finalAndroidId = androidId;
-        btnsave.setOnClickListener(view1-> {
-                    String name = (firstname.getText().toString() + " " + lastname.getText().toString());
-                    String email = emailid.getText().toString();
-                    String phonenumber = phone.getText().toString();
-                    if (name.isEmpty() || email.isEmpty()) {
-                        android.widget.Toast.makeText(requireContext(), "Enter name and email id", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    User user = new User(name, email);
-                    user.setPhone(phonenumber);
-                    user.setDeviceid(finalAndroidId);
-                    user.setAdmin(false);
-
-                    Session.save(user);//local memory for now- to be replaced by firebase
-                    Toast.makeText(requireContext(), "Profile information saved", Toast.LENGTH_SHORT).show();
-                });
-        btndelete.setOnClickListener(view1->{
-                Session.clear();//to be replaced
-                firstname.setText("");
-                lastname.setText("");
-                emailid.setText("");
-                phone.setText("");
-                Toast.makeText(requireContext(), "Profile deleted", Toast.LENGTH_SHORT).show();
-            });
+        String deviceID = DeviceId.get(requireContext());
+        userdeviceId.setText("User device id: " + deviceID);
+        profile();
+        btnsave.setOnClickListener(v -> saveprofile());
+        btndelete.setOnClickListener(v -> deleteprofile());
         return view;
     }
+
+    private void profile(){
+        String deviceID = DeviceId.get(requireContext());
+        FirebaseFirestore.getInstance()
+                        .collection("users")
+                        .document(deviceID)
+                        .get()
+                                .addOnSuccessListener((DocumentSnapshot snapshot)->{
+                                    if (snapshot.exists()){
+                                        String fullname = snapshot.getString("name");
+                                        if (fullname!=null){
+                                            String[] split = fullname.split(" ",2);
+                                            firstname.setText(split[0]);
+                                            if (split.length>1) lastname.setText(split[1]);
+                                        }
+                                    }
+                                    emailid.setText(snapshot.getString("email"));
+                                    phone.setText(snapshot.getString("phone"));
+                                });
+    }
+    private void saveprofile() {
+        String deviceID = DeviceId.get(requireContext());
+        String fullname = firstname.getText().toString() + " " + lastname.getText().toString();
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(deviceID)
+                .set(new ProfileDialogFragment.Simple(
+                        fullname, emailid.getText().toString(), phone.getText().toString()
+                ))
+                .addOnSuccessListener(unused -> Toast.makeText(requireContext(), "Updated profile!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(fail -> Toast.makeText(requireContext(), "Failed updating profile"+ fail.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+    private void deleteprofile() {
+        String deviceID = DeviceId.get(requireContext());
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(deviceID)
+                .delete()
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(requireContext(), "Deleted Profile", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(fail -> Toast.makeText(requireContext(), "Failed deleting profile", Toast.LENGTH_SHORT).show()
+                );
+    }
+
 }

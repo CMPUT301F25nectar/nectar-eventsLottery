@@ -1,8 +1,11 @@
 package com.example.beethere;
 
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.beethere.ui.profile.ProfileDialogFragment;
+import com.example.beethere.ui.profile.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
