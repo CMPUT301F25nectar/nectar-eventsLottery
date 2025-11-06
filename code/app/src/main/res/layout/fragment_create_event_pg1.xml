@@ -235,25 +235,102 @@
                         android:hint="Enter Description Here: " />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Button
-                    android:id="@+id/nextButton"
+                <TextView
+                    android:id="@+id/geoLocation"
+                    android:layout_width="220sp"
+                    android:layout_height="18sp"
+                    app:layout_constraintTop_toBottomOf="@id/description"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:text="Geolocation of Entrants Required: " />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/geoLocSwitch"
+                    android:layout_width="42dp"
+                    android:layout_height="18dp"
+                    app:layout_constraintStart_toEndOf="@id/geoLocation"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/description"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/geoLocWarn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/geoLocation"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginTop="5dp"
+                    android:text="When on, the locations of all attendees and wait-listed participants are stored based on where they were when they signed up. This information is visible only to you. You cannot change this later." />
+
+                <TextView
+                    android:id="@+id/randomSelect"
+                    android:layout_width="220sp"
+                    android:layout_height="40sp"
+                    app:layout_constraintTop_toBottomOf="@id/geoLocWarn"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:text="Randomly Select From Wait-list if Invited Users Declines: " />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/randomSelectSwitch"
+                    android:layout_width="42dp"
+                    android:layout_height="18dp"
+                    app:layout_constraintStart_toEndOf="@id/randomSelect"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/description"
+                    app:layout_constraintTop_toBottomOf="@id/geoLocWarn"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/waitListMax"
+                    android:layout_width="220sp"
+                    android:layout_height="18sp"
+                    app:layout_constraintTop_toBottomOf="@id/randomSelect"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:text="Max Wait-list Entrants: " />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/maxWaitSwitch"
+                    android:layout_width="42dp"
+                    android:layout_height="18dp"
+                    app:layout_constraintStart_toEndOf="@id/waitListMax"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/randomSelectSwitch"
+                    android:text="" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="130dp"
+                    android:layout_height="24dp"
+                    android:id="@+id/maxWaitFill"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/waitListMax"
+                    android:visibility="visible">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="12dp"
+                        android:hint="Enter Max: " />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/completeButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:text="Next"
-                    />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/maxWaitFill"
+                    android:layout_weight="1"
+                    android:text="Complete" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/red"
                     android:id="@+id/errorMessage"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/maxWaitFill"
+                    app:layout_constraintEnd_toStartOf="@id/completeButton"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/description"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:visibility="invisible"
-                    android:text="All fields on this page are required."/>
+                    android:text="All fields marked with an asterisk(*) are required."/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -62,28 +62,17 @@ public class MyEventsFragment extends Fragment {
         eventsListView.setAdapter(eventAdapter);
 
         CreateEventFragment1 pageOne = new CreateEventFragment1();
-        createEventButton.setOnClickListener(v -> {
-            NavController nav = Navigation.findNavController(v);
-            nav.navigate(R.id.myEventsToCreateEvents);
-        });
+        createEventButton.setOnClickListener(this::showCreationPage);
 
         return view;
     }
 
-    /**
-     *
-     * @param pageOne switches fragment page to the first page of creating an event
-     *                adds the previous page to a stack
-     */
+    private void showCreationPage (View v) {
+        //TODO: check if account exists, if not, go to make account fragment
 
-    private void showCreatePG1 (Fragment pageOne) {
-        CreateEventFragment1 fragment = new CreateEventFragment1();
-        FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
-
-        fragmentTransaction.replace(R.id.create_event_container1, fragment, null);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-
+        //if account exists do what is below
+        NavController nav = Navigation.findNavController(v);
+        nav.navigate(R.id.myEventsToCreateEvents);
     }
 
 

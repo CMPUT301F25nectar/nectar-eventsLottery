@@ -70,23 +70,15 @@ public class CreateEventFragment1 extends Fragment {
         maxAttend = view.findViewById(R.id.maxAttend);
         eventDesc = view.findViewById(R.id.description);
         errorMessage = view.findViewById(R.id.errorMessage);
-
-        Button nextButton = view.findViewById(R.id.nextButton);
-
         eventPoster.setOnClickListener(v -> choosePoster());
-        nextButton.setOnClickListener(v -> onNext());
+
+        Button completeButton = view.findViewById(R.id.completeButton);
+        completeButton.setOnClickListener(v -> complete());
 
         Button backButton = view.findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> backMain());
 
         return view;
-    }
-    private void showCreatePG2 (Fragment pageTwo) {
-        FragmentManager fm = getChildFragmentManager();
-        fm.beginTransaction()
-                .replace(R.id.create_event_container2, pageTwo)
-                .addToBackStack(null)
-                .commit();
     }
 
     private void backMain () {
@@ -103,7 +95,7 @@ public class CreateEventFragment1 extends Fragment {
     }
 
     @SuppressLint("SetTextI18n")
-    private void onNext() {
+    private void complete() {
         String titleInput = eventTitle.getEditText().getText().toString().trim();
         String regStartInput = regStart.getEditText().getText().toString().trim();
         String regEndInput = regEnd.getEditText().getText().toString().trim();
@@ -142,27 +134,12 @@ public class CreateEventFragment1 extends Fragment {
                 return;
             }
 
-            Bundle bundle = new Bundle();
-
-            bundle.putString("TitleStr", titleInput);
-            bundle.putString("RegStartStr", regStartInput);
-            bundle.putString("RegEndStr", regEndInput);
-            bundle.putString("DateStartStr", eventStartInput);
-            bundle.putString("DateEndStr", eventEndInput);
-            bundle.putString("TimeStartStr", timeStartInput);
-            bundle.putString("TimeEndStr", timeEndInput);
-            bundle.putString("maxAttendStr", maxAttendInput);
-            bundle.putString("descStr", descInput);
-
-            CreateEventFragment2 pageTwo = new CreateEventFragment2();
-            pageTwo.setArguments(bundle);
-
-            showCreatePG2(pageTwo);
-
         } catch (Exception e) {
             errorMessage.setText("Ensure input formats are correct.");
             errorMessage.setVisibility(View.VISIBLE);
         }
+
+        //TODO: Add event to database once all tests are passed
     }
 }
 
