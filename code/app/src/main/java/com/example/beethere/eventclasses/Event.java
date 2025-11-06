@@ -4,34 +4,72 @@ import com.example.beethere.User;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class Event {
     private User organizer;
-    private String name;
+    private String title;
     private String description;
 
     private int poster;
     private int qrCode;
 
-    private Boolean status;
-
+    private Boolean status; //status on if the event is still active or not
 
     private LocalDate regStart;
     private LocalDate regEnd;
 
     private LocalDate eventDateStart;
     private LocalDate eventDateEnd;
-    private LocalTime eventTimestart;
+    private LocalTime eventTimeStart;
     private LocalTime eventTimeEnd;
 
-
     private Boolean geoloc;
-    private Boolean autoRandomSelection;
 
-    private UserListManager listManager;
-
+    private UserListManager entrantList;
 
 
+    /**
+     *
+     * @param organizer User, user who can create events, identified by unique deviceID
+     * @param title String,title of the event
+     * @param description String, details of the event
+     * @param image URI, advertisement poster of the event
+     * @param qrCode idk, qr code to take user to page for event
+     * @param status boolean, status of if the event is active or not
+     * @param regStart Date, when registration for the event begins
+     * @param regEnd Date, when registration for the event ends
+     * @param eventDateStart Date, when the event itself begins
+     * @param eventDateEnd Date, when the event itself ends
+     * @param eventTimeStart Date, the time the event starts
+     * @param eventTimeEnd  Date, the time the event ends
+     * @param entrantMax   integer, max number of entrants, individuals who can attend the event
+     * @param getLocation boolean, organizer requires geolocation of participants to be collected
+     * @param entrantList list of all related entrants to the event
+     * @param autoRandomSelection boolean, if those in the waiting list should be selected on invitees cancellation
+     */
+
+    public Event(User organizer, String title, String description, int image, int qrCode,
+                 Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
+                 LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
+                 int entrantMax, Boolean getLocation, UserListManager entrantList,
+                 Boolean autoRandomSelection) {
+        this.organizer = organizer;
+        this.title = title;
+        this.description = description;
+        this.poster = image;
+        this.qrCode = qrCode;
+        this.status = status;
+        this.regStart = regStart;
+        this.regEnd = regEnd;
+        this.eventDateStart = eventDateStart;
+        this.eventDateEnd = eventDateEnd;
+        this.eventTimeStart = eventTimeStart;
+        this.eventTimeEnd = eventTimeEnd;
+        this.geoloc = false;
+        this.entrantList = entrantList;
+    }
 
     public User getOrganizer() {
         return organizer;
@@ -41,12 +79,12 @@ public class Event {
         this.organizer = organizer;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {
@@ -113,12 +151,12 @@ public class Event {
         this.eventDateEnd = eventDateEnd;
     }
 
-    public LocalTime getEventTimestart() {
-        return eventTimestart;
+    public LocalTime getEventTimeStart() {
+        return eventTimeStart;
     }
 
-    public void setEventTimestart(LocalTime eventTimestart) {
-        this.eventTimestart = eventTimestart;
+    public void setEventTimeStart(LocalTime eventTimeStart) {
+        this.eventTimeStart = eventTimeStart;
     }
 
     public LocalTime getEventTimeEnd() {
@@ -137,19 +175,11 @@ public class Event {
         this.geoloc = geoloc;
     }
 
-    public Boolean getAutoRandomSelection() {
-        return autoRandomSelection;
+    public UserListManager getEntrantList() {
+        return entrantList;
     }
 
-    public void setAutoRandomSelection(Boolean autoRandomSelection) {
-        this.autoRandomSelection = autoRandomSelection;
-    }
-
-    public UserListManager getListManager() {
-        return listManager;
-    }
-
-    public void setListManager(UserListManager listManager) {
-        this.listManager = listManager;
+    public void setEntrantList(UserListManager entrantList) {
+        this.entrantList = entrantList;
     }
 }

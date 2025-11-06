@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="Back" />
+
+    <TextView
+        android:id="@+id/geoLocation"
+        android:layout_width="220sp"
+        android:layout_height="18sp"
+        app:layout_constraintTop_toBottomOf="@id/backButton"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="Geolocation of Entrants Required: " />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/geoLocSwitch"
+        android:layout_width="42dp"
+        android:layout_height="18dp"
+        app:layout_constraintStart_toEndOf="@id/geoLocation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="44dp"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/geoLocWarn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/geoLocation"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="When on, the locations of all attendees and wait-listed participants are stored based on where they were when they signed up. This information is visible only to you. You cannot change this later." />
+
+    <TextView
+        android:id="@+id/randomSelect"
+        android:layout_width="220sp"
+        android:layout_height="40sp"
+        app:layout_constraintTop_toBottomOf="@id/geoLocWarn"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="Randomly Select From Wait-list if Invited Users Declines: " />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/randomSelectSwitch"
+        android:layout_width="42dp"
+        android:layout_height="18dp"
+        app:layout_constraintStart_toEndOf="@id/randomSelect"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="130dp"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/waitListMax"
+        android:layout_width="220sp"
+        android:layout_height="18sp"
+        app:layout_constraintTop_toBottomOf="@id/randomSelect"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="Max Wait-list Entrants: " />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/maxWaitSwitch"
+        android:layout_width="42dp"
+        android:layout_height="18dp"
+        app:layout_constraintStart_toEndOf="@id/waitListMax"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="170dp"
+        android:text="" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="130dp"
+        android:layout_height="24dp"
+        android:id="@+id/maxWaitFill"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/waitListMax"
+        android:visibility="invisible">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12dp"
+            android:hint="Enter Max: " />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/completeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_weight="1"
+        android:text="Complete" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
