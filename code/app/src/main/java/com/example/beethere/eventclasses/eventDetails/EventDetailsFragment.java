@@ -10,6 +10,7 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.beethere.R;
@@ -93,12 +94,20 @@ public class EventDetailsFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO
-                onDestroy();
-                // or
-                // getParentFragmentManager().beginTransaction().remove(EventDetailsFragment.this).commitAllowingStateLoss();
+                FragmentManager fragmentManager = getParentFragmentManager();
+                fragmentManager.popBackStack();
+                
             }
         });
+
+
+
+
+
+
+
+
+
 
         ImageButton imageButton = view.findViewById(R.id.button_QR);
         imageButton.setOnClickListener(new View.OnClickListener() {

@@ -13,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 
 import com.example.beethere.R;
@@ -43,14 +45,20 @@ public class AllEventsFragment extends Fragment {
         events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                EventDetailsFragment fragment = new EventDetailsFragment();
+
+                NavController nav = Navigation.findNavController(view);
+                        nav.navigate(R.id.myEventsToCreateEvents);
+
+                /*EventDetailsFragment fragment = new EventDetailsFragment();
                 //Event event = (Event) parent.getItemAtPosition(position);
                 //fragment.setEvent(event);
                 fragment.setEvent((Event) parent.getItemAtPosition(position));
                 FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                transaction.replace(R.id.someId, fragment).commit();
+                transaction.replace(R.id.someId, fragment).commit();*/
             }
         });
+
+
 
         return view;
     }
