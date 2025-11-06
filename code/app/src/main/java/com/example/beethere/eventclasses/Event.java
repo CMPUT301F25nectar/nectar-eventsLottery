@@ -46,14 +46,13 @@ public class Event {
      * @param eventTimeEnd  Date, the time the event ends
      * @param entrantMax   integer, max number of entrants, individuals who can attend the event
      * @param getLocation boolean, organizer requires geolocation of participants to be collected
-     * @param entrantList list of all related entrants to the event
      * @param autoRandomSelection boolean, if those in the waiting list should be selected on invitees cancellation
      */
 
     public Event(User organizer, String title, String description, int image, int qrCode,
                  Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
                  LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
-                 int entrantMax, Boolean getLocation, UserListManager entrantList,
+                 int entrantMax, Boolean getLocation,
                  Boolean autoRandomSelection) {
         this.organizer = organizer;
         this.title = title;
@@ -67,8 +66,29 @@ public class Event {
         this.eventDateEnd = eventDateEnd;
         this.eventTimeStart = eventTimeStart;
         this.eventTimeEnd = eventTimeEnd;
-        this.geoloc = false;
-        this.entrantList = entrantList;
+        this.geoloc = getLocation;
+        this.entrantList = new UserListManager(autoRandomSelection, entrantMax);
+    }
+
+    public Event(User organizer, String title, String description, int image, int qrCode,
+                 Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
+                 LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
+                 int entrantMax, Boolean getLocation,
+                 Boolean autoRandomSelection, int maxWaitlist) {
+        this.organizer = organizer;
+        this.title = title;
+        this.description = description;
+        this.poster = image;
+        this.qrCode = qrCode;
+        this.status = status;
+        this.regStart = regStart;
+        this.regEnd = regEnd;
+        this.eventDateStart = eventDateStart;
+        this.eventDateEnd = eventDateEnd;
+        this.eventTimeStart = eventTimeStart;
+        this.eventTimeEnd = eventTimeEnd;
+        this.geoloc = getLocation;
+        this.entrantList = new UserListManager(autoRandomSelection, entrantMax, maxWaitlist);
     }
 
     public User getOrganizer() {

@@ -17,7 +17,7 @@ public class UserListManagerTest {
     }
 
     public UserListManager mockListManager(){
-        UserListManager listManager = new UserListManager(2);
+        UserListManager listManager = new UserListManager(Boolean.TRUE, 2);
         listManager.addWaitlist(mockUser());
         return listManager;
     }
