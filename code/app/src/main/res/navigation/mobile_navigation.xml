@@ -55,7 +55,6 @@
         android:name="com.example.beethere.eventclasses.eventDetails.EventDetailsFragment"
         android:label="Create"
         tools:layout="@layout/fragment_event_details">
-
     </fragment>
 
 

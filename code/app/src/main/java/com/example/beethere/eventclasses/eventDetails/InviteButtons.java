@@ -18,6 +18,7 @@ public class InviteButtons extends Fragment {
 
     private Event event;
     private User user;
+    private Boolean userCreated;
 
     public Event getEvent() {
         return event;
@@ -44,8 +45,6 @@ public class InviteButtons extends Fragment {
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO
-                // code
                 event.getEntrantList().acceptInvite(user);
             }
         });
@@ -57,8 +56,6 @@ public class InviteButtons extends Fragment {
                 event.getEntrantList().declineInvite(user);
             }
         });
-
-
 
         return view;
     }

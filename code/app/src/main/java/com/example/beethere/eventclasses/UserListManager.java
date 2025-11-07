@@ -4,6 +4,7 @@ import com.example.beethere.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -261,6 +262,9 @@ public class UserListManager {
 
     public Boolean inRegistered(User user){
         return registered.contains(user);
+    }
+    public Boolean waitlistFull() {
+        return (Objects.equals(maxWaitlist, waitlistSize()));
     }
 
     // TODO

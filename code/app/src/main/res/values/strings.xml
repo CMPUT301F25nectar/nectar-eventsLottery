@@ -33,6 +33,10 @@
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
 
+    <!-- Button titles -->
+    <string name="waitlist_full">Waitlist is full</string>
+    <string name="waitlist_ended">Waitlist period ended</string>
+
 
 
 
