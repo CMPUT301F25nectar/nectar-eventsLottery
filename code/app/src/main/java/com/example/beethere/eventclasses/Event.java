@@ -3,8 +3,6 @@ package com.example.beethere.eventclasses;
 import android.net.Uri;
 
 import com.example.beethere.User;
-import com.google.zxing.common.BitMatrix;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -22,13 +20,13 @@ public class Event {
 
     private Boolean status; //status on if the event is still active or not
 
-    private LocalDateTime regStart;
-    private LocalDateTime regEnd;
+    private LocalDate regStart;
+    private LocalDate regEnd;
 
-    private LocalDateTime eventDateStart;
-    private LocalDateTime eventDateEnd;
-    private LocalDateTime eventTimeStart;
-    private LocalDateTime eventTimeEnd;
+    private LocalDate eventDateStart;
+    private LocalDate eventDateEnd;
+    private LocalTime eventTimeStart;
+    private LocalTime eventTimeEnd;
 
     private Boolean geoloc;
 
@@ -55,8 +53,8 @@ public class Event {
      */
 
     public Event(User organizer, int eventID, String title, String description, String posterPath, BitMatrix qrCode,
-                 Boolean status, LocalDateTime regStart, LocalDateTime regEnd, LocalDateTime eventDateStart,
-                 LocalDateTime eventDateEnd, LocalDateTime eventTimeStart, LocalDateTime eventTimeEnd,
+                 Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
+                 LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
                  int entrantMax, Boolean getLocation,
                  Boolean autoRandomSelection) {
         this.organizer = organizer;
@@ -77,8 +75,8 @@ public class Event {
     }
 
     public Event(User organizer, int eventID, String title, String description, String posterPath, BitMatrix qrCode,
-                 Boolean status, LocalDateTime regStart, LocalDateTime regEnd, LocalDateTime eventDateStart,
-                 LocalDateTime eventDateEnd, LocalDateTime eventTimeStart, LocalDateTime eventTimeEnd,
+                 Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
+                 LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
                  int entrantMax, Boolean getLocation,
                  Boolean autoRandomSelection, int maxWaitlist) {
         this.organizer = organizer;
@@ -154,51 +152,51 @@ public class Event {
         this.status = status;
     }
 
-    public LocalDateTime getRegStart() {
+    public LocalDate getRegStart() {
         return regStart;
     }
 
-    public void setRegStart(LocalDateTime regStart) {
+    public void setRegStart(LocalDate regStart) {
         this.regStart = regStart;
     }
 
-    public LocalDateTime getRegEnd() {
+    public LocalDate getRegEnd() {
         return regEnd;
     }
 
-    public void setRegEnd(LocalDateTime regEnd) {
+    public void setRegEnd(LocalDate regEnd) {
         this.regEnd = regEnd;
     }
 
-    public LocalDateTime getEventDateStart() {
+    public LocalDate getEventDateStart() {
         return eventDateStart;
     }
 
-    public void setEventDateStart(LocalDateTime eventDateStart) {
+    public void setEventDateStart(LocalDate eventDateStart) {
         this.eventDateStart = eventDateStart;
     }
 
-    public LocalDateTime getEventDateEnd() {
+    public LocalDate getEventDateEnd() {
         return eventDateEnd;
     }
 
-    public void setEventDateEnd(LocalDateTime eventDateEnd) {
+    public void setEventDateEnd(LocalDate eventDateEnd) {
         this.eventDateEnd = eventDateEnd;
     }
 
-    public LocalDateTime getEventTimeStart() {
+    public LocalTime getEventTimeStart() {
         return eventTimeStart;
     }
 
-    public void setEventTimeStart(LocalDateTime eventTimeStart) {
+    public void setEventTimeStart(LocalTime eventTimeStart) {
         this.eventTimeStart = eventTimeStart;
     }
 
-    public LocalDateTime getEventTimeEnd() {
+    public LocalTime getEventTimeEnd() {
         return eventTimeEnd;
     }
 
-    public void setEventTimeEnd(LocalDateTime eventTimeEnd) {
+    public void setEventTimeEnd(LocalTime eventTimeEnd) {
         this.eventTimeEnd = eventTimeEnd;
     }
 

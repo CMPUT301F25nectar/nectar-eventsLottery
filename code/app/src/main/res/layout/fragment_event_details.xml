@@ -7,9 +7,10 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/event_image"
         android:layout_width="match_parent"
         android:layout_height="150dp"
+        android:layout_marginTop="60dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -20,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="70dp"
         android:clickable="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -37,7 +38,7 @@
         android:textSize="45sp"
         app:layout_constraintEnd_toStartOf="@+id/button_QR"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/event_image" />
 
     <ImageButton
         android:id="@+id/button_QR"
@@ -45,18 +46,17 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/event_image"
         android:src="@drawable/qr_code"/>
 
     <TextView
         android:id="@+id/text_host_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:textColor="@color/dark_brown"
         android:fontFamily="@font/work_sans"
         android:text="@string/placeholder"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textColor="@color/dark_brown"
+        app:layout_constraintStart_toEndOf="@+id/hostedBy"
         app:layout_constraintTop_toBottomOf="@+id/text_event_name" />
 
     <TextView
@@ -77,55 +77,50 @@
         android:id="@+id/text_geoloc_req"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:textColor="@color/dark_brown"
         android:fontFamily="@font/work_sans"
         android:text="@string/placeholder"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textColor="@color/dark_brown"
+        app:layout_constraintStart_toEndOf="@+id/geoLocReq"
         app:layout_constraintTop_toBottomOf="@+id/text_description" />
 
     <TextView
         android:id="@+id/text_event_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:textColor="@color/dark_brown"
         android:fontFamily="@font/work_sans"
+        android:textColor="@color/dark_brown"
         android:text="@string/placeholder"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/event_date_header"
         app:layout_constraintTop_toBottomOf="@+id/text_geoloc_req" />
 
     <TextView
         android:id="@+id/text_event_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:textColor="@color/dark_brown"
         android:fontFamily="@font/work_sans"
         android:text="@string/placeholder"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textColor="@color/dark_brown"
+        app:layout_constraintStart_toEndOf="@+id/event_time_header"
         app:layout_constraintTop_toBottomOf="@+id/text_event_date" />
 
     <TextView
         android:id="@+id/text_max_enroll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:textColor="@color/dark_brown"
         android:fontFamily="@font/work_sans"
         android:text="@string/placeholder"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textColor="@color/dark_brown"
+        app:layout_constraintStart_toEndOf="@+id/maximum_enroll"
         app:layout_constraintTop_toBottomOf="@+id/text_event_time" />
 
     <TextView
         android:id="@+id/text_waitlist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:textColor="@color/dark_brown"
         android:fontFamily="@font/work_sans"
         android:text="@string/placeholder"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textColor="@color/dark_brown"
+        app:layout_constraintStart_toEndOf="@+id/current_waitlist"
         app:layout_constraintTop_toBottomOf="@+id/text_max_enroll" />
 
     <FrameLayout
@@ -138,6 +133,72 @@
         app:layout_constraintStart_toStartOf="parent">
 
     </FrameLayout>
+
+    <TextView
+        android:id="@+id/hostedBy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:fontFamily="@font/work_sans_bold"
+        android:textColor="@color/dark_brown"
+        android:text="Hosted By: "
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_event_name" />
+
+    <TextView
+        android:id="@+id/geoLocReq"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:fontFamily="@font/work_sans_bold"
+        android:textColor="@color/dark_brown"
+        android:text="GeoLocation Requirement: "
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_description" />
+
+    <TextView
+        android:id="@+id/event_date_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:fontFamily="@font/work_sans_bold"
+        android:textColor="@color/dark_brown"
+        android:text="Event Date: "
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/geoLocReq" />
+
+    <TextView
+        android:id="@+id/event_time_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:fontFamily="@font/work_sans_bold"
+        android:textColor="@color/dark_brown"
+        android:text="Event Time: "
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/event_date_header" />
+
+    <TextView
+        android:id="@+id/maximum_enroll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:fontFamily="@font/work_sans_bold"
+        android:textColor="@color/dark_brown"
+        android:text="Max Enroll: "
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/event_time_header" />
+
+    <TextView
+        android:id="@+id/current_waitlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:fontFamily="@font/work_sans_bold"
+        android:textColor="@color/dark_brown"
+        android:text="Current Waitlist: "
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/maximum_enroll" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

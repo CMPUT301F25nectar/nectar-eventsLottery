@@ -1,10 +1,13 @@
 package com.example.beethere.eventclasses.eventDetails;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -127,6 +130,9 @@ public class EventDetailsFragment extends Fragment {
 
         // TODO
         // event image set up
+        ImageView imageView = view.findViewById(R.id.event_image);
+        Bitmap bitmap = BitmapFactory.decodeFile(event.getPosterPath());
+        imageView.setImageBitmap(bitmap);
 
 
         // SET LISTENERS

@@ -27,6 +27,7 @@ import com.example.beethere.eventclasses.eventDetails.EventDetailsFragment;
 import com.example.beethere.ui.myEvents.MyEventsAdapter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
@@ -51,9 +52,11 @@ public class AllEventsFragment extends Fragment {
         User tempUser = new User("name", "email");
         User tempEntrant = new User("some name", "email");
         Event tempEvent = new Event(tempUser,
+                1,
                 "title",
                 "description",
-                1, 1,
+                "path",
+                1,
                 Boolean.TRUE,
                 LocalDate.of(2025, 12,1),
                 LocalDate.of(2025, 12, 31),
