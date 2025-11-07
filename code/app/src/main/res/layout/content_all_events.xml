@@ -37,6 +37,8 @@
                 android:layout_marginStart="11dp"
                 android:layout_marginTop="26dp"
                 android:textSize="20dp"
+                android:fontFamily="@font/work_sans"
+                android:textColor="@color/dark_brown"
                 android:text="Event Title" />
 
             <TextView
@@ -46,6 +48,8 @@
                 app:layout_constraintTop_toBottomOf="@id/EventsTitle"
                 app:layout_constraintStart_toEndOf="@id/EventsPoster"
                 android:layout_marginStart="12dp"
+                android:fontFamily="@font/work_sans"
+                android:textColor="@color/dark_brown"
                 android:text="Enrollment Period" />
 
             <TextView
@@ -55,16 +59,20 @@
                 app:layout_constraintTop_toBottomOf="@id/EventEnrollPeriod"
                 app:layout_constraintStart_toEndOf="@id/EventsPoster"
                 android:layout_marginStart="12dp"
+                android:fontFamily="@font/work_sans"
+                android:textColor="@color/dark_brown"
                 android:text="00-00-0000" />
 
             <TextView
                 android:id="@+id/EventDash"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/work_sans"
+                android:textColor="@color/dark_brown"
                 app:layout_constraintTop_toBottomOf="@id/EventEnrollPeriod"
                 app:layout_constraintStart_toEndOf="@id/EventEnrollStart"
                 app:layout_constraintEnd_toStartOf="@id/EventEnrollEnd"
-                android:text="-" />
+                android:text=" to " />
 
             <TextView
                 android:id="@+id/EventEnrollEnd"
@@ -72,7 +80,9 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/EventEnrollPeriod"
                 app:layout_constraintStart_toEndOf="@id/EventDash"
-                android:text="00-00-0000" />
+                android:text="00-00-0000"
+                android:fontFamily="@font/work_sans"
+                android:textColor="@color/dark_brown"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

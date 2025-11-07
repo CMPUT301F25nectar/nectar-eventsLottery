@@ -23,10 +23,10 @@
 
     <!-- Event Details Fragment Resources -->
     <string name="event_name">%s</string>
-    <string name="event_organizer">Hosted by: %s</string>
+    <string name="event_organizer">%s</string>
     <string name="event_description">%s</string>
     <string name="event_registration">%s - %s</string>
-    <string name="event_date">%s - %s</string>
+    <string name="event_date">%s to %s</string>
     <string name="event_time">%s - %s</string>
 
     <!-- Button titles -->

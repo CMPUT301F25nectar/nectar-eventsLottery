@@ -50,14 +50,14 @@ public class EventsAdapter extends ArrayAdapter<Event> {
         TextView enrollEnd = view.findViewById(R.id.EventEnrollEnd);
 
         if (event != null) {
-            LocalDate regStart = event.getRegStart();
-            LocalDate regEnd = event.getRegEnd();
+            //LocalDate regStart = event.getRegStart();
+            //LocalDate regEnd = event.getRegEnd();
 
             //set the objects information using getters
-            /*title.setText(event.getTitle());
-            poster.setImageResource(event.getPoster());
-            enrollStart.setText(formatter.format(regStart));
-            enrollEnd.setText(formatter.format(regEnd));*/
+            title.setText(event.getTitle());
+            //poster.setImageResource(event.getPoster());
+            enrollStart.setText(event.getRegStart().toString());
+            enrollEnd.setText(event.getRegEnd().toString());
         }
 
 

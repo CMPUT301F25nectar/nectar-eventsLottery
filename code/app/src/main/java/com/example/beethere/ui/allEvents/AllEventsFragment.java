@@ -67,10 +67,27 @@ public class AllEventsFragment extends Fragment {
                 50,
                 Boolean.FALSE,
                 Boolean.TRUE);
+        Event tempEvent2 = new Event(tempUser,
+                4,
+                "something unique",
+                "a long and arduous description",
+                "some other path",
+                5,
+                Boolean.TRUE,
+                LocalDate.of(2026, 12,1),
+                LocalDate.of(2026, 12, 31),
+                LocalDate.of(2027, 1, 1),
+                LocalDate.of(2027, 1, 30),
+                LocalTime.of(8, 0),
+                LocalTime.of(10, 0),
+                50,
+                Boolean.FALSE,
+                Boolean.TRUE);
 
 
         ArrayList<Event> eventList = new ArrayList<>(); // TODO: change when firebase involved, on retrieving userID and their events if any
         eventList.add(tempEvent);
+        eventList.add(tempEvent2);
         ListView events = view.findViewById(R.id.event_display);
         EventsAdapter eventAdapter = new EventsAdapter(getContext(), eventList);
         events.setAdapter(eventAdapter);

@@ -16,7 +16,7 @@ public class Event {
     private int eventID;
 
     private String posterPath;
-    private BitMatrix qrCode;
+    private int qrCode;
 
     private Boolean status; //status on if the event is still active or not
 
@@ -52,7 +52,7 @@ public class Event {
      * @param autoRandomSelection boolean, if those in the waiting list should be selected on invitees cancellation
      */
 
-    public Event(User organizer, int eventID, String title, String description, String posterPath, BitMatrix qrCode,
+    public Event(User organizer, int eventID, String title, String description, String posterPath, int qrCode,
                  Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
                  LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
                  int entrantMax, Boolean getLocation,
@@ -74,7 +74,7 @@ public class Event {
         this.entrantList = new UserListManager(autoRandomSelection, entrantMax);
     }
 
-    public Event(User organizer, int eventID, String title, String description, String posterPath, BitMatrix qrCode,
+    public Event(User organizer, int eventID, String title, String description, String posterPath, int qrCode,
                  Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
                  LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
                  int entrantMax, Boolean getLocation,
@@ -136,11 +136,11 @@ public class Event {
         this.posterPath = posterPath;
     }
 
-    public BitMatrix getQrCode() {
+    public int getQrCode() {
         return qrCode;
     }
 
-    public void setQrCode(BitMatrix qrCode) {
+    public void setQrCode(int qrCode) {
         this.qrCode = qrCode;
     }
 

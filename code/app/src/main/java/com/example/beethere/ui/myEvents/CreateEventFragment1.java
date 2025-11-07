@@ -28,10 +28,10 @@ import com.example.beethere.R;
 import com.example.beethere.User;
 import com.example.beethere.eventclasses.UserListManager;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.zxing.BarcodeFormat;
+/*import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.QRCodeWriter;*/
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -195,7 +195,7 @@ public class CreateEventFragment1 extends Fragment {
         //TODO: Add event to database once all tests are passed, call addToDatebase
     }
 
-    private void addToDatabase(String title, LocalDateTime regStart, LocalDateTime regEnd, LocalDateTime eventStart,
+    /*private void addToDatabase(String title, LocalDateTime regStart, LocalDateTime regEnd, LocalDateTime eventStart,
                                LocalDateTime eventEnd, LocalDateTime timeStart, LocalDateTime timeEnd, int maxAttendees,
                                String description, String posterPath, boolean wantMaxWaitList, boolean wantGeoLocation,
                                boolean wantRandomSelect, int maxWaitListInt) throws WriterException {
@@ -224,6 +224,6 @@ public class CreateEventFragment1 extends Fragment {
                     maxAttendees, wantGeoLocation, wantRandomSelect, maxWaitListInt);
         }
 
-    }
+    }*/
 }
 
