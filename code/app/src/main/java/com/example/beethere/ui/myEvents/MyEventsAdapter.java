@@ -17,60 +17,51 @@ import androidx.annotation.Nullable;
 import com.example.beethere.R;
 import com.example.beethere.eventclasses.Event;
 
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class MyEventsAdapter extends ArrayAdapter<Event> {
 
-    private ArrayList<Event> events;
-    private Context context;
-    private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+    ArrayList<Event> events;
 
     public MyEventsAdapter(Context context, ArrayList<Event> events) {
         super(context, 0, events);
         this.events = events;
-        this.context = context;
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        View view = convertView;
-        if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.content_my_events, parent, false);
+        View view;
+        if (convertView == null){
+            view = LayoutInflater.from(getContext()).inflate(R.layout.content_all_events, parent, false);
+        } else {
+            view = convertView;
         }
 
         Event event = events.get(position);
-
         TextView title = view.findViewById(R.id.myEventsTitle);
         ImageView poster = view.findViewById(R.id.myEventsPoster);
         TextView enrollStart = view.findViewById(R.id.enrollStart);
         TextView enrollEnd = view.findViewById(R.id.enrollEnd);
         ImageButton optionsMenuButton = view.findViewById(R.id.optionsMenuButton);
 
-        // Set event title
         title.setText(event.getTitle());
-
-        // Set poster image from URI if available
         String posterPath = event.getPosterPath();
-        if (posterPath != null && !posterPath.isEmpty()) {
-            poster.setImageURI(Uri.parse(posterPath));
-        } else {
-            poster.setImageResource(R.drawable.ic_profile); // fallback image
-        }
 
-        // Set enrollment dates
-        if (event.getRegStart() != null) {
-            enrollStart.setText(event.getRegStart().format(dateFormatter));
-        }
-        if (event.getRegEnd() != null) {
-            enrollEnd.setText(event.getRegEnd().format(dateFormatter));
-        }
+        poster.setImageURI(Uri.parse(posterPath));
+        title.setText(event.getTitle());
+        enrollStart.setText(event.getRegStart().toString());
+        enrollEnd.setText(event.getRegEnd().toString());
+
 
         // Set options menu
         optionsMenuButton.setOnClickListener(v -> {
-            PopupMenu popupMenu = new PopupMenu(context, v);
+            PopupMenu popupMenu = new PopupMenu(getContext(), v);
             popupMenu.getMenuInflater().inflate(R.menu.event_options_menu, popupMenu.getMenu());
 
             popupMenu.setOnMenuItemClickListener(menuItem -> {

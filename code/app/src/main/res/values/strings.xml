@@ -38,16 +38,4 @@
     <string name="waitlist_ended">Waitlist period ended</string>
 
 
-
-<<<<<<< HEAD
-    <string name="first_name">First name</string>
-    <string name="last_name">Last name</string>
-    <string name="email">email@domain.com</string>
-    <string name="phone">Phone (optional)</string>
-    <string name="device_id">Device ID: </string>
-    <string name="btn_save">Save information</string>
-    <string name="btn_delete">Delete account</string>
-=======
->>>>>>> 5dd082351dca75379b58e177a9f406a71a6078d3
-
 </resources>

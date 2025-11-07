@@ -33,16 +33,16 @@ import java.util.ArrayList;
 
 
 public class AllEventsFragment extends Fragment {
-
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_all_events, container, false);
-
-
-        SearchView search = view.findViewById(R.id.searchView);
-
-        ImageButton filter = view.findViewById(R.id.button_filter);
-<<<<<<< HEAD
+//
+//    public View onCreateView(@NonNull LayoutInflater inflater,
+//                             ViewGroup container, Bundle savedInstanceState) {
+//        View view = inflater.inflate(R.layout.fragment_all_events, container, false);
+//
+//
+//        SearchView search = view.findViewById(R.id.searchView);
+//
+//        ImageButton filter = view.findViewById(R.id.button_filter);
+//
 //        filter.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -50,83 +50,60 @@ public class AllEventsFragment extends Fragment {
 //            }
 //        });
 //
+//        User tempUser = new User("name", "email");
+//        User tempEntrant = new User("some name", "email");
+//        Event tempEvent = new Event(tempUser,
+//                1,
+//                "title",
+//                "description",
+//                "path",
+//                1,
+//                Boolean.TRUE,
+//                LocalDate.of(2025, 12,1),
+//                LocalDate.of(2025, 12, 31),
+//                LocalDate.of(2026, 1, 1),
+//                LocalDate.of(2026, 1, 30),
+//                LocalTime.of(8, 0),
+//                LocalTime.of(10, 0),
+//                50,
+//                Boolean.FALSE,
+//                Boolean.TRUE);
+//        Event tempEvent2 = new Event(tempUser,
+//                4,
+//                "something unique",
+//                "a long and arduous description",
+//                "some other path",
+//                5,
+//                Boolean.TRUE,
+//                LocalDate.of(2026, 12,1),
+//                LocalDate.of(2026, 12, 31),
+//                LocalDate.of(2027, 1, 1),
+//                LocalDate.of(2027, 1, 30),
+//                LocalTime.of(8, 0),
+//                LocalTime.of(10, 0),
+//                50,
+//                Boolean.FALSE,
+//                Boolean.TRUE);
+//
+//
+//        ArrayList<Event> eventList = new ArrayList<>(); // TODO: change when firebase involved, on retrieving userID and their events if any
+//        eventList.add(tempEvent);
+//        eventList.add(tempEvent2);
 //        ListView events = view.findViewById(R.id.event_display);
+//        EventsAdapter eventAdapter = new EventsAdapter(getContext(), eventList);
+//        events.setAdapter(eventAdapter);
 //        events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //            @Override
 //            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                EventDetailsFragment fragment = new EventDetailsFragment();
-//                //Event event = (Event) parent.getItemAtPosition(position);
-//                //fragment.setEvent(event);
-//                fragment.setEvent((Event) parent.getItemAtPosition(position));
-//                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-//                //transaction.replace(R.id.someId, fragment).commit();
+//
+//                NavController nav = Navigation.findNavController(view);
+//                        nav.navigate(R.id.allEventToEventDetails);
+//
+//                EventDataViewModel event = new ViewModelProvider(getActivity()).get(EventDataViewModel.class);
+//                event.setEvent((Event) parent.getItemAtPosition(position));
 //            }
 //        });
-=======
-        filter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // filter dialog fragment
-            }
-        });
-
-        User tempUser = new User("name", "email");
-        User tempEntrant = new User("some name", "email");
-        Event tempEvent = new Event(tempUser,
-                1,
-                "title",
-                "description",
-                "path",
-                1,
-                Boolean.TRUE,
-                LocalDate.of(2025, 12,1),
-                LocalDate.of(2025, 12, 31),
-                LocalDate.of(2026, 1, 1),
-                LocalDate.of(2026, 1, 30),
-                LocalTime.of(8, 0),
-                LocalTime.of(10, 0),
-                50,
-                Boolean.FALSE,
-                Boolean.TRUE);
-        Event tempEvent2 = new Event(tempUser,
-                4,
-                "something unique",
-                "a long and arduous description",
-                "some other path",
-                5,
-                Boolean.TRUE,
-                LocalDate.of(2026, 12,1),
-                LocalDate.of(2026, 12, 31),
-                LocalDate.of(2027, 1, 1),
-                LocalDate.of(2027, 1, 30),
-                LocalTime.of(8, 0),
-                LocalTime.of(10, 0),
-                50,
-                Boolean.FALSE,
-                Boolean.TRUE);
-
-
-        ArrayList<Event> eventList = new ArrayList<>(); // TODO: change when firebase involved, on retrieving userID and their events if any
-        eventList.add(tempEvent);
-        eventList.add(tempEvent2);
-        ListView events = view.findViewById(R.id.event_display);
-        EventsAdapter eventAdapter = new EventsAdapter(getContext(), eventList);
-        events.setAdapter(eventAdapter);
-        events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                NavController nav = Navigation.findNavController(view);
-                        nav.navigate(R.id.allEventToEventDetails);
-
-                EventDataViewModel event = new ViewModelProvider(getActivity()).get(EventDataViewModel.class);
-                event.setEvent((Event) parent.getItemAtPosition(position));
-            }
-        });
->>>>>>> 5dd082351dca75379b58e177a9f406a71a6078d3
-
-
-
-        return view;
-    }
+//
+//        return view;
+//    }
 }

@@ -22,17 +22,22 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.beethere.DeviceId;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.R;
 import com.example.beethere.User;
+import com.example.beethere.eventclasses.EventDataViewModel;
 import com.example.beethere.eventclasses.UserListManager;
+import com.example.beethere.ui.device.DeviceIDViewModel;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -59,6 +64,8 @@ public class CreateEventFragment1 extends Fragment {
     public Uri imageURL;
 
     private User organizer;
+    private DeviceIDViewModel deviceIDProvider;
+
 
     private boolean wantMaxWaitList, wantRandomSelect, wantGeoLocation = false;
 
@@ -69,9 +76,9 @@ public class CreateEventFragment1 extends Fragment {
     private MyEventsAdapter myEventsAdapter;
     public ArrayList<Event> events;
 
-
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     DatabaseFunctions dbFunctions = new DatabaseFunctions();
+
 
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US);  // Use Locale.US for AM/PM format
@@ -83,7 +90,6 @@ public class CreateEventFragment1 extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_event_pg1, container, false);
-        String deviceID = DeviceId.get(requireContext());
 
         pickImageLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -97,6 +103,16 @@ public class CreateEventFragment1 extends Fragment {
 
         events = new ArrayList<>();
         myEventsAdapter = new MyEventsAdapter(getContext(), events);
+
+        String deviceID = DeviceId.get(requireContext());
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(deviceID)
+                .get()
+                .addOnSuccessListener(snap -> {
+                    organizer = snap.toObject(User.class);
+                });
+
 
         eventPoster = view.findViewById(R.id.poster);
         eventTitle = view.findViewById(R.id.eventTitle);
@@ -136,24 +152,21 @@ public class CreateEventFragment1 extends Fragment {
             wantRandomSelect = isChecked;  // Set the value of wantRandomSelect based on the switch state
         });
 
-
-
         Button completeButton = view.findViewById(R.id.completeButton);
         completeButton.setOnClickListener(v -> complete());
 
         Button backButton = view.findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> backMain());
 
+
         return view;
     }
 
     private void backMain () {
-        //TODO: display pop up asking if they are sure they'd like to go back
+//        DialogFragment goBack
         FragmentManager fragmentManager = getParentFragmentManager();
         fragmentManager.popBackStack();
     }
-
-
     private void choosePoster() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.setType("image/*");
@@ -251,6 +264,7 @@ public class CreateEventFragment1 extends Fragment {
             Event event = new Event(organizer, eventID, title, description, posterPath,
                     status, regStart, regEnd, eventStart, eventEnd, timeStart, timeEnd,
                     maxAttendees, wantGeoLocation, wantRandomSelect, maxWaitListInt);
+
             dbFunctions.addEventDB(event);
             events.add(event);
             myEventsAdapter.notifyDataSetChanged();
