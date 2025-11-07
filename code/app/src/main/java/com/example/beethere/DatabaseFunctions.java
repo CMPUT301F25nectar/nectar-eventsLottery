@@ -65,16 +65,16 @@ public class DatabaseFunctions {
     public void getEventsDB(Boolean filter, User waitlistID, DatabaseCallback<ArrayList<Event>> callback) {
 
         CollectionReference events = db.collection("Events");
-        ArrayList<Event> cityArrayList = new ArrayList<>();
+        ArrayList<Event> eventArrayList = new ArrayList<>();
 
         if (filter == Boolean.FALSE){
             // return
             events.get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        cityArrayList.add(document.toObject(Event.class));
+                        eventArrayList.add(document.toObject(Event.class));
                     }
-                    callback.onCallback(cityArrayList);
+                    callback.onCallback(eventArrayList);
                 } else {
                     Log.d(TAG, "Error getting documents: ", task.getException());
                     callback.onError(task.getException());
@@ -88,10 +88,10 @@ public class DatabaseFunctions {
                         UserListManager userlist = event.getEntrantList();
                         // Assuming 'event.getWaitlistUserIds()' returns your ArrayList<String>
                         if (!userlist.getWaitlist().contains(waitlistID)) {
-                            cityArrayList.add(document.toObject(Event.class));
+                            eventArrayList.add(event);
                         }
                     }
-                    callback.onCallback(cityArrayList);
+                    callback.onCallback(eventArrayList);
                 } else {
                     Log.d(TAG, "Error getting documents: ", task.getException());
                     callback.onError(task.getException());
@@ -100,9 +100,14 @@ public class DatabaseFunctions {
         }
     }
 
+    /**
+     * This methods returns the events a user has waitlisted
+     * @param waitlistID User class of user if they don't want events that they've already added to waitlist
+     * @param callback Database Callback to return the database
+     */
     public void getWaitlistEventsDB(User waitlistID, DatabaseCallback<ArrayList<Event>> callback){
         CollectionReference events = db.collection("Events");
-        ArrayList<Event> cityArrayList = new ArrayList<>();
+        ArrayList<Event> eventArrayList = new ArrayList<>();
 
         events.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -111,10 +116,37 @@ public class DatabaseFunctions {
                     UserListManager userlist = event.getEntrantList();
                     // Assuming 'event.getWaitlistUserIds()' returns your ArrayList<String>
                     if (userlist.getWaitlist().contains(waitlistID)) {
-                        cityArrayList.add(document.toObject(Event.class));
+                        eventArrayList.add(event);
                     }
                 }
-                callback.onCallback(cityArrayList);
+                callback.onCallback(eventArrayList);
+            } else {
+                Log.d(TAG, "Error getting documents: ", task.getException());
+                callback.onError(task.getException());
+            }
+        });
+
+    }
+
+    /**
+     * This methods returns the events a user has created
+     * @param waitlistID User class of user who is the organizer
+     * @param callback Database Callback to return the database
+     */
+    public void getCreatedEventsDB(User waitlistID, DatabaseCallback<ArrayList<Event>> callback){
+        CollectionReference events = db.collection("Events");
+        ArrayList<Event> eventArrayList = new ArrayList<>();
+
+        events.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    Event event = document.toObject(Event.class);
+                    // Assuming 'event.getWaitlistUserIds()' returns your ArrayList<String>
+                    if (event.getOrganizer() == waitlistID) {
+                        eventArrayList.add(event);
+                    }
+                }
+                callback.onCallback(eventArrayList);
             } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
                 callback.onError(task.getException());
