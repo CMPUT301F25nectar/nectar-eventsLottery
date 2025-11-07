@@ -40,12 +40,8 @@ public class ProfileDialogFragment extends DialogFragment {
                     String email = EnterEmail.getText().toString();
                     String phone = EnterPhone.getText().toString();
                     String deviceId = DeviceId.get(requireContext());
-                    if (TextUtils.isEmpty(name)) {
-                        Toast.makeText(requireContext(), "Enter your name", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    if (TextUtils.isEmpty(email)) {
-                        Toast.makeText(requireContext(), "Enter your email", Toast.LENGTH_SHORT).show();
+                    if (name.isEmpty() || email.isEmpty()){
+                        Toast.makeText(requireContext(), "Please enter name and email", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     User u = new User();
@@ -54,6 +50,7 @@ public class ProfileDialogFragment extends DialogFragment {
                     u.setPhone(phone);
                     u.setDeviceid(deviceId);
                     u.setAdmin(false);
+                    u.setOrganizer(true);
 
                     FirebaseFirestore.getInstance()
                             .collection("Users")

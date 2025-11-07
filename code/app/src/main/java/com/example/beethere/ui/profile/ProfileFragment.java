@@ -68,18 +68,32 @@ public class ProfileFragment extends Fragment {
     }
     private void saveprofile() {
         String deviceID = DeviceId.get(requireContext());
-        String fullname = firstname.getText().toString() + " " + lastname.getText().toString();
+        String first = firstname.getText().toString();
+        String last = lastname.getText().toString();
         String email = emailid.getText().toString();
         String phonenumber = phone.getText().toString();
+        if (first.isEmpty() && last.isEmpty()){
+            Toast.makeText(requireContext(), "Please enter name", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (email.isEmpty()){
+            Toast.makeText(requireContext(), "Please enter email", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String fullname = (first) + " " + (last);
         FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(deviceID)
                 .get()
                 .addOnSuccessListener(snap->{
                     Boolean admincurrent = null;
+                    Boolean organizercurrent = null;
                     if(snap.exists()){
                         User exists = snap.toObject(User.class);
-                        if (exists!= null) admincurrent = exists.getAdmin();
+                        if (exists!= null) {
+                            admincurrent = exists.getAdmin();
+                            organizercurrent=exists.getOrganizer();
+                        }
                     }
                     User u = new User();
                     u.setName(fullname);
@@ -88,6 +102,8 @@ public class ProfileFragment extends Fragment {
                     u.setDeviceid(deviceID);
                     if (admincurrent!=null) u.setAdmin(admincurrent);
                     else u.setAdmin(false);
+                    if (organizercurrent!=null) u.setOrganizer(organizercurrent);
+                    else u.setOrganizer(true);
                     FirebaseFirestore.getInstance().collection("users")
                             .document(deviceID)
                             .set(u)

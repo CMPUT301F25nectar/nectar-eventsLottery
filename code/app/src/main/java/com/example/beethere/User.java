@@ -9,6 +9,7 @@ public class User {
     private String phone; //optional
     private String deviceid;
     private Boolean admin; //admin flag
+    private Boolean organizer;//organizer flag
 
     public User(){}
     public User (String name, String email){
@@ -44,5 +45,11 @@ public class User {
     }
     public Boolean getAdmin(){
         return admin;
+    }
+    public Boolean getOrganizer(){
+        return organizer;
+    }
+    public void setOrganizer(boolean organizer){
+        this.organizer=organizer;
     }
 }

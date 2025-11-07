@@ -59,6 +59,13 @@
             android:text= "Admin"
             android:textStyle="bold"
             />
+        <TextView
+            android:id="@+id/is_organizer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Organizer"
+            android:textStyle="bold"
+            />
 
         <Button
             android:id="@+id/savebtn"
