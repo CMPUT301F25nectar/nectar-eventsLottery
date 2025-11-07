@@ -1,4 +1,8 @@
 package com.example.beethere.ui.profile;
+/**
+ * Dialog to create a new profile for a user (name, email, phone, admin and boolean flags) for each deviceid.
+ * Writes to the users collection with admin set as false and organizer set as true by default
+ */
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -53,7 +57,7 @@ public class ProfileDialogFragment extends DialogFragment {
                     u.setOrganizer(true);
 
                     FirebaseFirestore.getInstance()
-                            .collection("Users")
+                            .collection("users")
                             .document(deviceId)
                             .set(u)
                             .addOnSuccessListener(unused -> {

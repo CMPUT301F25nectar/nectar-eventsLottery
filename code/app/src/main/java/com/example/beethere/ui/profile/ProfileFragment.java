@@ -18,7 +18,9 @@ import com.example.beethere.User;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-
+/**
+ * In app profile screen to view/edit/delete the current device's profile
+ */
 public class ProfileFragment extends Fragment {
     private EditText firstname, lastname, emailid, phone;
     private TextView userdeviceId;
