@@ -32,25 +32,25 @@ public class AllEventsFragment extends Fragment {
         SearchView search = view.findViewById(R.id.searchView);
 
         ImageButton filter = view.findViewById(R.id.button_filter);
-        filter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // filter dialog fragment
-            }
-        });
-
-        ListView events = view.findViewById(R.id.event_display);
-        events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                EventDetailsFragment fragment = new EventDetailsFragment();
-                //Event event = (Event) parent.getItemAtPosition(position);
-                //fragment.setEvent(event);
-                fragment.setEvent((Event) parent.getItemAtPosition(position));
-                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                //transaction.replace(R.id.someId, fragment).commit();
-            }
-        });
+//        filter.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // filter dialog fragment
+//            }
+//        });
+//
+//        ListView events = view.findViewById(R.id.event_display);
+//        events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                EventDetailsFragment fragment = new EventDetailsFragment();
+//                //Event event = (Event) parent.getItemAtPosition(position);
+//                //fragment.setEvent(event);
+//                fragment.setEvent((Event) parent.getItemAtPosition(position));
+//                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+//                //transaction.replace(R.id.someId, fragment).commit();
+//            }
+//        });
 
         return view;
     }

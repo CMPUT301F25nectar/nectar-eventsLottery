@@ -15,20 +15,19 @@ public class Event {
     private User organizer;
     private String title;
     private String description;
-    private int eventID;
+    private String eventID;
 
     private String posterPath;
-    private BitMatrix qrCode;
 
     private Boolean status; //status on if the event is still active or not
 
-    private LocalDateTime regStart;
-    private LocalDateTime regEnd;
+    private LocalDate regStart;
+    private LocalDate regEnd;
 
-    private LocalDateTime eventDateStart;
-    private LocalDateTime eventDateEnd;
-    private LocalDateTime eventTimeStart;
-    private LocalDateTime eventTimeEnd;
+    private LocalDate eventDateStart;
+    private LocalDate eventDateEnd;
+    private LocalTime eventTimeStart;
+    private LocalTime eventTimeEnd;
 
     private Boolean geoloc;
 
@@ -41,7 +40,6 @@ public class Event {
      * @param title String,title of the event
      * @param description String, details of the event
      * @param posterPath URI, advertisement poster of the event
-     * @param qrCode idk, qr code to take user to page for event
      * @param status boolean, status of if the event is active or not
      * @param regStart Date, when registration for the event begins
      * @param regEnd Date, when registration for the event ends
@@ -54,9 +52,9 @@ public class Event {
      * @param autoRandomSelection boolean, if those in the waiting list should be selected on invitees cancellation
      */
 
-    public Event(User organizer, int eventID, String title, String description, String posterPath, BitMatrix qrCode,
-                 Boolean status, LocalDateTime regStart, LocalDateTime regEnd, LocalDateTime eventDateStart,
-                 LocalDateTime eventDateEnd, LocalDateTime eventTimeStart, LocalDateTime eventTimeEnd,
+    public Event(User organizer, String eventID, String title, String description, String posterPath,
+                 Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
+                 LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
                  int entrantMax, Boolean getLocation,
                  Boolean autoRandomSelection) {
         this.organizer = organizer;
@@ -64,7 +62,6 @@ public class Event {
         this.title = title;
         this.description = description;
         this.posterPath = posterPath;
-        this.qrCode = qrCode;
         this.status = status;
         this.regStart = regStart;
         this.regEnd = regEnd;
@@ -76,9 +73,9 @@ public class Event {
         this.entrantList = new UserListManager(autoRandomSelection, entrantMax);
     }
 
-    public Event(User organizer, int eventID, String title, String description, String posterPath, BitMatrix qrCode,
-                 Boolean status, LocalDateTime regStart, LocalDateTime regEnd, LocalDateTime eventDateStart,
-                 LocalDateTime eventDateEnd, LocalDateTime eventTimeStart, LocalDateTime eventTimeEnd,
+    public Event(User organizer, String eventID, String title, String description, String posterPath,
+                 Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
+                 LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
                  int entrantMax, Boolean getLocation,
                  Boolean autoRandomSelection, int maxWaitlist) {
         this.organizer = organizer;
@@ -86,7 +83,6 @@ public class Event {
         this.title = title;
         this.description = description;
         this.posterPath = posterPath;
-        this.qrCode = qrCode;
         this.status = status;
         this.regStart = regStart;
         this.regEnd = regEnd;
@@ -106,11 +102,11 @@ public class Event {
         this.organizer = organizer;
     }
 
-    public int getEventID() {
+    public String getEventID() {
         return eventID;
     }
 
-    public void setEventID(int eventID) {
+    public void setEventID(String eventID) {
         this.eventID = eventID;
     }
 
@@ -138,13 +134,6 @@ public class Event {
         this.posterPath = posterPath;
     }
 
-    public BitMatrix getQrCode() {
-        return qrCode;
-    }
-
-    public void setQrCode(BitMatrix qrCode) {
-        this.qrCode = qrCode;
-    }
 
     public Boolean getStatus() {
         return status;
@@ -154,51 +143,51 @@ public class Event {
         this.status = status;
     }
 
-    public LocalDateTime getRegStart() {
+    public LocalDate getRegStart() {
         return regStart;
     }
 
-    public void setRegStart(LocalDateTime regStart) {
+    public void setRegStart(LocalDate regStart) {
         this.regStart = regStart;
     }
 
-    public LocalDateTime getRegEnd() {
+    public LocalDate getRegEnd() {
         return regEnd;
     }
 
-    public void setRegEnd(LocalDateTime regEnd) {
+    public void setRegEnd(LocalDate regEnd) {
         this.regEnd = regEnd;
     }
 
-    public LocalDateTime getEventDateStart() {
+    public LocalDate getEventDateStart() {
         return eventDateStart;
     }
 
-    public void setEventDateStart(LocalDateTime eventDateStart) {
+    public void setEventDateStart(LocalDate eventDateStart) {
         this.eventDateStart = eventDateStart;
     }
 
-    public LocalDateTime getEventDateEnd() {
+    public LocalDate getEventDateEnd() {
         return eventDateEnd;
     }
 
-    public void setEventDateEnd(LocalDateTime eventDateEnd) {
+    public void setEventDateEnd(LocalDate eventDateEnd) {
         this.eventDateEnd = eventDateEnd;
     }
 
-    public LocalDateTime getEventTimeStart() {
+    public LocalTime getEventTimeStart() {
         return eventTimeStart;
     }
 
-    public void setEventTimeStart(LocalDateTime eventTimeStart) {
+    public void setEventTimeStart(LocalTime eventTimeStart) {
         this.eventTimeStart = eventTimeStart;
     }
 
-    public LocalDateTime getEventTimeEnd() {
+    public LocalTime getEventTimeEnd() {
         return eventTimeEnd;
     }
 
-    public void setEventTimeEnd(LocalDateTime eventTimeEnd) {
+    public void setEventTimeEnd(LocalTime eventTimeEnd) {
         this.eventTimeEnd = eventTimeEnd;
     }
 

@@ -33,7 +33,6 @@
         android:layout_marginStart="20dp"
         android:text="@string/placeholder"
         android:textColor="@color/dark_brown"
-        android:fontFamily="@font/work_sans"
         android:textSize="45sp"
         app:layout_constraintEnd_toStartOf="@+id/button_QR"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,7 +53,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:textColor="@color/dark_brown"
-        android:fontFamily="@font/work_sans"
         android:text="@string/placeholder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_event_name" />
@@ -66,7 +64,6 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:textColor="@color/dark_brown"
-        android:fontFamily="@font/work_sans"
         android:text="@string/placeholder"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -79,7 +76,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:textColor="@color/dark_brown"
-        android:fontFamily="@font/work_sans"
         android:text="@string/placeholder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_description" />
@@ -90,7 +86,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:textColor="@color/dark_brown"
-        android:fontFamily="@font/work_sans"
         android:text="@string/placeholder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_geoloc_req" />
@@ -101,7 +96,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:textColor="@color/dark_brown"
-        android:fontFamily="@font/work_sans"
         android:text="@string/placeholder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_event_date" />
@@ -112,7 +106,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:textColor="@color/dark_brown"
-        android:fontFamily="@font/work_sans"
         android:text="@string/placeholder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_event_time" />
@@ -123,7 +116,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:textColor="@color/dark_brown"
-        android:fontFamily="@font/work_sans"
         android:text="@string/placeholder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_max_enroll" />

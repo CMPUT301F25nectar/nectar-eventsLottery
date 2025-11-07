@@ -17,6 +17,7 @@ import com.example.beethere.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+    private DeviceIDViewModel deviceID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        deviceID = new ViewModelProvider(this).get(DeviceIDViewModel.class);
+        deviceID.setDeviceID(DeviceId.get(this));
     }
 
     @Override
