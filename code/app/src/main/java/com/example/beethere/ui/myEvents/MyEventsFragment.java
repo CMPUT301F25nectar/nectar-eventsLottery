@@ -61,7 +61,6 @@ public class MyEventsFragment extends Fragment {
         MyEventsAdapter eventAdapter = new MyEventsAdapter(getContext(), eventList);
         eventsListView.setAdapter(eventAdapter);
 
-        CreateEventFragment1 pageOne = new CreateEventFragment1();
         createEventButton.setOnClickListener(this::showCreationPage);
 
         return view;

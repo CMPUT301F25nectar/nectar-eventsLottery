@@ -1,8 +1,12 @@
 package com.example.beethere.eventclasses;
 
+import android.net.Uri;
+
 import com.example.beethere.User;
+import com.google.zxing.common.BitMatrix;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,19 +15,20 @@ public class Event {
     private User organizer;
     private String title;
     private String description;
+    private int eventID;
 
-    private int poster;
-    private int qrCode;
+    private String posterPath;
+    private BitMatrix qrCode;
 
     private Boolean status; //status on if the event is still active or not
 
-    private LocalDate regStart;
-    private LocalDate regEnd;
+    private LocalDateTime regStart;
+    private LocalDateTime regEnd;
 
-    private LocalDate eventDateStart;
-    private LocalDate eventDateEnd;
-    private LocalTime eventTimeStart;
-    private LocalTime eventTimeEnd;
+    private LocalDateTime eventDateStart;
+    private LocalDateTime eventDateEnd;
+    private LocalDateTime eventTimeStart;
+    private LocalDateTime eventTimeEnd;
 
     private Boolean geoloc;
 
@@ -35,7 +40,7 @@ public class Event {
      * @param organizer User, user who can create events, identified by unique deviceID
      * @param title String,title of the event
      * @param description String, details of the event
-     * @param image URI, advertisement poster of the event
+     * @param posterPath URI, advertisement poster of the event
      * @param qrCode idk, qr code to take user to page for event
      * @param status boolean, status of if the event is active or not
      * @param regStart Date, when registration for the event begins
@@ -49,15 +54,16 @@ public class Event {
      * @param autoRandomSelection boolean, if those in the waiting list should be selected on invitees cancellation
      */
 
-    public Event(User organizer, String title, String description, int image, int qrCode,
-                 Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
-                 LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
+    public Event(User organizer, int eventID, String title, String description, String posterPath, BitMatrix qrCode,
+                 Boolean status, LocalDateTime regStart, LocalDateTime regEnd, LocalDateTime eventDateStart,
+                 LocalDateTime eventDateEnd, LocalDateTime eventTimeStart, LocalDateTime eventTimeEnd,
                  int entrantMax, Boolean getLocation,
                  Boolean autoRandomSelection) {
         this.organizer = organizer;
+        this.eventID = eventID;
         this.title = title;
         this.description = description;
-        this.poster = image;
+        this.posterPath = posterPath;
         this.qrCode = qrCode;
         this.status = status;
         this.regStart = regStart;
@@ -70,15 +76,16 @@ public class Event {
         this.entrantList = new UserListManager(autoRandomSelection, entrantMax);
     }
 
-    public Event(User organizer, String title, String description, int image, int qrCode,
-                 Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
-                 LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
+    public Event(User organizer, int eventID, String title, String description, String posterPath, BitMatrix qrCode,
+                 Boolean status, LocalDateTime regStart, LocalDateTime regEnd, LocalDateTime eventDateStart,
+                 LocalDateTime eventDateEnd, LocalDateTime eventTimeStart, LocalDateTime eventTimeEnd,
                  int entrantMax, Boolean getLocation,
                  Boolean autoRandomSelection, int maxWaitlist) {
         this.organizer = organizer;
+        this.eventID = eventID;
         this.title = title;
         this.description = description;
-        this.poster = image;
+        this.posterPath = posterPath;
         this.qrCode = qrCode;
         this.status = status;
         this.regStart = regStart;
@@ -99,6 +106,14 @@ public class Event {
         this.organizer = organizer;
     }
 
+    public int getEventID() {
+        return eventID;
+    }
+
+    public void setEventID(int eventID) {
+        this.eventID = eventID;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -115,19 +130,19 @@ public class Event {
         this.description = description;
     }
 
-    public int getPoster() {
-        return poster;
+    public String getPosterPath() {
+        return posterPath;
     }
 
-    public void setPoster(int poster) {
-        this.poster = poster;
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
     }
 
-    public int getQrCode() {
+    public BitMatrix getQrCode() {
         return qrCode;
     }
 
-    public void setQrCode(int qrCode) {
+    public void setQrCode(BitMatrix qrCode) {
         this.qrCode = qrCode;
     }
 
@@ -139,51 +154,51 @@ public class Event {
         this.status = status;
     }
 
-    public LocalDate getRegStart() {
+    public LocalDateTime getRegStart() {
         return regStart;
     }
 
-    public void setRegStart(LocalDate regStart) {
+    public void setRegStart(LocalDateTime regStart) {
         this.regStart = regStart;
     }
 
-    public LocalDate getRegEnd() {
+    public LocalDateTime getRegEnd() {
         return regEnd;
     }
 
-    public void setRegEnd(LocalDate regEnd) {
+    public void setRegEnd(LocalDateTime regEnd) {
         this.regEnd = regEnd;
     }
 
-    public LocalDate getEventDateStart() {
+    public LocalDateTime getEventDateStart() {
         return eventDateStart;
     }
 
-    public void setEventDateStart(LocalDate eventDateStart) {
+    public void setEventDateStart(LocalDateTime eventDateStart) {
         this.eventDateStart = eventDateStart;
     }
 
-    public LocalDate getEventDateEnd() {
+    public LocalDateTime getEventDateEnd() {
         return eventDateEnd;
     }
 
-    public void setEventDateEnd(LocalDate eventDateEnd) {
+    public void setEventDateEnd(LocalDateTime eventDateEnd) {
         this.eventDateEnd = eventDateEnd;
     }
 
-    public LocalTime getEventTimeStart() {
+    public LocalDateTime getEventTimeStart() {
         return eventTimeStart;
     }
 
-    public void setEventTimeStart(LocalTime eventTimeStart) {
+    public void setEventTimeStart(LocalDateTime eventTimeStart) {
         this.eventTimeStart = eventTimeStart;
     }
 
-    public LocalTime getEventTimeEnd() {
+    public LocalDateTime getEventTimeEnd() {
         return eventTimeEnd;
     }
 
-    public void setEventTimeEnd(LocalTime eventTimeEnd) {
+    public void setEventTimeEnd(LocalDateTime eventTimeEnd) {
         this.eventTimeEnd = eventTimeEnd;
     }
 

@@ -250,6 +250,8 @@
                     app:layout_constraintStart_toEndOf="@id/geoLocation"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/description"
+                    android:thumb="@drawable/switch_thumb"
+                    app:track="@drawable/switch_track"
                     android:text="" />
 
                 <TextView

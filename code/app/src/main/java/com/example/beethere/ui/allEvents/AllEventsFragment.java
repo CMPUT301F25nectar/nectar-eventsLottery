@@ -48,7 +48,7 @@ public class AllEventsFragment extends Fragment {
                 //fragment.setEvent(event);
                 fragment.setEvent((Event) parent.getItemAtPosition(position));
                 FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                transaction.replace(R.id.someId, fragment).commit();
+                //transaction.replace(R.id.someId, fragment).commit();
             }
         });
 

@@ -8,7 +8,8 @@ public class User {
     private String email;
     private String phone; //optional
     private String deviceid;
-    private Boolean admin; //admin flag
+    private Boolean admin;
+    private Boolean organizer; //admin flag
 
     public User (String name, String email){
         this.name = name;
@@ -44,5 +45,6 @@ public class User {
     public void setAdmin(boolean admin){
         this.admin = admin;
     }
-
+    public Boolean getOrganizer() {return organizer;}
+    public void setOrganizer(Boolean organizer) {this.organizer = organizer;}
 }

@@ -20,6 +20,7 @@ import com.example.beethere.R;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -68,12 +69,12 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
         ImageView poster = view.findViewById(R.id.myEventsPoster);
         TextView enrollStart = view.findViewById(R.id.enrollStart);
         TextView enrollEnd = view.findViewById(R.id.enrollEnd);
-        LocalDate regStart = event.getRegStart();
-        LocalDate regEnd = event.getRegEnd();
+        LocalDateTime regStart = event.getRegStart();
+        LocalDateTime regEnd = event.getRegEnd();
 
         //set the objects information using getters
         title.setText(event.getTitle());
-        poster.setImageResource(event.getImage());
+        poster.setImageResource(event.getPoster());
         enrollStart.setText(formatter.format(regStart));
         enrollEnd.setText(formatter.format(regEnd));
 
@@ -88,9 +89,13 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
                     return true;
                 } else if (id == R.id.delete) {
                     // TODO: handle action for this
+                    // here, a dialog fragment would just pop up asking the user if they are aure theyd like to delete
+                    //if they click yes, delete from the database
+                    //if they click cancel, continue on
                     return true;
                 } else if (id == R.id.qrcode) {
                     // TODO: handle action for this
+                    //need to call qrcode process thing
                     return true;
                 } else if (id == R.id.entrants) {
                     // TODO: handle action for this

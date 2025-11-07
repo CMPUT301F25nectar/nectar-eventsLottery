@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(libs.cardview)
     implementation("com.google.android.material:material:1.10.0")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
