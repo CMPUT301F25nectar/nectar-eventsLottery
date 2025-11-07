@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,9 +19,9 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class EventsAdapter extends ArrayAdapter<Event> {
-    private ArrayList<Event> events;
-    private Context context;
+
     SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+    ArrayList<Event> events;
 
     /**
      **  the context of the activity where the events are being showcased
@@ -36,25 +35,31 @@ public class EventsAdapter extends ArrayAdapter<Event> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        View view = convertView;
-        if (view == null){
-            view = LayoutInflater.from(context).inflate(R.layout.content_my_events, parent, false);
+        View view;
+        if (convertView == null){
+            view = LayoutInflater.from(getContext()).inflate(R.layout.content_all_events, parent, false);
+        } else {
+            view = convertView;
         }
-
+        //Event event = getItem(position);
 
         Event event = events.get(position);
-        TextView title = view.findViewById(R.id.myEventsTitle);
-        ImageView poster = view.findViewById(R.id.myEventsPoster);
-        TextView enrollStart = view.findViewById(R.id.enrollStart);
-        TextView enrollEnd = view.findViewById(R.id.enrollEnd);
-        LocalDate regStart = event.getRegStart();
-        LocalDate regEnd = event.getRegEnd();
+        TextView title = view.findViewById(R.id.EventsTitle);
+        ImageView poster = view.findViewById(R.id.EventsPoster);
+        TextView enrollStart = view.findViewById(R.id.EventEnrollStart);
+        TextView enrollEnd = view.findViewById(R.id.EventEnrollEnd);
 
-        //set the objects information using getters
-        title.setText(event.getTitle());
-        poster.setImageResource(event.getPoster());
-        enrollStart.setText(formatter.format(regStart));
-        enrollEnd.setText(formatter.format(regEnd));
+        if (event != null) {
+            LocalDate regStart = event.getRegStart();
+            LocalDate regEnd = event.getRegEnd();
+
+            //set the objects information using getters
+            /*title.setText(event.getTitle());
+            poster.setImageResource(event.getPoster());
+            enrollStart.setText(formatter.format(regStart));
+            enrollEnd.setText(formatter.format(regEnd));*/
+        }
+
 
 
         return view;

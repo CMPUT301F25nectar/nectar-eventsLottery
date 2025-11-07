@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-
     <androidx.cardview.widget.CardView
-        android:id="@+id/myEventsItem"
+        android:id="@+id/EventItem"
         android:layout_width="342dp"
         android:layout_height="138dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -21,7 +19,7 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/myEventsPoster"
+                android:id="@+id/EventsPoster"
                 android:layout_width="115dp"
                 android:layout_height="115dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -31,10 +29,10 @@
                 tools:srcCompat="@tools:sample/avatars" />
 
             <TextView
-                android:id="@+id/myEventsTitle"
+                android:id="@+id/EventsTitle"
                 android:layout_width="179dp"
                 android:layout_height="53dp"
-                app:layout_constraintStart_toEndOf="@id/myEventsPoster"
+                app:layout_constraintStart_toEndOf="@id/EventsPoster"
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginStart="11dp"
                 android:layout_marginTop="26dp"
@@ -42,40 +40,40 @@
                 android:text="Event Title" />
 
             <TextView
-                android:id="@+id/enrollPeriod"
+                android:id="@+id/EventEnrollPeriod"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/myEventsTitle"
-                app:layout_constraintStart_toEndOf="@id/myEventsPoster"
+                app:layout_constraintTop_toBottomOf="@id/EventsTitle"
+                app:layout_constraintStart_toEndOf="@id/EventsPoster"
                 android:layout_marginStart="12dp"
                 android:text="Enrollment Period" />
 
             <TextView
-                android:id="@+id/enrollStart"
+                android:id="@+id/EventEnrollStart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/enrollPeriod"
-                app:layout_constraintStart_toEndOf="@id/myEventsPoster"
+                app:layout_constraintTop_toBottomOf="@id/EventEnrollPeriod"
+                app:layout_constraintStart_toEndOf="@id/EventsPoster"
                 android:layout_marginStart="12dp"
                 android:text="00-00-0000" />
 
             <TextView
-                android:id="@+id/dash"
+                android:id="@+id/EventDash"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/enrollPeriod"
-                app:layout_constraintStart_toEndOf="@id/enrollStart"
-                app:layout_constraintEnd_toStartOf="@id/enrollEnd"
+                app:layout_constraintTop_toBottomOf="@id/EventEnrollPeriod"
+                app:layout_constraintStart_toEndOf="@id/EventEnrollStart"
+                app:layout_constraintEnd_toStartOf="@id/EventEnrollEnd"
                 android:text="-" />
 
             <TextView
-                android:id="@+id/enrollEnd"
+                android:id="@+id/EventEnrollEnd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/enrollPeriod"
-                app:layout_constraintStart_toEndOf="@id/dash"
+                app:layout_constraintTop_toBottomOf="@id/EventEnrollPeriod"
+                app:layout_constraintStart_toEndOf="@id/EventDash"
                 android:text="00-00-0000" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

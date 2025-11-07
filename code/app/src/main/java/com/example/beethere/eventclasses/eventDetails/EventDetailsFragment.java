@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.beethere.R;
 import com.example.beethere.User;
 import com.example.beethere.eventclasses.Event;
+import com.example.beethere.eventclasses.EventDataViewModel;
 import com.example.beethere.ui.device.DeviceIDViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -32,6 +33,7 @@ public class EventDetailsFragment extends Fragment {
 
     private Event event;
     private DeviceIDViewModel deviceID;
+    private EventDataViewModel eventData;
 
 
     public Event getEvent() {
@@ -43,6 +45,8 @@ public class EventDetailsFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event_details, container, false);
+        eventData = new ViewModelProvider(requireActivity()).get(EventDataViewModel.class);
+        event = eventData.getEvent();
 
         // checking device id status and defining user
         // get device id

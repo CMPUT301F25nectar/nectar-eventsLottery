@@ -1,15 +1,12 @@
 package com.example.beethere.ui.device;
 
-import android.content.Context;
 
 import androidx.lifecycle.ViewModel;
-
-import com.example.beethere.DeviceId;
 
 public class DeviceIDViewModel extends ViewModel {
     private String deviceID;
 
-    public DeviceIDViewModel(Context context){
+    public DeviceIDViewModel(){
         this.deviceID = "";
     }
 

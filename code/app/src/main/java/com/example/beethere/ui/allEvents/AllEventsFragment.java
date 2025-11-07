@@ -13,15 +13,21 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 
 import com.example.beethere.R;
+import com.example.beethere.User;
 import com.example.beethere.eventclasses.Event;
+import com.example.beethere.eventclasses.EventDataViewModel;
+import com.example.beethere.eventclasses.EventsAdapter;
 import com.example.beethere.eventclasses.eventDetails.EventDetailsFragment;
 import com.example.beethere.ui.myEvents.MyEventsAdapter;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 
@@ -42,26 +48,38 @@ public class AllEventsFragment extends Fragment {
             }
         });
 
-
+        User tempUser = new User("name", "email");
+        User tempEntrant = new User("some name", "email");
+        Event tempEvent = new Event(tempUser,
+                "title",
+                "description",
+                1, 1,
+                Boolean.TRUE,
+                LocalDate.of(2025, 12,1),
+                LocalDate.of(2025, 12, 31),
+                LocalDate.of(2026, 1, 1),
+                LocalDate.of(2026, 1, 30),
+                LocalTime.of(8, 0),
+                LocalTime.of(10, 0),
+                50,
+                Boolean.FALSE,
+                Boolean.TRUE);
 
 
         ArrayList<Event> eventList = new ArrayList<>(); // TODO: change when firebase involved, on retrieving userID and their events if any
+        eventList.add(tempEvent);
         ListView events = view.findViewById(R.id.event_display);
-        MyEventsAdapter eventAdapter = new MyEventsAdapter(getContext(), eventList);
+        EventsAdapter eventAdapter = new EventsAdapter(getContext(), eventList);
         events.setAdapter(eventAdapter);
         events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 NavController nav = Navigation.findNavController(view);
-                        nav.navigate(R.id.myEventsToCreateEvents);
+                        nav.navigate(R.id.allEventToEventDetails);
 
-                /*EventDetailsFragment fragment = new EventDetailsFragment();
-                //Event event = (Event) parent.getItemAtPosition(position);
-                //fragment.setEvent(event);
-                fragment.setEvent((Event) parent.getItemAtPosition(position));
-                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                transaction.replace(R.id.someId, fragment).commit();*/
+                EventDataViewModel event = new ViewModelProvider(getActivity()).get(EventDataViewModel.class);
+                event.setEvent((Event) parent.getItemAtPosition(position));
             }
         });
 
