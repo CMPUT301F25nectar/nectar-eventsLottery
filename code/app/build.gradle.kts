@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.navigation.ui)
     //implementation(libs.cardview)
     implementation("com.google.android.material:material:1.10.0")
+    implementation(libs.fragment.testing)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
