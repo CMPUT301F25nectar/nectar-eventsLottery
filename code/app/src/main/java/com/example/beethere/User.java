@@ -10,6 +10,7 @@ public class User {
     private String deviceid;
     private Boolean admin; //admin flag
 
+    public User(){}
     public User (String name, String email){
         this.name = name;
         this.email = email;
@@ -38,11 +39,10 @@ public class User {
     public void setDeviceid(String deviceid){
         this.deviceid = deviceid;
     }
-    public boolean isAdmin(){
-        return admin;
-    }
     public void setAdmin(boolean admin){
         this.admin = admin;
     }
-
+    public Boolean getAdmin(){
+        return admin;
+    }
 }

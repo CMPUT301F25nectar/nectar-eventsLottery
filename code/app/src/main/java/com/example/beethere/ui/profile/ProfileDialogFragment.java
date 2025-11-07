@@ -14,6 +14,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.beethere.DeviceId;
 import com.example.beethere.R;
+import com.example.beethere.User;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ProfileDialogFragment extends DialogFragment {
@@ -47,7 +48,13 @@ public class ProfileDialogFragment extends DialogFragment {
                         Toast.makeText(requireContext(), "Enter your email", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    Simple u = new Simple(name, email, phone);
+                    User u = new User();
+                    u.setName(name);
+                    u.setEmail(email);
+                    u.setPhone(phone);
+                    u.setDeviceid(deviceId);
+                    u.setAdmin(false);
+
                     FirebaseFirestore.getInstance()
                             .collection("Users")
                             .document(deviceId)
@@ -63,16 +70,6 @@ public class ProfileDialogFragment extends DialogFragment {
         builder.setNegativeButton("Cancel", null);
         return builder.create();
     }
-    public static class Simple{
-        public String name;
-        public String email;
-        public String phone;
-        public Simple(){}
-        public Simple(String name, String email, String phone){
-            this.name=name;
-            this.email=email;
-            this.phone=phone;
-        }
-    }
+
 }
 
