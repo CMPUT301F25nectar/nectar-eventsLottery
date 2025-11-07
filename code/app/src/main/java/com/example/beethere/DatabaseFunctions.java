@@ -19,7 +19,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.beethere.Event;
+import com.example.beethere.eventclasses.Event;
 
 
 public class DatabaseFunctions {
