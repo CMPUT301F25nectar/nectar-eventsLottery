@@ -10,7 +10,12 @@ lifecycleLivedataKtx = "2.9.4"
 lifecycleViewmodelKtx = "2.9.4"
 navigationFragment = "2.9.5"
 navigationUi = "2.9.5"
+<<<<<<< HEAD
 cardview = "1.0.0"
+=======
+playServicesTasks = "18.4.0"
+firebaseInstallations = "19.0.1"
+>>>>>>> 077c511b1243579fa1b23a042ffdf54df26673e9
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -23,7 +28,12 @@ lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-lived
 lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
+<<<<<<< HEAD
 cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
+=======
+play-services-tasks = { group = "com.google.android.gms", name = "play-services-tasks", version.ref = "playServicesTasks" }
+firebase-installations = { group = "com.google.firebase", name = "firebase-installations", version.ref = "firebaseInstallations" }
+>>>>>>> 077c511b1243579fa1b23a042ffdf54df26673e9
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
