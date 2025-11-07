@@ -1,5 +1,6 @@
 package com.example.beethere.notifications_classes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Notification {
@@ -10,9 +11,24 @@ public class Notification {
     private long timestamp;
     private String type;
     private List<String> deviceIds;
-    private String createdBy;
+    private String organizerDeviceId;
 
-    //add no arg constructor for firebase girll
+    //generating primary composite key:
+    // @Entity (primaryKeys = {"column1","column2"})
+
+    //no arg constructor for firebase
+    public Notification(){
+        this.notificationId = "";
+        this.eventId = "";
+        this.eventName = "";
+        this.message = "";
+        this.timestamp = 0L;
+        this.type = "custom";
+        this.deviceIds = new ArrayList<>();
+        this.organizerDeviceId = "";
+
+
+    }
 
     public Notification(String notificationId, String eventId, String eventName, String message, long timestamp, String type, List<String> deviceIds, String createdBy ){
         this.notificationId = notificationId;
@@ -22,7 +38,7 @@ public class Notification {
         this.timestamp = timestamp;
         this.type = type;
         this.deviceIds = deviceIds;
-        this.createdBy = createdBy;
+        this.organizerDeviceId = createdBy;
     }
 
     //getters
@@ -47,8 +63,8 @@ public class Notification {
     public List<String> getDeviceIds() {
         return deviceIds;
     }
-    public String getCreatedBy() {
-        return createdBy;
+    public String getOrganizerDeviceId() {
+        return organizerDeviceId;
     }
     //setters
 
@@ -80,7 +96,7 @@ public class Notification {
         this.deviceIds = deviceIds;
     }
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+    public void setOrganizerDeviceId(String createdBy) {
+        this.organizerDeviceId = organizerDeviceId;
     }
 }
