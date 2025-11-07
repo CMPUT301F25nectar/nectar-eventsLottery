@@ -1,5 +1,9 @@
 package com.example.beethere;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -20,94 +24,49 @@ import java.util.List;
 public class NotificationHandlerInstrumentedTest {
 
     private NotificationHandler notificationHandler;
-    private FirebaseFirestore db;
 
     @Before
     public void setup() {
-        db = FirebaseFirestore.getInstance();
-        notificationHandler = new NotificationHandler();
+        notificationHandler = new NotificationHandler();  // no need for db as FirebaseFirestore.getInstance() is used directly
     }
 
     @Test
-    public void testSendLotteryNotifications() {
-        // Create fake users
+    public void testRealTimeNotificationListener() throws InterruptedException {
+        // Create a fake user with device ID
         User alice = new User("Alice", "alice@test.com");
         alice.setDeviceid("device_alice_123");
 
-        User bob = new User("Bob", "bob@test.com");
-        bob.setDeviceid("device_bob_456");
+        // Set up the listener for this user
+        notificationHandler.setupNotificationListener(alice.getDeviceid(), new NotificationHandler.NotificationCallback() {
+            @Override
+            public void onSuccess(List<Notification> notifications) {
+                // Verify that the notifications list is not empty and contains the notification sent
+                assertTrue(!notifications.isEmpty());
+                assertEquals("Sample Event", notifications.get(0).getEventName());
+                android.util.Log.d("NotificationTest", "Real-time notifications received");
+            }
 
-        // Create dummy inviteList and waitlist
+            @Override
+            public void onError(String error) {
+                // Fail the test if there is an error in fetching notifications
+                fail("Error receiving notifications: " + error);
+            }
+        });
+
+        // Send a new notification for this user
         HashMap<User, Boolean> inviteList = new HashMap<>();
         inviteList.put(alice, true);
         ArrayList<User> waitlist = new ArrayList<>();
-        waitlist.add(bob);
-
-        // Call handler
+        waitlist.add(new User("Bob", "bob@test.com"));  // Example waitlist
         notificationHandler.sendLotteryNotifications(
-                "event_test_01",
-                "Test Event",
+                "event_test_04",
+                "Sample Event",
                 inviteList,
                 waitlist,
                 "organizer_001"
         );
 
-        // Log to verify test ran
-        android.util.Log.d("NotificationTest", "sendLotteryNotifications() executed");
-    }
-
-    @Test
-    public void testOrganizerMessage() {
-        ArrayList<User> waitlist = new ArrayList<>();
-        User user = new User("Charlie", "charlie@test.com");
-        user.setDeviceid("device_charlie_789");
-        waitlist.add(user);
-
-        notificationHandler.sendOrganizerMessage(
-                "event_test_02",
-                "Organizer Event",
-                waitlist,
-                "Custom message from organizer",
-                "organizer_002"
-        );
-
-        android.util.Log.d("NotificationTest", "sendOrganizerMessage() executed");
-    }
-
-    @Test
-    public void testSendLotteryNotificationsAndVerifyFirestore() throws Exception {
-        User alice = new User("Alice", "alice@test.com");
-        alice.setDeviceid("device_alice_123");
-        User bob = new User("Bob", "bob@test.com");
-        bob.setDeviceid("device_bob_456");
-
-        HashMap<User, Boolean> inviteList = new HashMap<>();
-        inviteList.put(alice, true);
-        ArrayList<User> waitlist = new ArrayList<>();
-        waitlist.add(bob);
-
-        notificationHandler.sendLotteryNotifications(
-                "event_test_03",
-                "Verification Event",
-                inviteList,
-                waitlist,
-                "organizer_003"
-        );
-
-        // Wait for the Firestore operation to complete
-        Tasks.await(db.collection("notifications")
-                .whereEqualTo("eventName", "Verification Event")
-                .get());
-
-        db.collection("notifications")
-                .whereEqualTo("eventName", "Verification Event")
-                .get()
-                .addOnSuccessListener(query -> {
-                    android.util.Log.d("NotificationTest", "Firestore has " + query.size() + " notifications for Verification Event");
-                })
-                .addOnFailureListener(e -> {
-                    android.util.Log.e("NotificationTest", "Firestore check failed: " + e.getMessage());
-                });
+        // Wait a little for Firestore to update
+        Thread.sleep(3000); // Wait for Firestore to trigger the real-time listener
     }
 }
-

@@ -142,7 +142,7 @@ public class NotificationHandler {
     public void setupNotificationListener(String deviceId, NotificationCallback callback) {
         db.collection("notifications")
                 .whereArrayContains("deviceIds", deviceId)
-                .orderBy("timestamp", Query.Direction.DESCENDING)
+                //.orderBy("timestamp", Query.Direction.DESCENDING)
                 .addSnapshotListener((queryDocumentSnapshots, error) -> {
                     if (error != null) {
                         callback.onError(error.getMessage());
