@@ -13,7 +13,7 @@ public class Event {
     private User organizer;
     private String title;
     private String description;
-    private int eventID;
+    private String eventID;
 
     private String posterPath;
     private int qrCode;
@@ -52,7 +52,7 @@ public class Event {
      * @param autoRandomSelection boolean, if those in the waiting list should be selected on invitees cancellation
      */
 
-    public Event(User organizer, int eventID, String title, String description, String posterPath, int qrCode,
+    public Event(User organizer, String eventID, String title, String description, String posterPath, int qrCode,
                  Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
                  LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
                  int entrantMax, Boolean getLocation,
@@ -74,7 +74,7 @@ public class Event {
         this.entrantList = new UserListManager(autoRandomSelection, entrantMax);
     }
 
-    public Event(User organizer, int eventID, String title, String description, String posterPath, int qrCode,
+    public Event(User organizer, String eventID, String title, String description, String posterPath, int qrCode,
                  Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
                  LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
                  int entrantMax, Boolean getLocation,
@@ -104,11 +104,11 @@ public class Event {
         this.organizer = organizer;
     }
 
-    public int getEventID() {
+    public String getEventID() {
         return eventID;
     }
 
-    public void setEventID(int eventID) {
+    public void setEventID(String eventID) {
         this.eventID = eventID;
     }
 

@@ -8,6 +8,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.beethere.eventclasses.Event;
 import com.example.beethere.eventclasses.UserListManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.example.beethere.Event;
 public class DatabaseFunctions {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     String TAG = "Error";
