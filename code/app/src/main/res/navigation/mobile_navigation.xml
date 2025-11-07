@@ -27,7 +27,10 @@
         android:id="@+id/navigation_notifications"
         android:name="com.example.beethere.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_notifications">
+        <action
+            android:id="@+id/action_notifications_to_eventDetails"
+            app:destination="@+id/eventDetailsFragment"/>
 
     <fragment
         android:id="@+id/navigation_profile"

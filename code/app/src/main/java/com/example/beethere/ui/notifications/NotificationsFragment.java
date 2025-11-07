@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -14,12 +15,15 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.beethere.R;
+import com.example.beethere.User;
 import com.example.beethere.notifications_classes.Notification;
 import com.example.beethere.notifications_classes.NotificationHandler;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class NotificationsFragment extends Fragment {
@@ -43,7 +47,19 @@ public class NotificationsFragment extends Fragment {
         adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, notificationItems);
         notificationsList.setAdapter(adapter);
 
+        FirebaseFirestore.getInstance()
+                .collection("debug_test")
+                .add(new HashMap<String, Object>() {{
+                    put("msg", "Hello Firestore");
+                    put("time", System.currentTimeMillis());
+                }})
+                .addOnSuccessListener(ref -> android.util.Log.d("FirestoreTest", "✅ Write success: " + ref.getId()))
+                .addOnFailureListener(e -> android.util.Log.e("FirestoreTest", "❌ Write failed", e));
+
+
         notificationHandler = new NotificationHandler();
+
+
 
         loadUserNotifications();
         notificationsList.setOnItemClickListener((parent, view1, position, id) -> {
@@ -52,6 +68,7 @@ public class NotificationsFragment extends Fragment {
 
         return view;
     }
+
     private void loadUserNotifications(){
         String deviceId = DeviceId.get(requireContext());
 
@@ -78,6 +95,8 @@ public class NotificationsFragment extends Fragment {
             }
         });
     }
+
+
 
     private String getTimeAgo(long timestamp){
         long difference = System.currentTimeMillis() - timestamp;
