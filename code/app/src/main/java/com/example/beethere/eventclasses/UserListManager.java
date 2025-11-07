@@ -246,6 +246,15 @@ public class UserListManager {
         for(int i = 0; i < range; i++){
             selectNewInvite();
         }
+        
+        NotificationHandler notificationHandler = new NotificationHandler();
+        notificationHandler.sendLotteryNotifications(
+                eventId,
+                eventName,
+                this.inviteList,    // Winners
+                this.waitlist,      // Losers (remaining on waitlist)
+                organizerDeviceId
+        );
     }
 
     public Boolean inWaitlist(User user) {

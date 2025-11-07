@@ -8,6 +8,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.beethere.eventclasses.Event;
 import com.example.beethere.eventclasses.UserListManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.example.beethere.Event;
+
 public class DatabaseFunctions {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     String TAG = "Error";
@@ -59,22 +60,29 @@ public class DatabaseFunctions {
      * This can either be all events or events filtered by the user
      * This is intended to only be used for the "All Events" page
      * @param filter True if any filter is made, False if viewing all events
-     * @param waitlistID User class of user if they don't want events that they've already added to waitlist
+     * @param user User class of user if they don't want events that they've already added to waitlist
      * @param callback Database Callback to return the database
      */
-    public void getEventsDB(Boolean filter, User waitlistID, DatabaseCallback<ArrayList<Event>> callback) {
+    public void getEventsDB(Boolean filter, User user, DatabaseCallback<ArrayList<Event>> callback) {
 
         CollectionReference events = db.collection("Events");
         ArrayList<Event> cityArrayList = new ArrayList<>();
 
+
         if (filter == Boolean.FALSE){
             // return
+
             events.get().addOnCompleteListener(task -> {
+
                 if (task.isSuccessful()) {
+
                     for (QueryDocumentSnapshot document : task.getResult()) {
+
                         cityArrayList.add(document.toObject(Event.class));
                     }
+                    Log.d("thisisamessage", "some message");
                     callback.onCallback(cityArrayList);
+
                 } else {
                     Log.d(TAG, "Error getting documents: ", task.getException());
                     callback.onError(task.getException());
@@ -87,7 +95,7 @@ public class DatabaseFunctions {
                         Event event = document.toObject(Event.class);
                         UserListManager userlist = event.getEntrantList();
                         // Assuming 'event.getWaitlistUserIds()' returns your ArrayList<String>
-                        if (!userlist.getWaitlist().contains(waitlistID)) {
+                        if (!userlist.getWaitlist().contains(user)) {
                             cityArrayList.add(document.toObject(Event.class));
                         }
                     }
@@ -157,6 +165,14 @@ public class DatabaseFunctions {
     }
 
     public void deleteImageDB(){}
+
+    public ArrayList<Event> sendEvents(ArrayList<Event> eventList) {
+        return eventList;
+    }
+
+    public ArrayList<Event> getEvents(ArrayList<Event> eventList) {
+        return eventList;
+    }
 }
 
 

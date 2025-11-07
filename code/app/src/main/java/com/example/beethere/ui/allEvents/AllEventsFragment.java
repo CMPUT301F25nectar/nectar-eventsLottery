@@ -1,6 +1,7 @@
 package com.example.beethere.ui.allEvents;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 
+import com.example.beethere.DatabaseCallback;
 import com.example.beethere.R;
 import com.example.beethere.User;
 import com.example.beethere.eventclasses.Event;
@@ -31,8 +33,22 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
+import com.example.beethere.DatabaseFunctions;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 
 public class AllEventsFragment extends Fragment {
+
+    private ArrayList<Event> eventArrayList = new ArrayList<>();
+
+    public ArrayList<Event> getEventArrayList() {
+        return eventArrayList;
+    }
+
+    public void setEventArrayList(ArrayList<Event> eventArrayList) {
+        this.eventArrayList = eventArrayList;
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -52,23 +68,23 @@ public class AllEventsFragment extends Fragment {
         User tempUser = new User("name", "email");
         User tempEntrant = new User("some name", "email");
         Event tempEvent = new Event(tempUser,
-                1,
+                "1",
                 "title",
                 "description",
                 "path",
                 1,
                 Boolean.TRUE,
-                LocalDate.of(2025, 12,1),
-                LocalDate.of(2025, 12, 31),
-                LocalDate.of(2026, 1, 1),
-                LocalDate.of(2026, 1, 30),
+                LocalDate.of(2024, 12,1),
+                LocalDate.of(2024, 12, 31),
+                LocalDate.of(2025, 1, 1),
+                LocalDate.of(2025, 1, 30),
                 LocalTime.of(8, 0),
                 LocalTime.of(10, 0),
                 50,
                 Boolean.FALSE,
                 Boolean.TRUE);
         Event tempEvent2 = new Event(tempUser,
-                4,
+                "4",
                 "something unique",
                 "a long and arduous description",
                 "some other path",
@@ -85,11 +101,28 @@ public class AllEventsFragment extends Fragment {
                 Boolean.TRUE);
 
 
-        ArrayList<Event> eventList = new ArrayList<>(); // TODO: change when firebase involved, on retrieving userID and their events if any
+        DatabaseFunctions functions = new DatabaseFunctions();
+        functions.getEventsDB(Boolean.FALSE, tempEntrant, new DatabaseCallback<ArrayList<Event>>() {
+            @Override
+            public void onCallback(ArrayList<Event> eventArrayList1) {
+                eventArrayList.addAll(eventArrayList1);
+            }
+            @Override
+            public void onError(Exception e) {
+                Log.d("some onError","we're hitting this error right here");
+            }
+        });
+
+        /*eventArrayList.add(tempEvent);
+        eventArrayList.add(tempEvent2);*/
+        ArrayList<Event> eventList = new ArrayList<>();
         eventList.add(tempEvent);
         eventList.add(tempEvent2);
+
+
+
         ListView events = view.findViewById(R.id.event_display);
-        EventsAdapter eventAdapter = new EventsAdapter(getContext(), eventList);
+        EventsAdapter eventAdapter = new EventsAdapter(getContext(), eventArrayList);
         events.setAdapter(eventAdapter);
         events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -107,4 +140,6 @@ public class AllEventsFragment extends Fragment {
 
         return view;
     }
+
+
 }
