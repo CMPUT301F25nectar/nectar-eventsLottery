@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.example.beethere.R;
 import com.example.beethere.User;
@@ -29,8 +30,8 @@ import java.util.List;
 public class NotificationsFragment extends Fragment {
 
     private ListView notificationsList;
-    private ArrayAdapter<String> adapter;
-    private ArrayList<String> notificationItems;
+    private NotificationsAdapter adapter;
+    private ArrayList<Notification> notificationItems;
     private NotificationHandler notificationHandler;
     private String currentUserDeviceid;
 
@@ -44,27 +45,22 @@ public class NotificationsFragment extends Fragment {
         notificationsList = view.findViewById(R.id.notifications_list);
         notificationItems = new ArrayList<>();
 
-        adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, notificationItems);
+        adapter = new NotificationsAdapter(notificationItems, eventId -> {
+            Toast.makeText(requireContext(), "Would navigate to event: " + eventId, Toast.LENGTH_SHORT).show();
+
+            Bundle bundle = new Bundle();
+            bundle.putString("eventId", eventId);
+            Navigation.findNavController(view).navigate(R.id.notificationsToEventDetails, bundle);
+
+        });
         notificationsList.setAdapter(adapter);
-
-        FirebaseFirestore.getInstance()
-                .collection("debug_test")
-                .add(new HashMap<String, Object>() {{
-                    put("msg", "Hello Firestore");
-                    put("time", System.currentTimeMillis());
-                }})
-                .addOnSuccessListener(ref -> android.util.Log.d("FirestoreTest", "✅ Write success: " + ref.getId()))
-                .addOnFailureListener(e -> android.util.Log.e("FirestoreTest", "❌ Write failed", e));
-
-
+        currentUserDeviceid = getDeviceid();
         notificationHandler = new NotificationHandler();
 
-
-
         loadUserNotifications();
-        notificationsList.setOnItemClickListener((parent, view1, position, id) -> {
-            Toast.makeText(requireContext(), "Clicked notification" + position, Toast.LENGTH_SHORT).show();
-        });
+//        notificationsList.setOnItemClickListener((parent, view1, position, id) -> {
+//            Toast.makeText(requireContext(), "Clicked notification" + position, Toast.LENGTH_SHORT).show();
+//        });
 
         return view;
     }
@@ -76,11 +72,12 @@ public class NotificationsFragment extends Fragment {
             @Override
             public void onSuccess(List<Notification> notifications) {
                 notificationItems.clear();
+                notificationItems.addAll(notifications);
 
-                for (Notification notif : notifications){
-                    String text = notif.getEventName() + "\n" + notif.getMessage() + "\n" + getTimeAgo(notif.getTimestamp());
-                    notificationItems.add(text);
-                }
+//                for (Notification notif : notifications){
+//                    String text = notif.getEventName() + "\n" + notif.getMessage() + "\n" + getTimeAgo(notif.getTimestamp());
+//                    notificationItems.add(text);
+//                }
 
                 adapter.notifyDataSetChanged();
 
@@ -98,24 +95,8 @@ public class NotificationsFragment extends Fragment {
 
 
 
-    private String getTimeAgo(long timestamp){
-        long difference = System.currentTimeMillis() - timestamp;
-        long seconds = difference/1000;
-        long minutes = seconds/60;
-        long hours = minutes/60;
-        long days = hours/24;
-
-        if (days>0){
-            return days + "d ago";
-        } else if (hours>0) {
-            return hours + "h ago";
-
-        } else if (minutes>0) {
-            return minutes + "m ago";
-
-        } else {
-            return "Just now";
-        }
+    private String getDeviceid(){
+        return DeviceId.get(requireContext());
     }
 
 
