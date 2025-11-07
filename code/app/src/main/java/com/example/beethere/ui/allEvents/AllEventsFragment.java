@@ -20,6 +20,7 @@ import androidx.navigation.Navigation;
 import com.example.beethere.R;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.eventclasses.eventDetails.EventDetailsFragment;
+import com.example.beethere.ui.myEvents.MyEventsAdapter;
 
 import java.util.ArrayList;
 
@@ -41,7 +42,13 @@ public class AllEventsFragment extends Fragment {
             }
         });
 
+
+
+
+        ArrayList<Event> eventList = new ArrayList<>(); // TODO: change when firebase involved, on retrieving userID and their events if any
         ListView events = view.findViewById(R.id.event_display);
+        MyEventsAdapter eventAdapter = new MyEventsAdapter(getContext(), eventList);
+        events.setAdapter(eventAdapter);
         events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

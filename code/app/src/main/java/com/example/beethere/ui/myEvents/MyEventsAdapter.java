@@ -73,7 +73,7 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
 
         //set the objects information using getters
         title.setText(event.getTitle());
-        poster.setImageResource(event.getImage());
+        poster.setImageResource(event.getPoster());
         enrollStart.setText(formatter.format(regStart));
         enrollEnd.setText(formatter.format(regEnd));
 
