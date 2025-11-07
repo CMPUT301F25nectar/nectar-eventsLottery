@@ -8,20 +8,37 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ *This is a class that handles all notifications operations for the BEE-THERE app
+ * Manages sending notifications and retrieving them from Firebase Firestore
+ */
 public class NotificationHandler {
+    /** Firebase Firestore instance for database operations*/
     private FirebaseFirestore db;
 
     // Notification types
+    /**Notification type constant for lottery winner*/
     public String TYPE_LOTTERY_WON = "lotteryWon";
+    /**Notification type constant for lottery loser*/
     public String TYPE_LOTTERY_LOST = "lotteryLost";
+    /**Notification type constant for organizer messages*/
     public String TYPE_ORGANIZER_MESSAGE = "organizerMessage";
 
+    /**
+     * Constructor that initializes Firebase instance
+     */
     public NotificationHandler(){
         this.db = FirebaseFirestore.getInstance();
     }
 
+
     /**
-     * Send lottery result notifications to winners and losers
+     * Sends lottery result notifications to winners and losers
+     * @param eventId The unique identifier for the event
+     * @param eventName The name of the event
+     * @param inviteList HashMap of users who won the lottery
+     * @param waitlist ArrayList of users who didn't win
+     * @param organizerDeviceId The device id of the organizer who sends the notifications
      */
     public void sendLotteryNotifications(String eventId, String eventName,
                                          HashMap<User, Boolean> inviteList,
@@ -36,8 +53,13 @@ public class NotificationHandler {
         }
     }
 
+
     /**
-     * Send "You won!" notification
+     * Sends "you won the lottery!" notification to a selected user
+     * @param user The user who won/selected
+     * @param eventId The unique identifier of the event
+     * @param eventName The event name
+     * @param organizerDeviceId The device id of the organizer
      */
     private void sendLotteryWonNotification(User user, String eventId, String eventName, String organizerDeviceId) {
         String message = "Congratulations! You've been selected for " + eventName + ". Accept your invitation now!";
@@ -46,7 +68,6 @@ public class NotificationHandler {
         deviceIds.add(user.getDeviceid());
 
         Notification notification = new Notification(
-                db.collection("notifications").document().getId(),
                 eventId,
                 eventName,
                 message,
@@ -59,8 +80,13 @@ public class NotificationHandler {
         saveNotificationToFirebase(notification);
     }
 
+
     /**
-     * Send "Not selected" notification
+     * Sends "Not selected" notification to a user
+     * @param user The user who didn't win
+     * @param eventId The unique identifier of the event
+     * @param eventName The event name
+     * @param organizerDeviceId The device id of the organizer
      */
     private void sendLotteryLostNotification(User user, String eventId, String eventName, String organizerDeviceId){
         String message = "Sorry! You weren't selected for " + eventName + " this time. You'll remain on the waitlist.";
@@ -69,7 +95,6 @@ public class NotificationHandler {
         deviceIds.add(user.getDeviceid());
 
         Notification notification = new Notification(
-                db.collection("notifications").document().getId(),
                 eventId,
                 eventName,
                 message,
@@ -82,9 +107,7 @@ public class NotificationHandler {
         saveNotificationToFirebase(notification);
     }
 
-    /**
-     * Send custom message from organizer to waitlist
-     */
+
     public void sendOrganizerMessage(String eventId, String eventName,
                                      ArrayList<User> waitlist,
                                      String customMessage,
@@ -96,7 +119,6 @@ public class NotificationHandler {
 
         if (!deviceIds.isEmpty()) {
             Notification notification = new Notification(
-                    db.collection("notifications").document().getId(),
                     eventId,
                     eventName,
                     customMessage,
@@ -110,13 +132,17 @@ public class NotificationHandler {
         }
     }
 
+
     /**
-     * Set up real-time listener for notifications
+     * Sets up real-time listener for notifications
+     * Automatically updates when new notifications arrive
+     * @param deviceId The device id of the user
+     * @param callback Callback interface for success/error handling
      */
     public void setupNotificationListener(String deviceId, NotificationCallback callback) {
         db.collection("notifications")
                 .whereArrayContains("deviceIds", deviceId)
-                //.orderBy("timestamp", Query.Direction.DESCENDING)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
                 .addSnapshotListener((queryDocumentSnapshots, error) -> {
                     if (error != null) {
                         callback.onError(error.getMessage());
@@ -136,10 +162,13 @@ public class NotificationHandler {
                 });
     }
 
+    /**
+     * Saves a notification to Firebase Firestore
+     * @param notification The notification object to save
+     */
     private void saveNotificationToFirebase(Notification notification){
         db.collection("notifications")
-                .document(notification.getNotificationId())
-                .set(notification)
+                .add(notification)
                 .addOnSuccessListener(aVoid -> {
                     android.util.Log.d("NotificationHandler", "notif saved" +notification.getEventName());
                 })
@@ -149,8 +178,20 @@ public class NotificationHandler {
                 //.set(notification);
     }
 
+    /**
+     * Callback interface for asynchronous notification retrieval
+     */
     public interface NotificationCallback {
+        /**
+         * Called when notifications are successfully retrieved
+         * @param notifications List of notifications
+         */
         void onSuccess(List<Notification> notifications);
+
+        /**
+         * Called when an error occurs
+         * @param error Error message
+         */
         void onError(String error);
     }
 }

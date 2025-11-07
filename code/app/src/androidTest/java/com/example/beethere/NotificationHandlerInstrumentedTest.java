@@ -6,6 +6,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import com.example.beethere.notifications_classes.NotificationHandler;
 import com.example.beethere.notifications_classes.Notification;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.android.gms.tasks.Tasks;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +53,7 @@ public class NotificationHandlerInstrumentedTest {
         );
 
         // Log to verify test ran
-        android.util.Log.d("NotificationTest", "✅ sendLotteryNotifications() executed");
+        android.util.Log.d("NotificationTest", "sendLotteryNotifications() executed");
     }
 
     @Test
@@ -70,10 +71,11 @@ public class NotificationHandlerInstrumentedTest {
                 "organizer_002"
         );
 
-        android.util.Log.d("NotificationTest", "✅ sendOrganizerMessage() executed");
+        android.util.Log.d("NotificationTest", "sendOrganizerMessage() executed");
     }
+
     @Test
-    public void testSendLotteryNotificationsAndVerifyFirestore() throws InterruptedException {
+    public void testSendLotteryNotificationsAndVerifyFirestore() throws Exception {
         User alice = new User("Alice", "alice@test.com");
         alice.setDeviceid("device_alice_123");
         User bob = new User("Bob", "bob@test.com");
@@ -92,18 +94,20 @@ public class NotificationHandlerInstrumentedTest {
                 "organizer_003"
         );
 
-        Thread.sleep(2000); // give Firestore time to write
+        // Wait for the Firestore operation to complete
+        Tasks.await(db.collection("notifications")
+                .whereEqualTo("eventName", "Verification Event")
+                .get());
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("notifications")
                 .whereEqualTo("eventName", "Verification Event")
                 .get()
                 .addOnSuccessListener(query -> {
-                    android.util.Log.d("NotificationTest", "✅ Firestore has " + query.size() + " notifications for Verification Event");
+                    android.util.Log.d("NotificationTest", "Firestore has " + query.size() + " notifications for Verification Event");
                 })
                 .addOnFailureListener(e -> {
-                    android.util.Log.e("NotificationTest", "❌ Firestore check failed: " + e.getMessage());
+                    android.util.Log.e("NotificationTest", "Firestore check failed: " + e.getMessage());
                 });
     }
-
 }
+
