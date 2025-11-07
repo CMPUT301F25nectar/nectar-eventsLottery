@@ -9,19 +9,28 @@
         android:id="@+id/navigation_events"
         android:name="com.example.beethere.ui.allEvents.AllEventsFragment"
         android:label="@string/title_events"
-        tools:layout="@layout/fragment_all_events" />
+        tools:layout="@layout/fragment_all_events">
+
+        <action
+            android:id="@+id/allEventToEventDetails"
+            app:destination="@+id/event_details" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_joined"
         android:name="com.example.beethere.ui.myEvents.MyEventsFragment"
         android:label="@string/title_joined"
-        tools:layout="@layout/fragment_my_events" />
+        tools:layout="@layout/fragment_joined" />
 
     <fragment
         android:id="@+id/navigation_myEvents"
         android:name="com.example.beethere.ui.myEvents.MyEventsFragment"
         android:label="@string/title_myEvents"
-        tools:layout="@layout/fragment_my_events" />
+        tools:layout="@layout/fragment_my_events">
+        <action
+            android:id="@+id/myEventsToCreateEvents"
+            app:destination="@id/createEvents1" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_notifications"
@@ -31,8 +40,23 @@
 
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.example.beethere.ui.notifications.NotificationsFragment"
+        android:name="com.example.beethere.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/createEvents1"
+        android:name="com.example.beethere.ui.myEvents.CreateEventFragment1"
+        android:label="Create"
+        tools:layout="@layout/fragment_create_event_pg1"/>
+
+    <fragment
+        android:id="@+id/event_details"
+        android:name="com.example.beethere.eventclasses.eventDetails.EventDetailsFragment"
+        android:label="Create"
+        tools:layout="@layout/fragment_event_details">
+    </fragment>
+
+
 
 </navigation>

@@ -1,73 +1,218 @@
-package com.example.beethere;
+package com.example.beethere.eventclasses;
 
+import android.net.Uri;
+
+import com.example.beethere.User;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Event {
     private User organizer;
     private String title;
     private String description;
-    private int image;
+    private int eventID;
+
+    private String posterPath;
     private int qrCode;
 
-    private Boolean status;
+    private Boolean status; //status on if the event is still active or not
 
     private LocalDate regStart;
     private LocalDate regEnd;
 
     private LocalDate eventDateStart;
     private LocalDate eventDateEnd;
-    private LocalTime eventTimestart;
+    private LocalTime eventTimeStart;
     private LocalTime eventTimeEnd;
-
-
-    private int entrantMax;
 
     private Boolean geoloc;
 
-    //move these 2 attributes into waitlist manager class, make into 1 attribute
-    // that class would control the display of number of people in waitlist
-    // of adding and removing from waitlist
-    // of randomly selecting from waitlist
-    // etc?
-
-    private ArrayList<User> waitlist;
-    private int waitlistMax;
+    private UserListManager entrantList;
 
 
-    private ArrayList<User> inviteList;
-    private ArrayList<User> registered;
+    /**
+     *
+     * @param organizer User, user who can create events, identified by unique deviceID
+     * @param title String,title of the event
+     * @param description String, details of the event
+     * @param posterPath URI, advertisement poster of the event
+     * @param qrCode idk, qr code to take user to page for event
+     * @param status boolean, status of if the event is active or not
+     * @param regStart Date, when registration for the event begins
+     * @param regEnd Date, when registration for the event ends
+     * @param eventDateStart Date, when the event itself begins
+     * @param eventDateEnd Date, when the event itself ends
+     * @param eventTimeStart Date, the time the event starts
+     * @param eventTimeEnd  Date, the time the event ends
+     * @param entrantMax   integer, max number of entrants, individuals who can attend the event
+     * @param getLocation boolean, organizer requires geolocation of participants to be collected
+     * @param autoRandomSelection boolean, if those in the waiting list should be selected on invitees cancellation
+     */
 
-    private Boolean autoRandomSelection;
+    public Event(User organizer, int eventID, String title, String description, String posterPath, int qrCode,
+                 Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
+                 LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
+                 int entrantMax, Boolean getLocation,
+                 Boolean autoRandomSelection) {
+        this.organizer = organizer;
+        this.eventID = eventID;
+        this.title = title;
+        this.description = description;
+        this.posterPath = posterPath;
+        this.qrCode = qrCode;
+        this.status = status;
+        this.regStart = regStart;
+        this.regEnd = regEnd;
+        this.eventDateStart = eventDateStart;
+        this.eventDateEnd = eventDateEnd;
+        this.eventTimeStart = eventTimeStart;
+        this.eventTimeEnd = eventTimeEnd;
+        this.geoloc = getLocation;
+        this.entrantList = new UserListManager(autoRandomSelection, entrantMax);
+    }
 
-    // all have getters and setters
+    public Event(User organizer, int eventID, String title, String description, String posterPath, int qrCode,
+                 Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
+                 LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
+                 int entrantMax, Boolean getLocation,
+                 Boolean autoRandomSelection, int maxWaitlist) {
+        this.organizer = organizer;
+        this.eventID = eventID;
+        this.title = title;
+        this.description = description;
+        this.posterPath = posterPath;
+        this.qrCode = qrCode;
+        this.status = status;
+        this.regStart = regStart;
+        this.regEnd = regEnd;
+        this.eventDateStart = eventDateStart;
+        this.eventDateEnd = eventDateEnd;
+        this.eventTimeStart = eventTimeStart;
+        this.eventTimeEnd = eventTimeEnd;
+        this.geoloc = getLocation;
+        this.entrantList = new UserListManager(autoRandomSelection, entrantMax, maxWaitlist);
+    }
 
-    // Display lists are handled by the fragment
+    public User getOrganizer() {
+        return organizer;
+    }
 
-    // Random selection from waitlist into invite
-    // includes sending notification
+    public void setOrganizer(User organizer) {
+        this.organizer = organizer;
+    }
 
-    // export registered as CSV
+    public int getEventID() {
+        return eventID;
+    }
 
+    public void setEventID(int eventID) {
+        this.eventID = eventID;
+    }
 
-    // NEW CLASS???
-    // EventDetailsAcvitiy class
+    public String getTitle() {
+        return title;
+    }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    // addtowaitlist
-    // includes checking for max
+    public String getDescription() {
+        return description;
+    }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    // add to entrants
-    // includes checking for max
+    public String getPosterPath() {
+        return posterPath;
+    }
 
-    // autoRandomSelection
-    // how to check declining invite
-    // if there are multiple people declining what happens?
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
+    }
 
+    public int getQrCode() {
+        return qrCode;
+    }
 
+    public void setQrCode(int qrCode) {
+        this.qrCode = qrCode;
+    }
 
+    public Boolean getStatus() {
+        return status;
+    }
 
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
 
+    public LocalDate getRegStart() {
+        return regStart;
+    }
+
+    public void setRegStart(LocalDate regStart) {
+        this.regStart = regStart;
+    }
+
+    public LocalDate getRegEnd() {
+        return regEnd;
+    }
+
+    public void setRegEnd(LocalDate regEnd) {
+        this.regEnd = regEnd;
+    }
+
+    public LocalDate getEventDateStart() {
+        return eventDateStart;
+    }
+
+    public void setEventDateStart(LocalDate eventDateStart) {
+        this.eventDateStart = eventDateStart;
+    }
+
+    public LocalDate getEventDateEnd() {
+        return eventDateEnd;
+    }
+
+    public void setEventDateEnd(LocalDate eventDateEnd) {
+        this.eventDateEnd = eventDateEnd;
+    }
+
+    public LocalTime getEventTimeStart() {
+        return eventTimeStart;
+    }
+
+    public void setEventTimeStart(LocalTime eventTimeStart) {
+        this.eventTimeStart = eventTimeStart;
+    }
+
+    public LocalTime getEventTimeEnd() {
+        return eventTimeEnd;
+    }
+
+    public void setEventTimeEnd(LocalTime eventTimeEnd) {
+        this.eventTimeEnd = eventTimeEnd;
+    }
+
+    public Boolean getGeoloc() {
+        return geoloc;
+    }
+
+    public void setGeoloc(Boolean geoloc) {
+        this.geoloc = geoloc;
+    }
+
+    public UserListManager getEntrantList() {
+        return entrantList;
+    }
+
+    public void setEntrantList(UserListManager entrantList) {
+        this.entrantList = entrantList;
+    }
 }
