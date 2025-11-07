@@ -14,10 +14,13 @@ import androidx.fragment.app.Fragment;
 
 import com.example.beethere.DeviceId;
 import com.example.beethere.R;
+import com.example.beethere.User;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-
+/**
+ * In app profile screen to view/edit/delete the current device's profile
+ */
 public class ProfileFragment extends Fragment {
     private EditText firstname, lastname, emailid, phone;
     private TextView userdeviceId;
@@ -51,29 +54,67 @@ public class ProfileFragment extends Fragment {
                         .collection("users")
                         .document(deviceID)
                         .get()
-                                .addOnSuccessListener((DocumentSnapshot snapshot)->{
-                                    if (snapshot.exists()){
-                                        String fullname = snapshot.getString("name");
-                                        if (fullname!=null){
-                                            String[] split = fullname.split(" ",2);
-                                            firstname.setText(split[0]);
-                                            if (split.length>1) lastname.setText(split[1]);
-                                        }
+                                .addOnSuccessListener((DocumentSnapshot snap)->{
+                                    User u = snap.toObject(User.class);//user class
+                                    if (u==null) return;
+                                    String fullname = u.getName();
+                                    if (fullname!=null){
+                                        String[] split = fullname.split(" ",2);
+                                        firstname.setText(split[0]);
+                                        if (split.length>1) lastname.setText(split[1]);
                                     }
-                                    emailid.setText(snapshot.getString("email"));
-                                    phone.setText(snapshot.getString("phone"));
-                                });
+                                    emailid.setText(u.getEmail());
+                                    phone.setText(u.getPhone());
+                                }
+                                );
     }
     private void saveprofile() {
         String deviceID = DeviceId.get(requireContext());
-        String fullname = firstname.getText().toString() + " " + lastname.getText().toString();
+        String first = firstname.getText().toString();
+        String last = lastname.getText().toString();
+        String email = emailid.getText().toString();
+        String phonenumber = phone.getText().toString();
+        if (first.isEmpty() && last.isEmpty()){
+            Toast.makeText(requireContext(), "Please enter name", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (email.isEmpty()){
+            Toast.makeText(requireContext(), "Please enter email", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String fullname = (first) + " " + (last);
         FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(deviceID)
-                .set(new ProfileDialogFragment.Simple(
-                        fullname, emailid.getText().toString(), phone.getText().toString()
-                ))
-                .addOnSuccessListener(unused -> Toast.makeText(requireContext(), "Updated profile!", Toast.LENGTH_SHORT).show())
+                .get()
+                .addOnSuccessListener(snap->{
+                    Boolean admincurrent = null;
+                    Boolean organizercurrent = null;
+                    if(snap.exists()){
+                        User exists = snap.toObject(User.class);
+                        if (exists!= null) {
+                            admincurrent = exists.getAdmin();
+                            organizercurrent=exists.getOrganizer();
+                        }
+                    }
+                    User u = new User();
+                    u.setName(fullname);
+                    u.setEmail(email);
+                    u.setPhone(phonenumber);
+                    u.setDeviceid(deviceID);
+                    if (admincurrent!=null) u.setAdmin(admincurrent);
+                    else u.setAdmin(false);
+                    if (organizercurrent!=null) u.setOrganizer(organizercurrent);
+                    else u.setOrganizer(true);
+                    FirebaseFirestore.getInstance().collection("users")
+                            .document(deviceID)
+                            .set(u)
+                            .addOnSuccessListener(unused->
+                                Toast.makeText(requireContext(), "Saved updates!", Toast.LENGTH_SHORT).show()
+                            )
+                            .addOnFailureListener(fail-> Toast.makeText(requireContext(), "failed to save",Toast.LENGTH_LONG).show()
+                            );
+                })
                 .addOnFailureListener(fail -> Toast.makeText(requireContext(), "Failed updating profile"+ fail.getMessage(), Toast.LENGTH_SHORT).show());
     }
     private void deleteprofile() {

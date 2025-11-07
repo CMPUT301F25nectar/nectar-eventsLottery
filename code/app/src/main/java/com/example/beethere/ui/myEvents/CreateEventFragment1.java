@@ -3,12 +3,14 @@ package com.example.beethere.ui.myEvents;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,6 +18,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -23,24 +26,39 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.R;
 import com.example.beethere.User;
+import com.example.beethere.eventclasses.UserListManager;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Random;
 
 public class CreateEventFragment1 extends Fragment {
 
     private ImageView eventPoster;
     private Uri imageURL;
 
+    private User organizer;
+
+    private boolean wantMaxWaitList, wantRandomSelect, wantGeoLocation = false;
 
     private TextInputLayout eventTitle, regStart, regEnd, eventStart,
-            eventEnd, timeStart, timeEnd, maxAttend, eventDesc;
+            eventEnd, timeStart, timeEnd, maxAttend, eventDesc, maxWaitList;
+    private SwitchCompat maxWaitListSwitch, randomSelectSwitch, geoLocationSwitch;
     private TextView errorMessage;
 
-    SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-    SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
+
 
     // Launcher for selecting image
     private ActivityResultLauncher<Intent> pickImageLauncher;
@@ -70,23 +88,19 @@ public class CreateEventFragment1 extends Fragment {
         maxAttend = view.findViewById(R.id.maxAttend);
         eventDesc = view.findViewById(R.id.description);
         errorMessage = view.findViewById(R.id.errorMessage);
-
-        Button nextButton = view.findViewById(R.id.nextButton);
-
+        maxWaitListSwitch = view.findViewById(R.id.maxWaitSwitch);
+        randomSelectSwitch = view.findViewById(R.id.randomSelectSwitch);
+        geoLocationSwitch = view.findViewById(R.id.geoLocSwitch);
+        maxWaitList = view.findViewById(R.id.maxWaitFill);
         eventPoster.setOnClickListener(v -> choosePoster());
-        nextButton.setOnClickListener(v -> onNext());
+
+        Button completeButton = view.findViewById(R.id.completeButton);
+        completeButton.setOnClickListener(v -> complete());
 
         Button backButton = view.findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> backMain());
 
         return view;
-    }
-    private void showCreatePG2 (Fragment pageTwo) {
-        FragmentManager fm = getChildFragmentManager();
-        fm.beginTransaction()
-                .replace(R.id.create_event_container2, pageTwo)
-                .addToBackStack(null)
-                .commit();
     }
 
     private void backMain () {
@@ -103,7 +117,7 @@ public class CreateEventFragment1 extends Fragment {
     }
 
     @SuppressLint("SetTextI18n")
-    private void onNext() {
+    private void complete() {
         String titleInput = eventTitle.getEditText().getText().toString().trim();
         String regStartInput = regStart.getEditText().getText().toString().trim();
         String regEndInput = regEnd.getEditText().getText().toString().trim();
@@ -113,12 +127,43 @@ public class CreateEventFragment1 extends Fragment {
         String timeEndInput = timeEnd.getEditText().getText().toString().trim();
         String maxAttendInput = maxAttend.getEditText().getText().toString().trim();
         String descInput = eventDesc.getEditText().getText().toString().trim();
+        String maxWaitListInput = maxWaitList.getEditText().getText().toString().trim();
+
+        geoLocationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+                if (buttonView.isChecked()) {
+                    wantGeoLocation = true;
+                    maxAttend.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        maxWaitListSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+                if (buttonView.isChecked()) {
+                    wantMaxWaitList = true;
+
+                }
+            }
+        });
+
+        randomSelectSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+                if (buttonView.isChecked()) {
+                    wantRandomSelect = true;
+                }
+            }
+        });
 
         // Validation
         if (titleInput.isEmpty() || regStartInput.isEmpty() || regEndInput.isEmpty() ||
                 eventStartInput.isEmpty() || eventEndInput.isEmpty() ||
                 timeStartInput.isEmpty() || timeEndInput.isEmpty() ||
-                maxAttendInput.isEmpty() || descInput.isEmpty() || imageURL == null) {
+                maxAttendInput.isEmpty() || descInput.isEmpty() ||
+                (wantMaxWaitList && maxWaitListInput.isEmpty()) || imageURL == null) { //just add an asterick by the fill input line
             errorMessage.setVisibility(View.VISIBLE);
             return;
         }
@@ -128,41 +173,57 @@ public class CreateEventFragment1 extends Fragment {
             return;
         }
         try {
-            Date regStartDate = dateFormatter.parse(regStartInput);
-            Date regEndDate = dateFormatter.parse(regEndInput);
-            Date eventStartDate = dateFormatter.parse(eventStartInput);
-            Date eventEndDate = dateFormatter.parse(eventEndInput);
-            Date startTime = timeFormatter.parse(timeStartInput);
-            Date endTime = timeFormatter.parse(timeEndInput);
+            LocalDateTime regStartDate = LocalDateTime.parse(regStartInput, dateFormatter);
+            LocalDateTime regEndDate = LocalDateTime.parse(regEndInput, dateFormatter);
+            LocalDateTime eventStartDate = LocalDateTime.parse(eventStartInput, dateFormatter);
+            LocalDateTime eventEndDate = LocalDateTime.parse(eventEndInput, dateFormatter);
+            LocalDateTime startTime = LocalDateTime.parse(timeStartInput, timeFormatter);
+            LocalDateTime endTime = LocalDateTime.parse(timeEndInput, timeFormatter);
             int maxAttendeesInt = Integer.parseInt(maxAttendInput);
+            int maxWaitListInt = Integer.parseInt(maxWaitListInput);
 
-            if (regStartDate.after(regEndDate) || eventStartDate.after(eventEndDate) || startTime.after(endTime)) {//i dont event think this works because im using date instead of local date
+            if (regStartDate.isAfter(regEndDate) || eventStartDate.isAfter(eventEndDate) || startTime.isAfter(endTime)) {
                 errorMessage.setText("Ensure start dates/times are before end dates/times.");
                 errorMessage.setVisibility(View.VISIBLE);
-                return;
             }
-
-            Bundle bundle = new Bundle();
-
-            bundle.putString("TitleStr", titleInput);
-            bundle.putString("RegStartStr", regStartInput);
-            bundle.putString("RegEndStr", regEndInput);
-            bundle.putString("DateStartStr", eventStartInput);
-            bundle.putString("DateEndStr", eventEndInput);
-            bundle.putString("TimeStartStr", timeStartInput);
-            bundle.putString("TimeEndStr", timeEndInput);
-            bundle.putString("maxAttendStr", maxAttendInput);
-            bundle.putString("descStr", descInput);
-
-            CreateEventFragment2 pageTwo = new CreateEventFragment2();
-            pageTwo.setArguments(bundle);
-
-            showCreatePG2(pageTwo);
 
         } catch (Exception e) {
             errorMessage.setText("Ensure input formats are correct.");
             errorMessage.setVisibility(View.VISIBLE);
         }
+
+        //TODO: Add event to database once all tests are passed, call addToDatebase
+    }
+
+    private void addToDatabase(String title, LocalDateTime regStart, LocalDateTime regEnd, LocalDateTime eventStart,
+                               LocalDateTime eventEnd, LocalDateTime timeStart, LocalDateTime timeEnd, int maxAttendees,
+                               String description, String posterPath, boolean wantMaxWaitList, boolean wantGeoLocation,
+                               boolean wantRandomSelect, int maxWaitListInt) throws WriterException {
+
+        int eventID;
+        //TODO: find the max id in the list of event ids and add 1, default of max is 0
+        boolean status = true;
+
+        QRCodeWriter writer = new QRCodeWriter();
+        BitMatrix QRCode = writer.encode(String.valueOf(eventID), BarcodeFormat.QR_CODE, 300, 300);
+        //TODO: add QR code to the collection of QR codes
+        if (wantMaxWaitList) {
+            UserListManager entrantList = new UserListManager(wantRandomSelect, maxAttendees, maxWaitListInt);
+
+            Event event = new Event(organizer, eventID, title, description, posterPath, QRCode,
+                    status, regStart, regEnd, eventStart, eventEnd, timeStart, timeEnd,
+                    maxAttendees, wantGeoLocation, wantRandomSelect);
+
+
+
+        } else {
+            UserListManager entrantList = new UserListManager(wantRandomSelect, maxAttendees);
+
+            Event event = new Event(organizer, eventID, title, description, posterPath, QRCode,
+                    status, regStart, regEnd, eventStart, eventEnd, timeStart, timeEnd,
+                    maxAttendees, wantGeoLocation, wantRandomSelect, maxWaitListInt);
+        }
+
     }
 }
 

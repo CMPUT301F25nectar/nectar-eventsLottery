@@ -1,4 +1,8 @@
 package com.example.beethere.ui.profile;
+/**
+ * Dialog to create a new profile for a user (name, email, phone, admin and boolean flags) for each deviceid.
+ * Writes to the users collection with admin set as false and organizer set as true by default
+ */
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -14,6 +18,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.beethere.DeviceId;
 import com.example.beethere.R;
+import com.example.beethere.User;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ProfileDialogFragment extends DialogFragment {
@@ -40,17 +45,20 @@ public class ProfileDialogFragment extends DialogFragment {
                     String email = EnterEmail.getText().toString();
                     String phone = EnterPhone.getText().toString();
                     String deviceId = DeviceId.get(requireContext());
-                    if (TextUtils.isEmpty(name)) {
-                        Toast.makeText(requireContext(), "Enter your name", Toast.LENGTH_SHORT).show();
+                    if (name.isEmpty() || email.isEmpty()){
+                        Toast.makeText(requireContext(), "Please enter name and email", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    if (TextUtils.isEmpty(email)) {
-                        Toast.makeText(requireContext(), "Enter your email", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    Simple u = new Simple(name, email, phone);
+                    User u = new User();
+                    u.setName(name);
+                    u.setEmail(email);
+                    u.setPhone(phone);
+                    u.setDeviceid(deviceId);
+                    u.setAdmin(false);
+                    u.setOrganizer(true);
+
                     FirebaseFirestore.getInstance()
-                            .collection("Users")
+                            .collection("users")
                             .document(deviceId)
                             .set(u)
                             .addOnSuccessListener(unused -> {
@@ -64,16 +72,6 @@ public class ProfileDialogFragment extends DialogFragment {
         builder.setNegativeButton("Cancel", null);
         return builder.create();
     }
-    public static class Simple{
-        public String name;
-        public String email;
-        public String phone;
-        public Simple(){}
-        public Simple(String name, String email, String phone){
-            this.name=name;
-            this.email=email;
-            this.phone=phone;
-        }
-    }
+
 }
 
