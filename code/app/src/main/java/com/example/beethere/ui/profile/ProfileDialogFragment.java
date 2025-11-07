@@ -27,6 +27,7 @@ public class ProfileDialogFragment extends DialogFragment {
         saved =cb;
         new ProfileDialogFragment().show(fragmentmanager, "New Profile Dialog");
     }
+
     @NonNull
     @Override
     public Dialog onCreateDialog (Bundle savedInstanceState){

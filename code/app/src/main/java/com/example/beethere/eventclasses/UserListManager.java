@@ -4,6 +4,7 @@ import com.example.beethere.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -36,6 +37,7 @@ public class UserListManager {
         this.waitlist = new ArrayList<User>();
 
         this.inviteList = new HashMap<User, Boolean>();
+        this.autoSelect = autoSelect;
 
         this.maxRegistered = maxRegistered;
         this.registered = new ArrayList<User>();
@@ -55,6 +57,7 @@ public class UserListManager {
         this.waitlist = new ArrayList<User>();
 
         this.inviteList = new HashMap<User, Boolean>();
+        this.autoSelect = autoSelect;
 
         this.maxRegistered = maxRegistered;
         this.registered = new ArrayList<User>();
@@ -220,8 +223,6 @@ public class UserListManager {
      */
     public void declineInvite(User user){
         inviteList.replace(user, Boolean.FALSE);
-
-        // TODO
         if(autoSelect){
             selectNewInvite();
         }
@@ -261,6 +262,9 @@ public class UserListManager {
 
     public Boolean inRegistered(User user){
         return registered.contains(user);
+    }
+    public Boolean waitlistFull() {
+        return (Objects.equals(maxWaitlist, waitlistSize()));
     }
 
     // TODO

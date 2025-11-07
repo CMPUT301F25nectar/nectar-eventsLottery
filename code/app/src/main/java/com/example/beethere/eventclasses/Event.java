@@ -3,8 +3,6 @@ package com.example.beethere.eventclasses;
 import android.net.Uri;
 
 import com.example.beethere.User;
-import com.google.zxing.common.BitMatrix;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -73,6 +71,7 @@ public class Event {
         this.entrantList = new UserListManager(autoRandomSelection, entrantMax);
     }
 
+
     public Event(User organizer, String eventID, String title, String description, String posterPath,
                  Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
                  LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
@@ -133,7 +132,6 @@ public class Event {
     public void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
     }
-
 
     public Boolean getStatus() {
         return status;

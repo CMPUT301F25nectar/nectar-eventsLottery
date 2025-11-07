@@ -27,11 +27,11 @@ public class DatabaseFunctions {
     String TAG = "Error";
 
 
-    public void addEventDB(Event event){
+    /*public void addEventDB(Event event){
         CollectionReference events = db.collection("events");
         DocumentReference docref = events.document(event.getEventID());
         docref.set(event);
-    }
+    }*/
 
     public void getEventDB(){}
 
@@ -89,16 +89,16 @@ public class DatabaseFunctions {
     public void getEventsDB(Boolean filter, String waitlistID, DatabaseCallback<ArrayList<Event>> callback) {
 
         CollectionReference events = db.collection("events");
-        ArrayList<Event> cityArrayList = new ArrayList<>();
+        ArrayList<Event> eventArrayList = new ArrayList<>();
 
         if (filter == Boolean.FALSE){
             // return
             events.get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        cityArrayList.add(document.toObject(Event.class));
+                        eventArrayList.add(document.toObject(Event.class));
                     }
-                    callback.onCallback(cityArrayList);
+                    callback.onCallback(eventArrayList);
                 } else {
                     Log.d(TAG, "Error getting documents: ", task.getException());
                     callback.onError(task.getException());
@@ -111,15 +111,17 @@ public class DatabaseFunctions {
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
-                    cityArrayList.add(document.toObject(Event.class));
+                    eventArrayList.add(document.toObject(Event.class));
                 }
-                callback.onCallback(cityArrayList);
+                callback.onCallback(eventArrayList);
             } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
                 callback.onError(task.getException());
             }
         });
         }
+
+
     }
 
 

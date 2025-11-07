@@ -39,6 +39,7 @@ android {
 }
 
 dependencies {
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
@@ -46,6 +47,8 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+    //implementation(libs.cardview)
+    implementation("com.google.android.material:material:1.10.0")
     implementation(libs.cardview)
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     testImplementation(libs.junit)
@@ -57,4 +60,5 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.1")
+
 }

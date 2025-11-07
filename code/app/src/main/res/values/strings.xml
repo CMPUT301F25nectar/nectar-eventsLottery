@@ -6,6 +6,13 @@
     <string name="title_eventSignUps">Event Sign-Ups</string>
     <string name="title_profile">Profile</string>
 
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="email">email@domain.com</string>
+    <string name="phone">Phone (optional)</string>
+    <string name="device_id">Device ID: </string>
+    <string name="btn_save">Save information</string>
+    <string name="btn_delete">Delete account</string>
     <string name="title_joined">Joined</string>
     <string name="placeholder">placeholder</string>
     <string name="join_waitlist">Join Waitlist</string>
@@ -16,17 +23,23 @@
 
     <!-- Event Details Fragment Resources -->
     <string name="event_name">%s</string>
-    <string name="event_organizer">Hosted by: %s</string>
+    <string name="event_organizer">%s</string>
     <string name="event_description">%s</string>
     <string name="event_registration">%s - %s</string>
-    <string name="event_date">%s - %s</string>
+    <string name="event_date">%s to %s</string>
     <string name="event_time">%s - %s</string>
 
     <!-- Button titles -->
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
 
+    <!-- Button titles -->
+    <string name="waitlist_full">Waitlist is full</string>
+    <string name="waitlist_ended">Waitlist period ended</string>
 
+
+
+<<<<<<< HEAD
     <string name="first_name">First name</string>
     <string name="last_name">Last name</string>
     <string name="email">email@domain.com</string>
@@ -34,5 +47,7 @@
     <string name="device_id">Device ID: </string>
     <string name="btn_save">Save information</string>
     <string name="btn_delete">Delete account</string>
+=======
+>>>>>>> 5dd082351dca75379b58e177a9f406a71a6078d3
 
 </resources>

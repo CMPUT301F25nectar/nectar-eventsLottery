@@ -9,7 +9,12 @@
         android:id="@+id/navigation_events"
         android:name="com.example.beethere.ui.allEvents.AllEventsFragment"
         android:label="@string/title_events"
-        tools:layout="@layout/fragment_all_events" />
+        tools:layout="@layout/fragment_all_events">
+
+        <action
+            android:id="@+id/allEventToEventDetails"
+            app:destination="@+id/event_details" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_joined"
@@ -44,5 +49,14 @@
         android:name="com.example.beethere.ui.myEvents.CreateEventFragment1"
         android:label="Create"
         tools:layout="@layout/fragment_create_event_pg1"/>
+
+    <fragment
+        android:id="@+id/event_details"
+        android:name="com.example.beethere.eventclasses.eventDetails.EventDetailsFragment"
+        android:label="Create"
+        tools:layout="@layout/fragment_event_details">
+    </fragment>
+
+
 
 </navigation>
