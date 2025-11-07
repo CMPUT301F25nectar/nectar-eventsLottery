@@ -1,7 +1,7 @@
 package com.example.beethere.ui.notifications;
 
 
-import android.companion.DeviceId;
+import com.example.beethere.DeviceId;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
