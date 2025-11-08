@@ -18,7 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
+import com.example.beethere.eventclasses.Event;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;

@@ -39,18 +39,15 @@
                     android:text="Event Title"
                     android:textSize="30sp" />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="277dp"
-                    android:layout_height="32dp"
+                <EditText
                     android:id="@+id/eventTitle"
+                    android:layout_width="277dp"
+                    android:layout_height="25dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/eventTitleHeader">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Title" />
-                </com.google.android.material.textfield.TextInputLayout>
+                    android:hint="Title"
+                    android:background="@drawable/text_input_background"
+                    app:layout_constraintTop_toBottomOf="@id/eventTitleHeader"
+                    />
 
                 <TextView
                     android:id="@+id/posterHeader"
@@ -87,33 +84,25 @@
                     android:text="Registration Period"
                     android:textSize="30sp" />
 
-                <com.google.android.material.textfield.TextInputLayout
+                <EditText
                     android:layout_width="130dp"
-                    android:layout_height="24dp"
+                    android:layout_height="25dp"
                     android:id="@+id/regStart"
+                    android:textSize="12sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/regHeader">
+                    app:layout_constraintTop_toBottomOf="@id/regHeader"
+                    android:background="@drawable/text_input_background"
+                    android:hint="Start:DD/MM/YYY" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="12dp"
-                        android:hint="Start:DD/MM/YYY" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
+                <EditText
                     android:layout_width="130dp"
-                    android:layout_height="24dp"
+                    android:layout_height="25dp"
+                    android:textSize="12sp"
                     android:id="@+id/regEnd"
                     app:layout_constraintStart_toEndOf="@id/regStart"
-                    app:layout_constraintTop_toBottomOf="@id/regHeader">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="12dp"
-                        android:hint="End:DD/MM/YYY" />
-                </com.google.android.material.textfield.TextInputLayout>
+                    app:layout_constraintTop_toBottomOf="@id/regHeader"
+                    android:background="@drawable/text_input_background"
+                    android:hint="End:DD/MM/YYY" />
 
                 <TextView
                     android:id="@+id/eventDateHeader"
@@ -124,33 +113,27 @@
                     android:text="Event Period"
                     android:textSize="30sp" />
 
-                <com.google.android.material.textfield.TextInputLayout
+                <EditText
                     android:layout_width="130dp"
-                    android:layout_height="24dp"
+                    android:layout_height="25dp"
+                    android:textSize="12sp"
                     android:id="@+id/eventStart"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/eventDateHeader">
+                    app:layout_constraintTop_toBottomOf="@id/eventDateHeader"
+                    android:background="@drawable/text_input_background"
+                    android:hint="Start:DD/MM/YYY" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="12dp"
-                        android:hint="Start:DD/MM/YYY" />
-                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
+                <EditText
                     android:layout_width="130dp"
-                    android:layout_height="24dp"
+                    android:layout_height="25dp"
+                    android:textSize="12sp"
                     android:id="@+id/eventEnd"
                     app:layout_constraintStart_toEndOf="@id/regStart"
-                    app:layout_constraintTop_toBottomOf="@id/eventDateHeader">
+                    app:layout_constraintTop_toBottomOf="@id/eventDateHeader"
+                    android:background="@drawable/text_input_background"
+                    android:hint="End:DD/MM/YYY" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="12dp"
-                        android:hint="End:DD/MM/YYY" />
-                </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
                     android:id="@+id/eventTimeHeader"
@@ -161,33 +144,27 @@
                     android:text="Event Time"
                     android:textSize="30sp" />
 
-                <com.google.android.material.textfield.TextInputLayout
+                <EditText
                     android:layout_width="130dp"
-                    android:layout_height="24dp"
+                    android:layout_height="25dp"
+                    android:textSize="12sp"
                     android:id="@+id/timeStart"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/eventTimeHeader">
+                    app:layout_constraintTop_toBottomOf="@id/eventTimeHeader"
+                    android:background="@drawable/text_input_background"
+                    android:hint="Start:00:00AM" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="12dp"
-                        android:hint="Start:00:00AM" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
+                <EditText
                     android:layout_width="130dp"
-                    android:layout_height="24dp"
+                    android:layout_height="25dp"
+                    android:textSize="12sp"
                     android:id="@+id/timeEnd"
                     app:layout_constraintStart_toEndOf="@id/regStart"
-                    app:layout_constraintTop_toBottomOf="@id/eventTimeHeader">
+                    app:layout_constraintTop_toBottomOf="@id/eventTimeHeader"
+                    android:background="@drawable/text_input_background"
+                    android:hint="End:00:00AM" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="12dp"
-                        android:hint="Start:00:00AM" />
-                </com.google.android.material.textfield.TextInputLayout>
+
 
                 <TextView
                     android:id="@+id/maxAttendTitle"
@@ -198,19 +175,16 @@
                     android:text="Max Attendees"
                     android:textSize="30sp" />
 
-                <com.google.android.material.textfield.TextInputLayout
+                <EditText
                     android:layout_width="130dp"
-                    android:layout_height="24dp"
+                    android:layout_height="25dp"
+                    android:textSize="12sp"
                     android:id="@+id/maxAttend"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/maxAttendTitle">
+                    app:layout_constraintTop_toBottomOf="@id/maxAttendTitle"
+                    android:background="@drawable/text_input_background"
+                    android:hint="Enter Max: " />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="12dp"
-                        android:hint="Enter Max: " />
-                </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
                     android:id="@+id/descriptionHeader"
@@ -221,19 +195,19 @@
                     android:text="Event Description"
                     android:textSize="30sp" />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="240dp"
-                    android:layout_height="240dp"
-                    android:id="@+id/description"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/descriptionHeader">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="240dp"
-                        android:layout_height="240dp"
-                        android:textSize="12dp"
-                        android:hint="Enter Description Here: " />
-                </com.google.android.material.textfield.TextInputLayout>
+                <EditText
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:textSize="12sp"
+                    android:id="@+id/description"
+                    android:gravity="top|start"
+                    android:inputType="textMultiLine"
+                    android:scrollbars="vertical"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/descriptionHeader"
+                    android:background="@drawable/text_input_background"
+                    android:hint="Enter Description Here: " />
 
                 <TextView
                     android:id="@+id/geoLocation"
@@ -250,8 +224,6 @@
                     app:layout_constraintStart_toEndOf="@id/geoLocation"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/description"
-                    android:thumb="@drawable/switch_thumb"
-                    app:track="@drawable/switch_track"
                     android:text="" />
 
                 <TextView
@@ -297,20 +269,15 @@
                     app:layout_constraintTop_toBottomOf="@id/randomSelectSwitch"
                     android:text="" />
 
-                <com.google.android.material.textfield.TextInputLayout
+                <EditText
                     android:layout_width="130dp"
-                    android:layout_height="24dp"
+                    android:layout_height="25dp"
+                    android:textSize="12sp"
                     android:id="@+id/maxWaitFill"
+                    android:background="@drawable/text_input_background"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/waitListMax"
-                    android:visibility="visible">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="12dp"
-                        android:hint="Enter Max: " />
-                </com.google.android.material.textfield.TextInputLayout>
+                    android:hint="Enter Max: " />
 
                 <Button
                     android:id="@+id/completeButton"
