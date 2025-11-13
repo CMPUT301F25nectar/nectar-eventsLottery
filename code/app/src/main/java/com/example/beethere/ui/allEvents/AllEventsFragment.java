@@ -101,28 +101,29 @@ public class AllEventsFragment extends Fragment {
                 Boolean.TRUE);
 
 
-        DatabaseFunctions functions = new DatabaseFunctions();
+        ArrayList<Event> eventList = new ArrayList<>();
+        /*eventList.add(tempEvent);
+        eventList.add(tempEvent2);*/
+
+        /*DatabaseFunctions functions = new DatabaseFunctions();
+        Log.d("Havewereached", "thispoint");
         functions.getEventsDB(Boolean.FALSE, tempEntrant, new DatabaseCallback<ArrayList<Event>>() {
             @Override
-            public void onCallback(ArrayList<Event> eventArrayList1) {
-                eventArrayList.addAll(eventArrayList1);
+            public void onCallback(ArrayList<Event> result) {
+                eventArrayList.addAll(result);
             }
             @Override
             public void onError(Exception e) {
                 Log.d("some onError","we're hitting this error right here");
             }
-        });
+        });*/
 
         /*eventArrayList.add(tempEvent);
         eventArrayList.add(tempEvent2);*/
-        ArrayList<Event> eventList = new ArrayList<>();
-        eventList.add(tempEvent);
-        eventList.add(tempEvent2);
-
 
 
         ListView events = view.findViewById(R.id.event_display);
-        EventsAdapter eventAdapter = new EventsAdapter(getContext(), eventArrayList);
+        EventsAdapter eventAdapter = new EventsAdapter(getContext(), eventList);
         events.setAdapter(eventAdapter);
         events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

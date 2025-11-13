@@ -71,7 +71,16 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="167f4968-96f1-45cd-9f7e-c1c07ad4384e" name="Changes" comment="" />
+    <list default="true" id="167f4968-96f1-45cd-9f7e-c1c07ad4384e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/config.properties" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/config.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/DatabaseFunctions.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/DatabaseFunctions.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/eventclasses/UserListManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/eventclasses/UserListManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/ui/allEvents/AllEventsFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/ui/allEvents/AllEventsFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/local.properties" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -80,7 +89,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=/Users/riyapatel/.android/avd/Medium_Phone.avd)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\nour\.android\avd\Pixel_9a.avd)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -123,7 +132,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/CMPUT301F25nectar/nectar-eventsLottery.git&quot;,
-    &quot;accountId&quot;: &quot;fa3b4867-d45d-4e1d-8695-9ea9747bd9b5&quot;
+    &quot;accountId&quot;: &quot;9fd36ff4-e589-4ff2-ad12-836cfafb0b04&quot;
   }
 }</component>
   <component name="ProblemsViewState">
@@ -133,6 +142,9 @@
   &quot;associatedIndex&quot;: 3
 }</component>
   <component name="ProjectId" id="34ZMeyEOqEyvwU7jlAYEwgEvmD5" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -150,7 +162,7 @@
     &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;com.google.services.firebase.aqiPopupShown&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;riya&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;nour&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/riyapatel/Desktop/CMPUT301/projects/nectar-eventsLottery/code&quot;
   }
 }</component>

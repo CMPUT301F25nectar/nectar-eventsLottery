@@ -65,22 +65,21 @@ public class DatabaseFunctions {
      */
     public void getEventsDB(Boolean filter, User user, DatabaseCallback<ArrayList<Event>> callback) {
 
-        CollectionReference events = db.collection("Events");
+        CollectionReference events = db.collection("events");
         ArrayList<Event> cityArrayList = new ArrayList<>();
 
-
+        Log.d("getEventsDB","pleaseeee");
         if (filter == Boolean.FALSE){
             // return
-
+            Log.d("insidefilterfalse", "whatthefuck");
             events.get().addOnCompleteListener(task -> {
 
                 if (task.isSuccessful()) {
-
+                    Log.d("taskissuccessful", "whatever");
                     for (QueryDocumentSnapshot document : task.getResult()) {
-
+                        //Log.d("thisisamessage", "a new message");
                         cityArrayList.add(document.toObject(Event.class));
                     }
-                    Log.d("thisisamessage", "some message");
                     callback.onCallback(cityArrayList);
 
                 } else {
