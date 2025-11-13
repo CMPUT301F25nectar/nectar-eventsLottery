@@ -37,7 +37,7 @@
                 android:layout_marginStart="11dp"
                 android:layout_marginTop="26dp"
                 android:textSize="20dp"
-                android:fontFamily="@font/work_sans"
+                android:fontFamily="@font/work_sans_bold"
                 android:textColor="@color/dark_brown"
                 android:text="Event Title" />
 
@@ -48,7 +48,7 @@
                 app:layout_constraintTop_toBottomOf="@id/EventsTitle"
                 app:layout_constraintStart_toEndOf="@id/EventsPoster"
                 android:layout_marginStart="12dp"
-                android:fontFamily="@font/work_sans"
+                android:fontFamily="@font/work_sans_bold"
                 android:textColor="@color/dark_brown"
                 android:text="Enrollment Period" />
 
@@ -59,7 +59,7 @@
                 app:layout_constraintTop_toBottomOf="@id/EventEnrollPeriod"
                 app:layout_constraintStart_toEndOf="@id/EventsPoster"
                 android:layout_marginStart="12dp"
-                android:fontFamily="@font/work_sans"
+                android:fontFamily="@font/work_sans_bold"
                 android:textColor="@color/dark_brown"
                 android:text="00-00-0000" />
 
@@ -67,7 +67,7 @@
                 android:id="@+id/EventDash"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/work_sans"
+                android:fontFamily="@font/work_sans_bold"
                 android:textColor="@color/dark_brown"
                 app:layout_constraintTop_toBottomOf="@id/EventEnrollPeriod"
                 app:layout_constraintStart_toEndOf="@id/EventEnrollStart"
@@ -81,7 +81,7 @@
                 app:layout_constraintTop_toBottomOf="@id/EventEnrollPeriod"
                 app:layout_constraintStart_toEndOf="@id/EventDash"
                 android:text="00-00-0000"
-                android:fontFamily="@font/work_sans"
+                android:fontFamily="@font/work_sans_bold"
                 android:textColor="@color/dark_brown"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -18,13 +18,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
+import com.example.beethere.eventclasses.Event;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
 
 public class DatabaseFunctions {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -60,28 +59,22 @@ public class DatabaseFunctions {
      * This can either be all events or events filtered by the user
      * This is intended to only be used for the "All Events" page
      * @param filter True if any filter is made, False if viewing all events
-     * @param user User class of user if they don't want events that they've already added to waitlist
+     * @param waitlistID User class of user if they don't want events that they've already added to waitlist
      * @param callback Database Callback to return the database
      */
-    public void getEventsDB(Boolean filter, User user, DatabaseCallback<ArrayList<Event>> callback) {
+    public void getEventsDB(Boolean filter, User waitlistID, DatabaseCallback<ArrayList<Event>> callback) {
 
-        CollectionReference events = db.collection("events");
-        ArrayList<Event> cityArrayList = new ArrayList<>();
+        CollectionReference events = db.collection("Events");
+        ArrayList<Event> eventArrayList = new ArrayList<>();
 
-        Log.d("getEventsDB","pleaseeee");
         if (filter == Boolean.FALSE){
             // return
-            Log.d("insidefilterfalse", "whatthefuck");
             events.get().addOnCompleteListener(task -> {
-
                 if (task.isSuccessful()) {
-                    Log.d("taskissuccessful", "whatever");
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        //Log.d("thisisamessage", "a new message");
-                        cityArrayList.add(document.toObject(Event.class));
+                        eventArrayList.add(document.toObject(Event.class));
                     }
-                    callback.onCallback(cityArrayList);
-
+                    callback.onCallback(eventArrayList);
                 } else {
                     Log.d(TAG, "Error getting documents: ", task.getException());
                     callback.onError(task.getException());
@@ -94,11 +87,11 @@ public class DatabaseFunctions {
                         Event event = document.toObject(Event.class);
                         UserListManager userlist = event.getEntrantList();
                         // Assuming 'event.getWaitlistUserIds()' returns your ArrayList<String>
-                        if (!userlist.getWaitlist().contains(user)) {
-                            cityArrayList.add(document.toObject(Event.class));
+                        if (!userlist.getWaitlist().contains(waitlistID)) {
+                            eventArrayList.add(event);
                         }
                     }
-                    callback.onCallback(cityArrayList);
+                    callback.onCallback(eventArrayList);
                 } else {
                     Log.d(TAG, "Error getting documents: ", task.getException());
                     callback.onError(task.getException());
@@ -107,9 +100,14 @@ public class DatabaseFunctions {
         }
     }
 
+    /**
+     * This methods returns the events a user has waitlisted
+     * @param waitlistID User class of user if they don't want events that they've already added to waitlist
+     * @param callback Database Callback to return the database
+     */
     public void getWaitlistEventsDB(User waitlistID, DatabaseCallback<ArrayList<Event>> callback){
         CollectionReference events = db.collection("Events");
-        ArrayList<Event> cityArrayList = new ArrayList<>();
+        ArrayList<Event> eventArrayList = new ArrayList<>();
 
         events.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -118,10 +116,37 @@ public class DatabaseFunctions {
                     UserListManager userlist = event.getEntrantList();
                     // Assuming 'event.getWaitlistUserIds()' returns your ArrayList<String>
                     if (userlist.getWaitlist().contains(waitlistID)) {
-                        cityArrayList.add(document.toObject(Event.class));
+                        eventArrayList.add(event);
                     }
                 }
-                callback.onCallback(cityArrayList);
+                callback.onCallback(eventArrayList);
+            } else {
+                Log.d(TAG, "Error getting documents: ", task.getException());
+                callback.onError(task.getException());
+            }
+        });
+
+    }
+
+    /**
+     * This methods returns the events a user has created
+     * @param waitlistID User class of user who is the organizer
+     * @param callback Database Callback to return the database
+     */
+    public void getCreatedEventsDB(User waitlistID, DatabaseCallback<ArrayList<Event>> callback){
+        CollectionReference events = db.collection("Events");
+        ArrayList<Event> eventArrayList = new ArrayList<>();
+
+        events.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    Event event = document.toObject(Event.class);
+                    // Assuming 'event.getWaitlistUserIds()' returns your ArrayList<String>
+                    if (event.getOrganizer() == waitlistID) {
+                        eventArrayList.add(event);
+                    }
+                }
+                callback.onCallback(eventArrayList);
             } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
                 callback.onError(task.getException());
@@ -164,14 +189,6 @@ public class DatabaseFunctions {
     }
 
     public void deleteImageDB(){}
-
-    public ArrayList<Event> sendEvents(ArrayList<Event> eventList) {
-        return eventList;
-    }
-
-    public ArrayList<Event> getEvents(ArrayList<Event> eventList) {
-        return eventList;
-    }
 }
 
 
