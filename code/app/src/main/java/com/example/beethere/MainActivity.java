@@ -2,14 +2,14 @@ package com.example.beethere;
 
 import android.os.Bundle;
 
-import com.example.beethere.ui.device.DeviceIDViewModel;
+import com.example.beethere.device.DeviceIDViewModel;
+import com.example.beethere.device.DeviceId;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;

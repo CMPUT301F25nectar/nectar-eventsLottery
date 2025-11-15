@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -20,41 +19,26 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProvider;
 
-import com.example.beethere.DeviceId;
+import com.example.beethere.device.DeviceId;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.R;
 import com.example.beethere.User;
-import com.example.beethere.eventclasses.EventDataViewModel;
-import com.example.beethere.eventclasses.UserListManager;
-import com.example.beethere.ui.device.DeviceIDViewModel;
-import com.google.android.material.textfield.TextInputLayout;
+import com.example.beethere.device.DeviceIDViewModel;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
 import com.example.beethere.DatabaseFunctions;
-import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.io.ByteArrayOutputStream;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 
@@ -252,7 +236,7 @@ public class CreateEventFragment1 extends Fragment {
 
         //TODO: add QR code to the collection of QR codes
 
-        if (wantMaxWaitList) {
+        /*if (wantMaxWaitList) {
             Event event = new Event(organizer, eventID, title, description, posterPath,
                     status, regStart, regEnd, eventStart, eventEnd, timeStart, timeEnd,
                     maxAttendees, wantGeoLocation, wantRandomSelect);
@@ -268,7 +252,7 @@ public class CreateEventFragment1 extends Fragment {
             dbFunctions.addEventDB(event);
             events.add(event);
             myEventsAdapter.notifyDataSetChanged();
-        }
+        }*/
     }
 
     private byte[] convertBitmapToByteArray(Bitmap bitmap) {

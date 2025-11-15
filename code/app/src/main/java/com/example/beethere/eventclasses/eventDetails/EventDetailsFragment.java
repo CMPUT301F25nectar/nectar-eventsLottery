@@ -20,14 +20,13 @@ import com.example.beethere.R;
 import com.example.beethere.User;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.eventclasses.EventDataViewModel;
-import com.example.beethere.ui.device.DeviceIDViewModel;
+import com.example.beethere.device.DeviceIDViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDate;
 import java.util.concurrent.atomic.AtomicReference;
-
 
 /**
  *
@@ -54,10 +53,11 @@ public class EventDetailsFragment extends Fragment {
         // checking device id status and defining user
         // get device id
         deviceID = new ViewModelProvider(requireActivity()).get(DeviceIDViewModel.class);
+
         // intialize value for if the user is created
         AtomicReference<Boolean> userCreated = new AtomicReference<>(Boolean.FALSE);
         // intialize user object
-        User user = null;
+        User user = new User("some name", "some email");
         // go through database and check device ID
         FirebaseFirestore.getInstance().collection("users").document(deviceID.getDeviceID())
                 .get()

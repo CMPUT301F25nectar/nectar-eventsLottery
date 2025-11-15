@@ -16,6 +16,7 @@ public class Event {
     private String eventID;
 
     private String posterPath;
+    private int qrCode;
 
     private Boolean status; //status on if the event is still active or not
 
@@ -38,6 +39,7 @@ public class Event {
      * @param title String,title of the event
      * @param description String, details of the event
      * @param posterPath URI, advertisement poster of the event
+     * @param qrCode idk, qr code to take user to page for event
      * @param status boolean, status of if the event is active or not
      * @param regStart Date, when registration for the event begins
      * @param regEnd Date, when registration for the event ends
@@ -50,7 +52,7 @@ public class Event {
      * @param autoRandomSelection boolean, if those in the waiting list should be selected on invitees cancellation
      */
 
-    public Event(User organizer, String eventID, String title, String description, String posterPath,
+    public Event(User organizer, String eventID, String title, String description, String posterPath, int qrCode,
                  Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
                  LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
                  int entrantMax, Boolean getLocation,
@@ -60,6 +62,7 @@ public class Event {
         this.title = title;
         this.description = description;
         this.posterPath = posterPath;
+        this.qrCode = qrCode;
         this.status = status;
         this.regStart = regStart;
         this.regEnd = regEnd;
@@ -71,8 +74,7 @@ public class Event {
         this.entrantList = new UserListManager(autoRandomSelection, entrantMax);
     }
 
-
-    public Event(User organizer, String eventID, String title, String description, String posterPath,
+    public Event(User organizer, String eventID, String title, String description, String posterPath, int qrCode,
                  Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
                  LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
                  int entrantMax, Boolean getLocation,
@@ -82,6 +84,7 @@ public class Event {
         this.title = title;
         this.description = description;
         this.posterPath = posterPath;
+        this.qrCode = qrCode;
         this.status = status;
         this.regStart = regStart;
         this.regEnd = regEnd;
@@ -131,6 +134,14 @@ public class Event {
 
     public void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
+    }
+
+    public int getQrCode() {
+        return qrCode;
+    }
+
+    public void setQrCode(int qrCode) {
+        this.qrCode = qrCode;
     }
 
     public Boolean getStatus() {

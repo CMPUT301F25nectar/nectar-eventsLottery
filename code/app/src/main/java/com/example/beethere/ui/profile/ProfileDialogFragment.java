@@ -7,7 +7,6 @@ package com.example.beethere.ui.profile;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -16,7 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
-import com.example.beethere.DeviceId;
+import com.example.beethere.device.DeviceId;
 import com.example.beethere.R;
 import com.example.beethere.User;
 import com.google.firebase.firestore.FirebaseFirestore;
