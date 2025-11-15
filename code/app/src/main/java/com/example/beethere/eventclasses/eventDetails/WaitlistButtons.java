@@ -9,7 +9,6 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.example.beethere.R;
 import com.example.beethere.User;
@@ -50,7 +49,7 @@ public class WaitlistButtons extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_waitlist_buttons, container, false);
+        View view = inflater.inflate(R.layout.fragment_event_details_waitlist_buttons, container, false);
 
         // Join Event
         ToggleButton waitlistButton = view.findViewById(R.id.button_waitlist);

@@ -102,6 +102,7 @@ public class AllEventsFragment extends Fragment {
 
 
         ArrayList<Event> eventList = new ArrayList<>();
+
         /*eventList.add(tempEvent);
         eventList.add(tempEvent2);*/
 

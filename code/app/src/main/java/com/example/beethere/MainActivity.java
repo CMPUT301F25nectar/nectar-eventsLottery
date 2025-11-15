@@ -2,7 +2,8 @@ package com.example.beethere;
 
 import android.os.Bundle;
 
-import com.example.beethere.ui.device.DeviceIDViewModel;
+import com.example.beethere.device.DeviceIDViewModel;
+import com.example.beethere.device.DeviceId;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.Nullable;

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_notifications">
+    app:startDestination="@+id/navigation_events">
 
     <fragment
         android:id="@+id/navigation_events"
@@ -18,7 +18,7 @@
 
     <fragment
         android:id="@+id/navigation_joined"
-        android:name="com.example.beethere.ui.myEvents.MyEventsFragment"
+        android:name="com.example.beethere.ui.joined.JoinedFragment"
         android:label="@string/title_joined"
         tools:layout="@layout/fragment_joined" />
 
@@ -37,10 +37,11 @@
         android:name="com.example.beethere.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications">
-    <action
-        android:id="@+id/notificationsToEventDetails"
-        app:destination="@id/event_details" />
+        <action
+            android:id="@+id/notificationsToEventDetails"
+            app:destination="@id/event_details" />
     </fragment>
+
 
     <fragment
         android:id="@+id/navigation_profile"
@@ -60,7 +61,5 @@
         android:label="Create"
         tools:layout="@layout/fragment_event_details">
     </fragment>
-
-
 
 </navigation>

@@ -1,7 +1,7 @@
 /**
  * Helper to get a device id as a unique identifier using ANDROID_ID
  */
-package com.example.beethere;
+package com.example.beethere.device;
 
 import android.content.Context;
 import android.provider.Settings;

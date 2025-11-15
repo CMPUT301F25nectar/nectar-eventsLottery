@@ -20,7 +20,7 @@ import com.example.beethere.R;
 import com.example.beethere.User;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.eventclasses.EventDataViewModel;
-import com.example.beethere.ui.device.DeviceIDViewModel;
+import com.example.beethere.device.DeviceIDViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;

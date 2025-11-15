@@ -27,7 +27,7 @@ public class StatusFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_status, container, false);
+        View view = inflater.inflate(R.layout.fragment_event_details_status, container, false);
 
         Button status = view.findViewById(R.id.button_status);
         status.setText(statusText);
