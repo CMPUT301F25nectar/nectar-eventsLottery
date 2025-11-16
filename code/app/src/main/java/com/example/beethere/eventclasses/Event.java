@@ -33,6 +33,10 @@ public class Event {
     private UserListManager entrantList;
 
 
+    public Event(){
+
+    }
+
     /**
      *
      * @param organizer User, user who can create events, identified by unique deviceID

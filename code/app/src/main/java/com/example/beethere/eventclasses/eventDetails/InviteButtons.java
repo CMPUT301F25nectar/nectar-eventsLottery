@@ -18,20 +18,10 @@ public class InviteButtons extends Fragment {
 
     private Event event;
     private User user;
-    private Boolean userCreated;
-
-    public Event getEvent() {
-        return event;
-    }
 
     public void setEvent(Event event) {
         this.event = event;
     }
-
-    public User getUser() {
-        return user;
-    }
-
     public void setUser(User user) {
         this.user = user;
     }

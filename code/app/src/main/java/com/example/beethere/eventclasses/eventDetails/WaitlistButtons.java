@@ -22,26 +22,12 @@ public class WaitlistButtons extends Fragment {
     private User user;
     private Boolean userCreated;
 
-    public Event getEvent() {
-        return event;
-    }
-
     public void setEvent(Event event) {
         this.event = event;
     }
-
-    public User getUser() {
-        return user;
-    }
-
     public void setUser(User user) {
         this.user = user;
     }
-
-    public Boolean getUserCreated() {
-        return userCreated;
-    }
-
     public void setUserCreated(Boolean userCreated) {
         this.userCreated = userCreated;
     }
@@ -83,6 +69,8 @@ public class WaitlistButtons extends Fragment {
                             .make(view, "You have left the waitlist!", Snackbar.LENGTH_SHORT)
                             .show();
                 }
+
+                
             }
         });
 

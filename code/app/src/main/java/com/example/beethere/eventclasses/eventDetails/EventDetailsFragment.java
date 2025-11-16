@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -46,18 +47,22 @@ public class EventDetailsFragment extends Fragment {
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        // inflate view
         View view = inflater.inflate(R.layout.fragment_event_details, container, false);
-        eventData = new ViewModelProvider(requireActivity()).get(EventDataViewModel.class);
-        event = eventData.getEvent();
+
 
         // checking device id status and defining user
-        // get device id
-        deviceID = new ViewModelProvider(requireActivity()).get(DeviceIDViewModel.class);
+
+        deviceID = new ViewModelProvider(requireActivity()).get(DeviceIDViewModel.class); // get device id
 
         // intialize value for if the user is created
+        // set boolean to true or false?
         AtomicReference<Boolean> userCreated = new AtomicReference<>(Boolean.FALSE);
         // intialize user object
+        // figure out alternative to setting a new user
         User user = new User("some name", "some email");
+
         // go through database and check device ID
         FirebaseFirestore.getInstance().collection("users").document(deviceID.getDeviceID())
                 .get()
@@ -78,17 +83,24 @@ public class EventDetailsFragment extends Fragment {
                                 userCreated.set(Boolean.FALSE)
                 );
 
+
+
+        // get event and its data
+        eventData = new ViewModelProvider(requireActivity()).get(EventDataViewModel.class);
+        event = eventData.getEvent();
+
+        // Event Image
+        ImageView imageView = view.findViewById(R.id.event_image);
+        Bitmap bitmap = BitmapFactory.decodeFile(event.getPosterPath());
+        imageView.setImageBitmap(bitmap);
+
         // Event Name display
         TextView name = view.findViewById(R.id.text_event_name);
         name.setText(event.getTitle());
 
         // Event organizer display
         TextView organizer = view.findViewById(R.id.text_host_name);
-        organizer.setText(String
-                .format(
-                        getContext().getString(R.string.event_organizer),
-                        event.getOrganizer().getName())
-        );
+        organizer.setText(event.getOrganizer().getName());
 
         // Event Description Display
         TextView description = view.findViewById(R.id.text_description);
@@ -128,18 +140,14 @@ public class EventDetailsFragment extends Fragment {
         TextView waitlist = view.findViewById(R.id.text_waitlist);
         waitlist.setText(event.getEntrantList().waitlistSize().toString());
 
-        // TODO
-        // event image set up
-        ImageView imageView = view.findViewById(R.id.event_image);
-        Bitmap bitmap = BitmapFactory.decodeFile(event.getPosterPath());
-        imageView.setImageBitmap(bitmap);
+
 
 
         // SET LISTENERS
 
-        // Go back to event list
-        FloatingActionButton fab = view.findViewById(R.id.button_back);
-        fab.setOnClickListener(new View.OnClickListener() {
+        // Go back to prev fragment
+        Button prevButton = view.findViewById(R.id.event_detail_back_button);
+        prevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getParentFragmentManager();
@@ -156,32 +164,54 @@ public class EventDetailsFragment extends Fragment {
         });
 
 
-
+        // bottom display choices
         LocalDate currentDate = LocalDate.now();
         if(!userCreated.get()){ // no profile connected to deviceID
-            if (currentDate.isAfter(event.getRegEnd())){ // waitlist period ended display
+            if (currentDate.isAfter(event.getRegEnd())){
+                // waitlist period ended display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
-            } else if (event.getEntrantList().waitlistFull()) { // waitlist full display
+
+            } else if (event.getEntrantList().waitlistFull()) {
+                // waitlist full display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_full));
+
             }
-            else { // waitlist button display that prompts create profile dialog
+            else {
+                // waitlist button display that prompts create profile dialog
                 displayWaitlistButton(user, userCreated.get());
+
             }
         } else {
-            if(event.getEntrantList().inRegistered(user)) { // user enrolled
+            // profile is connected to deviceID
+            if(event.getEntrantList().inRegistered(user)) {
+                // user enrolled
                 displayWaitlistStatus("Enrolled");
-            } else if (event.getEntrantList().isDeclined(user)) { // user declined, display waitlist ended
+
+            } else if (event.getEntrantList().isDeclined(user)) {
+                // user declined, display waitlist ended
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
-            } else if (event.getEntrantList().inInvite(user)) { // user invited, accept or decline invite button
+
+            } else if (event.getEntrantList().inInvite(user)) {
+                // user invited, accept or decline invite button
+
+
                 InviteButtons button = new InviteButtons();
                 button.setEvent(event);
+                button.setUser(user);
                 FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
                 transaction.add(R.id.button_layout, button).commit();
-            } else if (currentDate.isAfter(event.getRegEnd())){ // waitlist period ended display
+
+
+            } else if (currentDate.isAfter(event.getRegEnd())){
+                // waitlist period ended display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
-            } else if (event.getEntrantList().waitlistFull()) { // waitlist full display
+
+            } else if (event.getEntrantList().waitlistFull()) {
+                // waitlist full display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_full));
-            } else { // join waitlist buttons added
+
+            } else {
+                // join waitlist buttons added
                 displayWaitlistButton(user, userCreated.get());
             }
         }
