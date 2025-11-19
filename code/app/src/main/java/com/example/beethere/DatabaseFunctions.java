@@ -64,7 +64,7 @@ public class DatabaseFunctions {
      */
     public void getEventsDB(Boolean filter, DatabaseCallback<ArrayList<Event>> callback) {
 
-        CollectionReference events = db.collection("events");
+        CollectionReference events = db.collection("events1");
         ArrayList<Event> eventArrayList = new ArrayList<>();
 
         events.get().addOnCompleteListener(task -> {

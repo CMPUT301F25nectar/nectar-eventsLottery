@@ -6,11 +6,14 @@ import com.example.beethere.User;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 public class Event {
     private User organizer;
+
     private String title;
     private String description;
     private String eventID;
@@ -20,18 +23,17 @@ public class Event {
 
     private Boolean status; //status on if the event is still active or not
 
-    private LocalDate regStart;
-    private LocalDate regEnd;
+    private String regStart;
+    private String regEnd;
 
-    private LocalDate eventDateStart;
-    private LocalDate eventDateEnd;
-    private LocalTime eventTimeStart;
-    private LocalTime eventTimeEnd;
+    private String eventDateStart;
+    private String eventDateEnd;
+    private String eventTimeStart;
+    private String eventTimeEnd;
 
     private Boolean geoloc;
 
     private UserListManager entrantList;
-
 
     public Event(){
 
@@ -57,8 +59,8 @@ public class Event {
      */
 
     public Event(User organizer, String eventID, String title, String description, String posterPath, int qrCode,
-                 Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
-                 LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
+                 Boolean status, String regStart, String regEnd, String eventDateStart,
+                 String eventDateEnd, String eventTimeStart, String eventTimeEnd,
                  int entrantMax, Boolean getLocation,
                  Boolean autoRandomSelection) {
         this.organizer = organizer;
@@ -78,9 +80,10 @@ public class Event {
         this.entrantList = new UserListManager(autoRandomSelection, entrantMax);
     }
 
+
     public Event(User organizer, String eventID, String title, String description, String posterPath, int qrCode,
-                 Boolean status, LocalDate regStart, LocalDate regEnd, LocalDate eventDateStart,
-                 LocalDate eventDateEnd, LocalTime eventTimeStart, LocalTime eventTimeEnd,
+                 Boolean status, String regStart, String regEnd, String eventDateStart,
+                 String eventDateEnd, String eventTimeStart, String eventTimeEnd,
                  int entrantMax, Boolean getLocation,
                  Boolean autoRandomSelection, int maxWaitlist) {
         this.organizer = organizer;
@@ -156,51 +159,51 @@ public class Event {
         this.status = status;
     }
 
-    public LocalDate getRegStart() {
+    public String getRegStart() {
         return regStart;
     }
 
-    public void setRegStart(LocalDate regStart) {
+    public void setRegStart(String regStart) {
         this.regStart = regStart;
     }
 
-    public LocalDate getRegEnd() {
+    public String getRegEnd() {
         return regEnd;
     }
 
-    public void setRegEnd(LocalDate regEnd) {
+    public void setRegEnd(String regEnd) {
         this.regEnd = regEnd;
     }
 
-    public LocalDate getEventDateStart() {
+    public String getEventDateStart() {
         return eventDateStart;
     }
 
-    public void setEventDateStart(LocalDate eventDateStart) {
+    public void setEventDateStart(String eventDateStart) {
         this.eventDateStart = eventDateStart;
     }
 
-    public LocalDate getEventDateEnd() {
+    public String getEventDateEnd() {
         return eventDateEnd;
     }
 
-    public void setEventDateEnd(LocalDate eventDateEnd) {
+    public void setEventDateEnd(String eventDateEnd) {
         this.eventDateEnd = eventDateEnd;
     }
 
-    public LocalTime getEventTimeStart() {
+    public String getEventTimeStart() {
         return eventTimeStart;
     }
 
-    public void setEventTimeStart(LocalTime eventTimeStart) {
+    public void setEventTimeStart(String eventTimeStart) {
         this.eventTimeStart = eventTimeStart;
     }
 
-    public LocalTime getEventTimeEnd() {
+    public String getEventTimeEnd() {
         return eventTimeEnd;
     }
 
-    public void setEventTimeEnd(LocalTime eventTimeEnd) {
+    public void setEventTimeEnd(String eventTimeEnd) {
         this.eventTimeEnd = eventTimeEnd;
     }
 
@@ -218,5 +221,18 @@ public class Event {
 
     public void setEntrantList(UserListManager entrantList) {
         this.entrantList = entrantList;
+    }
+
+
+    public LocalDate convertDate(String stringDate) {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        return LocalDate.parse(stringDate, dateFormatter);
+    }
+
+    public LocalTime convertTime(String stringTime) {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US);
+
+        return LocalTime.parse(stringTime, timeFormatter);
     }
 }

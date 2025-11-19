@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -27,6 +28,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -35,9 +39,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public class EventDetailsFragment extends Fragment {
 
     private Event event;
+    private User user;
+    private Boolean userCreated;
     private DeviceIDViewModel deviceID;
     private EventDataViewModel eventData;
-
 
     public Event getEvent() {
         return event;
@@ -51,10 +56,14 @@ public class EventDetailsFragment extends Fragment {
         // inflate view
         View view = inflater.inflate(R.layout.fragment_event_details, container, false);
 
-
         // checking device id status and defining user
-
         deviceID = new ViewModelProvider(requireActivity()).get(DeviceIDViewModel.class); // get device id
+
+        // get event and its data
+        eventData = new ViewModelProvider(requireActivity()).get(EventDataViewModel.class);
+        event = eventData.getEvent();
+
+
 
         // intialize value for if the user is created
         // set boolean to true or false?
@@ -84,10 +93,33 @@ public class EventDetailsFragment extends Fragment {
                 );
 
 
+        // SET LISTENERS
 
-        // get event and its data
-        eventData = new ViewModelProvider(requireActivity()).get(EventDataViewModel.class);
-        event = eventData.getEvent();
+        // Go back to prev fragment
+        Button prevButton = view.findViewById(R.id.event_detail_back_button);
+        prevButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getParentFragmentManager();
+                fragmentManager.popBackStack();
+            }
+        });
+
+        ImageButton qrButton = view.findViewById(R.id.button_QR);
+        qrButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //display image dialog fragment? for qr code
+            }
+        });
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         // Event Image
         ImageView imageView = view.findViewById(R.id.event_image);
@@ -119,8 +151,8 @@ public class EventDetailsFragment extends Fragment {
         date.setText(String
                 .format(
                         getContext().getString(R.string.event_date),
-                        event.getEventDateStart().toString(),
-                        event.getEventDateEnd().toString())
+                        event.getEventDateStart(),
+                        event.getEventDateEnd())
         );
 
         // Event Time display
@@ -142,32 +174,10 @@ public class EventDetailsFragment extends Fragment {
 
 
 
-
-        // SET LISTENERS
-
-        // Go back to prev fragment
-        Button prevButton = view.findViewById(R.id.event_detail_back_button);
-        prevButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentManager fragmentManager = getParentFragmentManager();
-                fragmentManager.popBackStack();
-            }
-        });
-
-        ImageButton qrButton = view.findViewById(R.id.button_QR);
-        qrButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //display image dialog fragment? for qr code
-            }
-        });
-
-
         // bottom display choices
         LocalDate currentDate = LocalDate.now();
-        if(!userCreated.get()){ // no profile connected to deviceID
-            if (currentDate.isAfter(event.getRegEnd())){
+        if(!userCreated){ // no profile connected to deviceID
+            if (currentDate.isAfter(convertDate(event.getRegEnd(), dateFormatter))){
                 // waitlist period ended display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
 
@@ -178,7 +188,7 @@ public class EventDetailsFragment extends Fragment {
             }
             else {
                 // waitlist button display that prompts create profile dialog
-                displayWaitlistButton(user, userCreated.get());
+                displayWaitlistButton(user, userCreated);
 
             }
         } else {
@@ -194,15 +204,16 @@ public class EventDetailsFragment extends Fragment {
             } else if (event.getEntrantList().inInvite(user)) {
                 // user invited, accept or decline invite button
 
-
                 InviteButtons button = new InviteButtons();
+
                 button.setEvent(event);
                 button.setUser(user);
+
                 FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
                 transaction.add(R.id.button_layout, button).commit();
 
 
-            } else if (currentDate.isAfter(event.getRegEnd())){
+            } else if (currentDate.isAfter(convertDate(event.getRegEnd(), dateFormatter))){
                 // waitlist period ended display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
 
@@ -212,31 +223,35 @@ public class EventDetailsFragment extends Fragment {
 
             } else {
                 // join waitlist buttons added
-                displayWaitlistButton(user, userCreated.get());
+                displayWaitlistButton(user, userCreated);
             }
         }
 
-        return view;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        getParentFragmentManager().beginTransaction().remove(EventDetailsFragment.this).commitAllowingStateLoss();
+        super.onViewCreated(view, savedInstanceState);
     }
 
     public void displayWaitlistButton(User user, Boolean created){
         WaitlistButtons button = new WaitlistButtons();
+
         button.setUser(user);
         button.setUserCreated(created);
+        button.setEvent(event);
+
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.add(R.id.button_layout, button).commit();
     }
 
     public void displayWaitlistStatus(String status){
         StatusFragment statusFragment = new StatusFragment();
+
         statusFragment.setStatusText(status);
+
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.add(R.id.button_layout, statusFragment).commit();
     }
+
+    public LocalDate convertDate(String stringDate, DateTimeFormatter dateFormatter) {
+        return LocalDate.parse(stringDate, dateFormatter);
+    }
+
 }

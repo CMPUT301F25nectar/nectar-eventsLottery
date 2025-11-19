@@ -59,6 +59,7 @@ public class AllEventsFragment extends Fragment {
 
         eventList = new ArrayList<Event>();
         eventsAdapter = new EventsAdapter(getContext(), eventList);
+
         //EventsAdapter eventAdapter = new EventsAdapter(getContext(), eventList);
         ListView events = view.findViewById(R.id.event_display);
         events.setAdapter(eventsAdapter);
@@ -73,6 +74,7 @@ public class AllEventsFragment extends Fragment {
                 event.setEvent((Event) parent.getItemAtPosition(position));
             }
         });
+
         loadEvents();
     }
 
@@ -83,9 +85,11 @@ public class AllEventsFragment extends Fragment {
         DatabaseCallback<ArrayList<Event>> callback = new DatabaseCallback<>() {
             @Override
             public void onCallback(ArrayList<Event> result) {
-                eventList = result;
+                eventList.addAll(result);
                 eventsAdapter.notifyDataSetChanged();
+
                 System.out.println(result);
+                System.out.println(eventList);
             }
             @Override
             public void onError(Exception e) {

@@ -53,8 +53,8 @@ public class EventsAdapter extends ArrayAdapter<Event> {
             //set the objects information using getters
             title.setText(event.getTitle());
             //poster.setImageResource(event.getPoster());
-            enrollStart.setText(event.getRegStart().toString());
-            enrollEnd.setText(event.getRegEnd().toString());
+            enrollStart.setText(event.getRegStart());
+            enrollEnd.setText(event.getRegEnd());
         }
 
         return view;
