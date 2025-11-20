@@ -90,6 +90,7 @@ public class ProfileFragment extends Fragment {
                 .addOnSuccessListener(snap->{
                     Boolean admincurrent = null;
                     Boolean organizercurrent = null;
+                    Boolean violationcurrent = false; //CHANGE MADE HERE
                     if(snap.exists()){
                         User exists = snap.toObject(User.class);
                         if (exists!= null) {
@@ -102,6 +103,7 @@ public class ProfileFragment extends Fragment {
                     u.setEmail(email);
                     u.setPhone(phonenumber);
                     u.setDeviceid(deviceID);
+                    u.setViolation(violationcurrent); //CHANGE MADE HERE
                     if (admincurrent!=null) u.setAdmin(admincurrent);
                     else u.setAdmin(false);
                     if (organizercurrent!=null) u.setOrganizer(organizercurrent);

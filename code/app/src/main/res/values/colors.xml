@@ -9,6 +9,7 @@
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="gray">#989898</color>
 
     <color name="dark_brown">#FF3F231B</color>
     <color name="transparent_brown">#D93F231B</color>
@@ -20,4 +21,5 @@
     <color name="second_yellow">#D9F4D6B1</color>
 
     <color name="red">#FFD03F3F</color>
+    <color name="other_red">#D03F3F</color>
 </resources>

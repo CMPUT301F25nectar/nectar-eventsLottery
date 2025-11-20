@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.beethere.device.DeviceId;
 import com.example.beethere.eventclasses.Event;
@@ -30,16 +31,20 @@ import com.example.beethere.User;
 import com.example.beethere.device.DeviceIDViewModel;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.example.beethere.DatabaseFunctions;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 
 public class CreateEventFragment1 extends Fragment {
@@ -47,9 +52,11 @@ public class CreateEventFragment1 extends Fragment {
     private ImageView eventPoster;
     public Uri imageURL;
 
+    private DeviceIDViewModel deviceIDViewModel;
     private User organizer;
-    private DeviceIDViewModel deviceIDProvider;
 
+    DatabaseFunctions dbFunctions = new DatabaseFunctions();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private boolean wantMaxWaitList, wantRandomSelect, wantGeoLocation = false;
 
@@ -60,13 +67,9 @@ public class CreateEventFragment1 extends Fragment {
     private MyEventsAdapter myEventsAdapter;
     public ArrayList<Event> events;
 
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    DatabaseFunctions dbFunctions = new DatabaseFunctions();
-
 
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US);  // Use Locale.US for AM/PM format
-
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US);
 
     // Launcher for selecting image
     private ActivityResultLauncher<Intent> pickImageLauncher;
@@ -88,7 +91,8 @@ public class CreateEventFragment1 extends Fragment {
         events = new ArrayList<>();
         myEventsAdapter = new MyEventsAdapter(getContext(), events);
 
-        String deviceID = DeviceId.get(requireContext());
+        deviceIDViewModel = new ViewModelProvider(requireActivity()).get(DeviceIDViewModel.class);
+        String deviceID = deviceIDViewModel.getDeviceID();
         FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(deviceID)
@@ -121,6 +125,7 @@ public class CreateEventFragment1 extends Fragment {
         maxWaitListSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 maxWaitList.setVisibility(View.VISIBLE);  // Show maxWaitList input
+                wantMaxWaitList = isChecked;
             } else {
                 maxWaitList.setVisibility(View.GONE);  // Hide maxWaitList input
             }
@@ -151,6 +156,7 @@ public class CreateEventFragment1 extends Fragment {
         FragmentManager fragmentManager = getParentFragmentManager();
         fragmentManager.popBackStack();
     }
+
     private void choosePoster() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.setType("image/*");
@@ -176,7 +182,7 @@ public class CreateEventFragment1 extends Fragment {
                 eventStartInput.isEmpty() || eventEndInput.isEmpty() ||
                 timeStartInput.isEmpty() || timeEndInput.isEmpty() ||
                 maxAttendInput.isEmpty() || descInput.isEmpty() ||
-                (wantMaxWaitList && maxWaitListInput.isEmpty()) || imageURL == null) { //just add an asterick by the fill input line
+                (wantMaxWaitList && maxWaitListInput.isEmpty()) || imageURL == null) {
             errorMessage.setVisibility(View.VISIBLE);
             return;
         }
@@ -201,30 +207,27 @@ public class CreateEventFragment1 extends Fragment {
             }
 
             if (regStartDate.isAfter(regEndDate) || eventStartDate.isAfter(eventEndDate) || startTime.isAfter(endTime)) {
-                errorMessage.setText("Ensure start dates/times are before end dates/times.");
                 errorMessage.setVisibility(View.VISIBLE);
             }
 
-            addToDatabase(titleInput, regStartDate, regEndDate, eventStartDate, eventEndDate,
-                    startTime, endTime, maxAttendeesInt, descInput, imageURL.toString(),
+            addToDatabase(titleInput, regStartInput, regEndInput, eventStartInput, eventEndInput,
+                    timeStartInput, timeEndInput, maxAttendeesInt, descInput, imageURL.toString(),
                     wantMaxWaitList, wantGeoLocation, wantRandomSelect, maxWaitListInt);
 
             FragmentManager fragmentManager = getParentFragmentManager();
             fragmentManager.popBackStack();
             android.widget.Toast.makeText(getActivity(), "Event created successfully!", android.widget.Toast.LENGTH_SHORT).show();
 
-
-
         } catch (Exception e) {
-            Log.e("CreateEventFragment", "Parsing error: " + e.getMessage());
+            Log.e("CreateEventFragment", "Parsing error: " + e.getMessage());//checker
             errorMessage.setText("Ensure input formats are correct.");
             errorMessage.setVisibility(View.VISIBLE);
         }
 
     }
 
-    private void addToDatabase(String title, LocalDate regStart, LocalDate regEnd, LocalDate eventStart,
-                               LocalDate eventEnd, LocalTime timeStart, LocalTime timeEnd, int maxAttendees,
+    private void addToDatabase(String title, String regStart, String regEnd, String eventStart,
+                               String eventEnd, String timeStart, String timeEnd, int maxAttendees,
                                String description, String posterPath, boolean wantMaxWaitList, boolean wantGeoLocation,
                                boolean wantRandomSelect, int maxWaitListInt) throws WriterException {
 
@@ -233,45 +236,30 @@ public class CreateEventFragment1 extends Fragment {
 
         boolean status = true;
 
+        ArrayList<User> waitList = new ArrayList<>();
+        Map<User, Boolean> invited = new HashMap<>();
+        ArrayList<User> registered = new ArrayList<>();
 
-        //TODO: add QR code to the collection of QR codes
-
-        /*if (wantMaxWaitList) {
+        if (wantMaxWaitList) {
             Event event = new Event(organizer, eventID, title, description, posterPath,
                     status, regStart, regEnd, eventStart, eventEnd, timeStart, timeEnd,
-                    maxAttendees, wantGeoLocation, wantRandomSelect);
+                    maxAttendees, wantGeoLocation, waitList, invited,
+                    registered, wantRandomSelect);
             dbFunctions.addEventDB(event);
             events.add(event);
             myEventsAdapter.notifyDataSetChanged();
+
 
         } else {
             Event event = new Event(organizer, eventID, title, description, posterPath,
                     status, regStart, regEnd, eventStart, eventEnd, timeStart, timeEnd,
-                    maxAttendees, wantGeoLocation, wantRandomSelect, maxWaitListInt);
+                    maxAttendees, wantGeoLocation,  waitList, invited,
+                    registered, wantRandomSelect, maxWaitListInt);
 
             dbFunctions.addEventDB(event);
             events.add(event);
             myEventsAdapter.notifyDataSetChanged();
-        }*/
-    }
-
-    private byte[] convertBitmapToByteArray(Bitmap bitmap) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream); // You can use PNG or JPEG format
-        return stream.toByteArray();
-    }
-
-    private Bitmap convertBitMatrixToBitmap(BitMatrix matrix) {
-        int width = matrix.getWidth();
-        int height = matrix.getHeight();
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                bitmap.setPixel(x, y, matrix.get(x, y) ? Color.BLACK : Color.WHITE);
-            }
         }
-        return bitmap;
     }
 }
 
