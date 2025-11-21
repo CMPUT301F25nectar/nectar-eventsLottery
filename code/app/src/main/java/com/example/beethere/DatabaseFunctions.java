@@ -62,25 +62,25 @@ public class DatabaseFunctions {
      * @param waitlistID User class of user if they don't want events that they've already added to waitlist
      * @param callback Database Callback to return the database
      */
-    public void getEventsDB(Boolean filter, User waitlistID, DatabaseCallback<ArrayList<Event>> callback) {
+    public void getEventsDB(Boolean filter, DatabaseCallback<ArrayList<Event>> callback) {
 
-        CollectionReference events = db.collection("Events");
+        CollectionReference events = db.collection("events1");
         ArrayList<Event> eventArrayList = new ArrayList<>();
 
-        if (filter == Boolean.FALSE){
-            // return
-            events.get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        eventArrayList.add(document.toObject(Event.class));
-                    }
-                    callback.onCallback(eventArrayList);
-                } else {
-                    Log.d(TAG, "Error getting documents: ", task.getException());
-                    callback.onError(task.getException());
-                }
-            });
-        } else {
+        events.get().addOnCompleteListener(task -> {
+            if(!task.isSuccessful()){
+                callback.onError(task.getException());
+                return;
+            }
+            for(QueryDocumentSnapshot document : task.getResult()) {
+                Event event = document.toObject(Event.class);
+                // check for filter here
+                eventArrayList.add(event);
+            }
+            callback.onCallback(eventArrayList);
+        });
+
+        /*else {
             events.get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
@@ -97,8 +97,10 @@ public class DatabaseFunctions {
                     callback.onError(task.getException());
                 }
             });
-        }
+        }*/
     }
+
+
 
     /**
      * This methods returns the events a user has waitlisted

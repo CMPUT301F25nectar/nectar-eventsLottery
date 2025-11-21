@@ -1,4 +1,4 @@
-package com.example.beethere.ui.device;
+package com.example.beethere.device;
 
 
 import androidx.lifecycle.ViewModel;

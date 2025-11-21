@@ -12,7 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.beethere.DeviceId;
+import com.example.beethere.device.DeviceId;
 import com.example.beethere.R;
 import com.example.beethere.User;
 import com.google.firebase.firestore.DocumentSnapshot;

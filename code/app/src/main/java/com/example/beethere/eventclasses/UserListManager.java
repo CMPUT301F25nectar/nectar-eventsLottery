@@ -1,8 +1,8 @@
 package com.example.beethere.eventclasses;
 
 import com.example.beethere.User;
-import com.example.beethere.notifications_classes.NotificationHandler;
 import com.example.beethere.notifications_classes.Notification;
+import com.example.beethere.notifications_classes.NotificationHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +26,9 @@ public class UserListManager {
     private Random random;
 
     // Constructors
+
+    // Empty constructor
+    public UserListManager(){}
     /**
      * This initializes the 3 different types of user lists associated with an event
      * and a random object.
@@ -242,23 +245,21 @@ public class UserListManager {
      * Randomly selects max number of users who can register
      * from the waitlist and adds them to the invite list
      */
-    public void selectInvitations(String eventId, String eventName, String organizerDeviceId){
+    public void selectInvitations(){
         Integer range = maxRegistered;
         if(waitlistSize() < maxRegistered) range = waitlistSize();
-
         for(int i = 0; i < range; i++){
             selectNewInvite();
         }
-
-        // Send lottery notifications
-        NotificationHandler notificationHandler = new NotificationHandler();
+        
+        /*NotificationHandler notificationHandler = new NotificationHandler();
         notificationHandler.sendLotteryNotifications(
                 eventId,
                 eventName,
-                this.inviteList,
-                this.waitlist,
+                this.inviteList,    // Winners
+                this.waitlist,      // Losers (remaining on waitlist)
                 organizerDeviceId
-        );
+        );*/
     }
 
     public Boolean inWaitlist(User user) {

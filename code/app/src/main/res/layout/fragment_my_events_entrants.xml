@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_back_to_prev"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="52dp"
+        android:background="@drawable/button_back_arrow"
+        android:backgroundTint="@color/dark_brown"
+        android:drawableEnd="@drawable/outline_arrow_back_24"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_entrant_waitlist"
+        android:layout_width="100dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/button_dark_brown"
+        android:text="Waitlist"
+        android:textAllCaps="false"
+        android:textSize="14sp"
+        android:textColor="@color/light_yellow"
+        android:fontFamily="@font/work_sans_semibold"
+        app:layout_constraintEnd_toStartOf="@+id/button_entrant_invited"
+        app:layout_constraintTop_toBottomOf="@+id/button_back_to_prev"
+        app:layout_constraintHorizontal_chainStyle="spread" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_entrant_invited"
+        android:layout_width="100dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/button_dark_brown"
+        android:fontFamily="@font/work_sans_semibold"
+        android:text="Invited"
+        android:textAllCaps="false"
+        android:textColor="@color/light_yellow"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_back_to_prev" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_entrant_registered"
+        android:layout_width="100dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/button_dark_brown"
+        android:text="Registered"
+        android:textAllCaps="false"
+        android:textSize="14sp"
+        android:textColor="@color/light_yellow"
+        android:fontFamily="@font/work_sans_semibold"
+        app:layout_constraintStart_toEndOf="@+id/button_entrant_invited"
+        app:layout_constraintTop_toBottomOf="@+id/button_back_to_prev" />
+
+    <SearchView
+        android:id="@+id/event_entrant_search"
+        android:layout_width="310dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_entrant_invited" />
+
+    <ImageButton
+        android:id="@+id/event_entrant_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_entrant_invited"
+        app:srcCompat="@android:drawable/ic_dialog_map" />
+
+    <ListView
+        android:id="@+id/event_entrant_list"
+        android:layout_width="409dp"
+        android:layout_height="500dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/event_entrant_search" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

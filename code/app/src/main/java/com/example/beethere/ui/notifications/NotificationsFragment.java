@@ -1,13 +1,11 @@
 package com.example.beethere.ui.notifications;
 
 
-import com.example.beethere.DeviceId;
+import com.example.beethere.device.DeviceId;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -16,15 +14,10 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.beethere.R;
-import com.example.beethere.User;
 import com.example.beethere.notifications_classes.Notification;
 import com.example.beethere.notifications_classes.NotificationHandler;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class NotificationsFragment extends Fragment {

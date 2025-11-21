@@ -18,20 +18,10 @@ public class InviteButtons extends Fragment {
 
     private Event event;
     private User user;
-    private Boolean userCreated;
-
-    public Event getEvent() {
-        return event;
-    }
 
     public void setEvent(Event event) {
         this.event = event;
     }
-
-    public User getUser() {
-        return user;
-    }
-
     public void setUser(User user) {
         this.user = user;
     }
@@ -39,7 +29,7 @@ public class InviteButtons extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_invite_buttons, container, false);
+        View view = inflater.inflate(R.layout.fragment_event_details_invite_buttons, container, false);
 
         Button accept = view.findViewById(R.id.button_accept_invite);
         accept.setOnClickListener(new View.OnClickListener() {
