@@ -7,16 +7,86 @@
     tools:context=".ui.myEvents.MyEventsFragment">
 
     <TextView
-        android:id="@+id/text_my_events"
-        android:layout_width="match_parent"
+        android:id="@+id/myEvents"
+        android:layout_width="225dp"
+        android:layout_height="55dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/createEventButton"
+        app:layout_constraintBottom_toTopOf="@id/myEventsSearch"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="80dp"
+        android:fontFamily="@font/space_mono_bold"
+        android:text="My Events"
+        android:textSize="35sp"
+        android:textColor="@color/dark_brown"/>
+
+    <Button
+        android:id="@+id/createEventButton"
+        android:layout_width="150dp"
+        android:layout_height="45dp"
+        android:foregroundGravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/myEvents"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/myEventsSearch"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="65dp"
+        android:background="@drawable/waitlist_button"
+        android:backgroundTint="@color/yellow"
+        android:textAllCaps="false"
+        android:textColor="@color/dark_brown"
+        android:textSize="15sp"
+        android:fontFamily="@font/work_sans_semibold"
+        android:text="Create Event" />
+
+    <TextView
+        android:id="@+id/noEventsMessage"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="No events created... start the buzz!"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:textAlignment="center"
+        android:textSize="30sp"
+        android:visibility="invisible"
+        tools:layout_editor_absoluteX="411dp" />
+
+    <ListView
+        android:id="@+id/myEventsList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="200dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+    </ListView>
+
+    <EditText
+        android:id="@+id/myEventsSearch"
+        android:layout_width="375dp"
+        android:layout_height="37dp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/myEvents"
+        android:background="@drawable/search_bar"
+        android:paddingStart="15dp"
+        android:hint="Search"
+        android:fontFamily="@font/work_sans"
+        android:textColor="@color/dark_brown"
+        app:queryBackground="@android:color/transparent"/>
+
+
+
+    <FrameLayout
+        android:id="@+id/create_event_container1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteX="411dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,10 +6,13 @@ plugins {
 android {
     namespace = "com.example.beethere"
     compileSdk = 36
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
 
     defaultConfig {
         applicationId = "com.example.beethere"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -36,6 +39,7 @@ android {
 }
 
 dependencies {
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
@@ -43,9 +47,18 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+    //implementation(libs.cardview)
+    implementation("com.google.android.material:material:1.10.0")
+    implementation(libs.cardview)
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    androidTestImplementation("androidx.fragment:fragment-testing:1.5.5")
     implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
+    testImplementation("org.mockito:mockito-core:4.8.1")
     implementation("com.google.firebase:firebase-firestore")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.1")
+
 }

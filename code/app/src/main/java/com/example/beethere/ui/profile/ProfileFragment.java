@@ -12,7 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.beethere.DeviceId;
+import com.example.beethere.device.DeviceId;
 import com.example.beethere.R;
 import com.example.beethere.User;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -98,6 +98,7 @@ public class ProfileFragment extends Fragment {
                 .addOnSuccessListener(snap->{
                     Boolean admincurrent = null;
                     Boolean organizercurrent = null;
+                    Boolean violationcurrent = false; //CHANGE MADE HERE
                     if(snap.exists()){
                         User exists = snap.toObject(User.class);
                         if (exists!= null) {
@@ -110,7 +111,10 @@ public class ProfileFragment extends Fragment {
                     u.setEmail(email);
                     u.setPhone(phonenumber);
                     u.setDeviceid(deviceID);
+
                     //set admin and organizer default flags
+
+                    u.setViolation(violationcurrent); //CHANGE MADE HERE
                     if (admincurrent!=null) u.setAdmin(admincurrent);
                     else u.setAdmin(false);
                     if (organizercurrent!=null) u.setOrganizer(organizercurrent);
