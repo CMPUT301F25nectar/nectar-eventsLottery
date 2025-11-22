@@ -23,6 +23,8 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.beethere.device.DeviceId;
 import com.example.beethere.eventclasses.Event;
@@ -82,11 +84,24 @@ public class CreateEventFragment1 extends Fragment {
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        imageURL = result.getData().getData();
+
+                        Uri uri = result.getData().getData();
+
+                        try {
+                            requireContext().getContentResolver().takePersistableUriPermission(
+                                    uri,
+                                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            );
+                        } catch (SecurityException e) {
+                            e.printStackTrace();
+                        }
+
+                        imageURL = uri;
                         eventPoster.setImageURI(imageURL);
                     }
                 }
         );
+
 
         events = new ArrayList<>();
         myEventsAdapter = new MyEventsAdapter(getContext(), events);
@@ -145,24 +160,37 @@ public class CreateEventFragment1 extends Fragment {
         completeButton.setOnClickListener(v -> complete());
 
         Button backButton = view.findViewById(R.id.backButton);
-        backButton.setOnClickListener(v -> backMain());
 
+        backButton.setOnClickListener(v -> showGoBackDialog(view));
 
         return view;
     }
 
-    private void backMain () {
-//        DialogFragment goBack
-        FragmentManager fragmentManager = getParentFragmentManager();
-        fragmentManager.popBackStack();
+    private void backMain (View view) {
+        NavController nav = Navigation.findNavController(view);
+        nav.navigate(R.id.createEventstoMyEvents);
     }
+
+    private void showGoBackDialog(View view) {
+        GoBackDialogFragment dialog = new GoBackDialogFragment();
+        dialog.setGoBackListener(() -> backMain(view)); // pass a lambda
+        dialog.show(getParentFragmentManager(), "GoBackDialog");
+    }
+
+
 
     private void choosePoster() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.setType("image/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        // REQUIRED: allow taking persistable permissions
+        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
         pickImageLauncher.launch(intent);
     }
+
 
     @SuppressLint("SetTextI18n")
     public void complete() {
@@ -237,7 +265,7 @@ public class CreateEventFragment1 extends Fragment {
         boolean status = true;
 
         ArrayList<User> waitList = new ArrayList<>();
-        Map<User, Boolean> invited = new HashMap<>();
+        Map<String, Boolean> invited = new HashMap<>();
         ArrayList<User> registered = new ArrayList<>();
 
         if (wantMaxWaitList) {
@@ -245,6 +273,7 @@ public class CreateEventFragment1 extends Fragment {
                     status, regStart, regEnd, eventStart, eventEnd, timeStart, timeEnd,
                     maxAttendees, wantGeoLocation, waitList, invited,
                     registered, wantRandomSelect);
+
             dbFunctions.addEventDB(event);
             events.add(event);
             myEventsAdapter.notifyDataSetChanged();

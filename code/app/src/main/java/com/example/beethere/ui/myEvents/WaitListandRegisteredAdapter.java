@@ -42,13 +42,7 @@ public class WaitListandRegisteredAdapter extends ArrayAdapter<User>{
 
         User user = users.get(position);
         TextView name =  view.findViewById(R.id.name);
-        //ImageView profilePicture =  view.findViewById(R.id.profilePicture);
-
         name.setText(user.getName());
-//        String posterPath = user.getProfilePicture();
-//        profilePicture.setImageURI(Uri.parse(posterPath));
-        //TODO get profile picture set up
-
         return view;
     }
 

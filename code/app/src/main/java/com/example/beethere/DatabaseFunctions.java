@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class DatabaseFunctions {
@@ -31,7 +32,7 @@ public class DatabaseFunctions {
 
 
     public void addEventDB(Event event){
-        CollectionReference events = db.collection("Events");
+        CollectionReference events = db.collection("events");
         DocumentReference docref = events.document(event.getEventID());
         docref.set(event).addOnSuccessListener(unused -> Log.d("AddEvent", "Event created successfully"))
                 .addOnFailureListener(fail -> Log.d(TAG, "Error creating account"));
@@ -134,7 +135,7 @@ public class DatabaseFunctions {
      * @param callback Database Callback to return the database
      */
     public void getCreatedEventsDB(User waitlistID, DatabaseCallback<ArrayList<Event>> callback){
-        CollectionReference events = db.collection("Events");
+        CollectionReference events = db.collection("events");
         ArrayList<Event> eventArrayList = new ArrayList<>();
 
         events.get().addOnCompleteListener(task -> {
@@ -142,7 +143,7 @@ public class DatabaseFunctions {
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     Event event = document.toObject(Event.class);
                     // Assuming 'event.getWaitlistUserIds()' returns your ArrayList<String>
-                    if (event.getOrganizer() == waitlistID) {
+                    if (Objects.equals(event.getOrganizer().getDeviceid(), waitlistID.getDeviceid())) {
                         eventArrayList.add(event);
                     }
                 }

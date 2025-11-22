@@ -100,6 +100,16 @@
                     app:layout_constraintStart_toStartOf="parent"
                     tools:srcCompat="@tools:sample/avatars" />
 
+                <Button
+                    android:id="@+id/editPosterButtom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    app:layout_constraintStart_toEndOf="@id/poster"
+                    app:layout_constraintTop_toBottomOf="@id/posterHeader"
+                    android:text="edit"
+                    />
+
                 <TextView
                     android:id="@+id/regHeader"
                     app:layout_constraintTop_toBottomOf="@id/poster"
@@ -315,95 +325,6 @@
                     android:background="@drawable/text_input_background"
                     android:hint="Enter Description Here: " />
 
-                <TextView
-                    android:id="@+id/geoLocation"
-                    android:layout_width="220sp"
-                    android:layout_height="18sp"
-                    android:layout_margin="10dp"
-                    app:layout_constraintTop_toBottomOf="@id/description"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:fontFamily="@font/work_sans_medium"
-                    android:textColor="@color/dark_brown"
-                    android:text="Geolocation of entrants required: " />
-
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/geoLocSwitch"
-                    android:layout_width="42dp"
-                    android:layout_height="18dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="70dp"
-                    android:layout_marginBottom="10dp"
-                    app:layout_constraintStart_toEndOf="@id/geoLocation"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/description"
-                    android:text="" />
-
-                <TextView
-                    android:id="@+id/geoLocWarn"
-                    android:layout_width="350dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    app:layout_constraintTop_toBottomOf="@id/geoLocation"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginTop="5dp"
-                    android:fontFamily="@font/work_sans_bold"
-                    android:textColor="@color/dark_brown"
-                    android:text="When on, the locations of all attendees and wait-listed participants are stored based on where they were when they signed up. This information is visible only to you. You cannot change this later." />
-
-                <TextView
-                    android:id="@+id/randomSelect"
-                    android:layout_width="290sp"
-                    android:layout_height="50sp"
-                    android:layout_margin="10dp"
-                    app:layout_constraintTop_toBottomOf="@id/geoLocWarn"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:fontFamily="@font/work_sans_medium"
-                    android:textColor="@color/dark_brown"
-                    android:text="Randomly select from wait-list if invited users declines: " />
-
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/randomSelectSwitch"
-                    android:layout_width="42dp"
-                    android:layout_height="18dp"
-                    android:layout_margin="10dp"
-                    app:layout_constraintStart_toEndOf="@id/randomSelect"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/geoLocWarn"
-                    android:text="" />
-
-                <TextView
-                    android:id="@+id/waitListMax"
-                    android:layout_width="220sp"
-                    android:layout_height="18sp"
-                    android:layout_margin="10dp"
-                    app:layout_constraintTop_toBottomOf="@id/randomSelect"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:fontFamily="@font/work_sans_medium"
-                    android:textColor="@color/dark_brown"
-                    android:text="Max Wait-list Entrants: " />
-
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/maxWaitSwitch"
-                    android:layout_width="42dp"
-                    android:layout_height="18dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginStart="70dp"
-                    app:layout_constraintStart_toEndOf="@id/waitListMax"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/randomSelectSwitch"
-                    android:text="" />
-
-                <EditText
-                    android:layout_width="130dp"
-                    android:layout_height="25dp"
-                    android:textSize="12sp"
-                    android:id="@+id/maxWaitFill"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/text_input_background"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/waitListMax"
-                    android:hint="Enter Max: " />
 
                 <Button
                     android:id="@+id/completeButton"
@@ -412,7 +333,7 @@
                     android:layout_margin="10dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/maxWaitFill"
+                    app:layout_constraintTop_toBottomOf="@id/description"
                     android:layout_weight="1"
                     android:text="Complete" />
 
@@ -421,7 +342,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/red"
                     android:id="@+id/errorMessage"
-                    app:layout_constraintTop_toBottomOf="@id/maxWaitFill"
+                    app:layout_constraintTop_toBottomOf="@id/description"
                     app:layout_constraintEnd_toStartOf="@id/completeButton"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -439,7 +360,6 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
-
 
         </LinearLayout>
 

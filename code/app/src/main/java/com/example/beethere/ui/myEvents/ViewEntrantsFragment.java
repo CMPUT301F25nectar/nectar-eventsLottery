@@ -26,7 +26,7 @@ public class ViewEntrantsFragment extends Fragment {
     private WaitListandRegisteredAdapter waitListandRegisteredAdapter;
 
     private ArrayList<User> waitList;
-    private Map<User, Boolean> invited;
+    private Map<String, Boolean> invited;
     private ArrayList<User> registered;
 
     private String eventID;

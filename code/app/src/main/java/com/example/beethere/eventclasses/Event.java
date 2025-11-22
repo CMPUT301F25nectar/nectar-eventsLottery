@@ -15,7 +15,6 @@ public class Event {
     private String eventID;
 
     private String posterPath;
-    private int qrCode;
 
     private Boolean status; //status on if the event is still active or not
 
@@ -35,9 +34,11 @@ public class Event {
 
 //    private UserListManager entrantList;
     private ArrayList<User> waitList;
-    private Map<User, Boolean> invited;
+    private Map<String, Boolean> invited;
     private ArrayList<User> registered;
 
+    public Event() {
+    }
 
     /**
      *
@@ -57,10 +58,11 @@ public class Event {
      * @param autoRandomSelection boolean, if those in the waiting list should be selected on invitees cancellation
      */
 
+
     public Event(User organizer, String eventID, String title, String description, String posterPath,
                  Boolean status, String regStart, String regEnd, String eventDateStart,
                  String eventDateEnd, String eventTimeStart, String eventTimeEnd,
-                 int entrantMax, Boolean getLocation, ArrayList<User> waitList, Map<User, Boolean> invited,
+                 int entrantMax, Boolean getLocation, ArrayList<User> waitList, Map<String, Boolean> invited,
                  ArrayList<User> registered, Boolean autoRandomSelection) {
         this.organizer = organizer;
         this.eventID = eventID;
@@ -85,7 +87,7 @@ public class Event {
     public Event(User organizer, String eventID, String title, String description, String posterPath,
                  Boolean status,String regStart, String regEnd, String eventDateStart,
                  String eventDateEnd, String eventTimeStart, String eventTimeEnd,
-                 int entrantMax, Boolean getLocation, ArrayList<User> waitList, Map<User, Boolean> invited,
+                 int entrantMax, Boolean getLocation, ArrayList<User> waitList, Map<String, Boolean> invited,
                  ArrayList<User> registered, Boolean autoRandomSelection, int maxWaitlist) {
         this.organizer = organizer;
         this.eventID = eventID;
@@ -244,11 +246,11 @@ public class Event {
         this.maxWaitlist = maxWaitlist;
     }
 
-    public Map<User, Boolean> getInvited() {
+    public Map<String, Boolean> getInvited() {
         return invited;
     }
 
-    public void setInvited(Map<User, Boolean> invited) {
+    public void setInvited(Map<String, Boolean> invited) {
         this.invited = invited;
     }
 

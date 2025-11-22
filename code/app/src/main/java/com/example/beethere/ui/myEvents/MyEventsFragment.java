@@ -35,7 +35,8 @@ public class MyEventsFragment extends Fragment {
 
     private DatabaseFunctions dbFunctions = new DatabaseFunctions();
 
-    private TextView noEventsMessage;
+    private TextView noEventsMessage1;
+    private TextView noEventsMessage2;
     private ListView eventsListView;
 
     @Override
@@ -45,7 +46,8 @@ public class MyEventsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_my_events, container, false);
 
         Button createEventButton = view.findViewById(R.id.createEventButton);
-        noEventsMessage = view.findViewById(R.id.noEventsMessage);
+        noEventsMessage1 = view.findViewById(R.id.noEventsMessage1);
+        noEventsMessage2 = view.findViewById(R.id.noEventsMessage2);
         eventsListView = view.findViewById(R.id.myEventsList);
 
         adapter = new MyEventsAdapter(getContext(), eventList);
@@ -90,9 +92,11 @@ public class MyEventsFragment extends Fragment {
                 adapter.notifyDataSetChanged();
 
                 if (eventList.isEmpty()) {
-                    noEventsMessage.setVisibility(View.VISIBLE);
+                    noEventsMessage1.setVisibility(View.VISIBLE);
+                    noEventsMessage2.setVisibility(View.VISIBLE);
                 } else {
-                    noEventsMessage.setVisibility(View.GONE);
+                    noEventsMessage1.setVisibility(View.GONE);
+                    noEventsMessage2.setVisibility(View.GONE);
                 }
             }
 
