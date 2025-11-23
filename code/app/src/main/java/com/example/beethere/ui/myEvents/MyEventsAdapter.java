@@ -2,6 +2,7 @@ package com.example.beethere.ui.myEvents;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,7 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
                 : convertView;
 
         Event event = getItem(position);
+        if (event == null) return view; // safety check
 
         TextView title = view.findViewById(R.id.myEventsTitle);
         ImageView poster = view.findViewById(R.id.myEventsPoster);
@@ -46,7 +48,9 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
         ImageButton optionsMenuButton = view.findViewById(R.id.optionsMenuButton);
 
         title.setText(event.getTitle());
-        poster.setImageURI(Uri.parse(event.getPosterPath()));
+        if (event.getPosterPath() != null) {
+            poster.setImageURI(Uri.parse(event.getPosterPath()));
+        }
         enrollStart.setText(event.getRegStart());
         enrollEnd.setText(event.getRegEnd());
 
@@ -74,8 +78,16 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
                     }
                     return true;
                 } else if (id == R.id.entrants) {
-                    NavController nav = Navigation.findNavController(view);
-                    nav.navigate(R.id.myEventsToViewEntrants);
+                    if (getContext() instanceof AppCompatActivity) {
+                        AppCompatActivity activity = (AppCompatActivity) getContext();
+                        NavController nav = Navigation.findNavController(
+                                activity.findViewById(R.id.nav_host_fragment)
+                        );
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString("eventID", event.getEventID());
+                        nav.navigate(R.id.myEventsToViewEntrants, bundle);
+                    }
                     return true;
                 }
                 return false;
@@ -98,6 +110,7 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
         }
     }
 }
+
 
 
 

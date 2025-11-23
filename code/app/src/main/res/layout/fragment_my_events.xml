@@ -41,6 +41,21 @@
         android:text="Create Event" />
 
     <TextView
+        android:id="@+id/searchNoEventsMessage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="No events with \nthat title..."
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/myEventsSearch"
+        android:textAlignment="center"
+        android:layout_marginTop="150dp"
+        android:textSize="25sp"
+        android:visibility="invisible"
+        android:fontFamily="@font/space_mono_bold"
+        android:textColor="@color/dark_brown" />
+
+    <TextView
         android:id="@+id/noEventsMessage1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -50,7 +65,7 @@
         app:layout_constraintTop_toBottomOf="@id/myEventsSearch"
         app:layout_constraintBottom_toTopOf="@id/noEventsMessage2"
         android:textAlignment="center"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="150dp"
         android:textSize="25sp"
         android:visibility="invisible"
         android:fontFamily="@font/space_mono_bold"
@@ -66,7 +81,7 @@
         app:layout_constraintTop_toBottomOf="@id/noEventsMessage1"
         app:layout_constraintBottom_toBottomOf="parent"
         android:textAlignment="center"
-        android:layout_marginBottom="250dp"
+        android:layout_marginBottom="300dp"
         android:textSize="25sp"
         android:fontFamily="@font/space_mono_bold"
         android:textColor="@color/yellow"
@@ -83,7 +98,7 @@
         app:layout_constraintStart_toStartOf="parent">
     </ListView>
 
-    <EditText
+    <SearchView
         android:id="@+id/myEventsSearch"
         android:layout_width="375dp"
         android:layout_height="37dp"
@@ -91,12 +106,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/myEvents"
+        android:queryHint="Search"
+        android:iconifiedByDefault="false"
+        android:closeIcon="@null"
+        android:searchIcon="@null"
+        android:submitBackground="@null"
+        android:focusable="true"
+        android:layout_marginEnd="8dp"
         android:background="@drawable/search_bar"
-        android:paddingStart="15dp"
-        android:hint="Search"
-        android:fontFamily="@font/work_sans"
         android:textColor="@color/dark_brown"
-        app:queryBackground="@android:color/transparent"/>
+        android:queryBackground="@null"/>
 
     <FrameLayout
         android:id="@+id/create_event_container1"
