@@ -50,7 +50,6 @@ public class MyEventsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_my_events, container, false);
 
-        // --- Initialize all views ---
         Button createEventButton = view.findViewById(R.id.createEventButton);
         noEventsMessage1 = view.findViewById(R.id.noEventsMessage1);
         noEventsMessage2 = view.findViewById(R.id.noEventsMessage2);
@@ -58,11 +57,9 @@ public class MyEventsFragment extends Fragment {
         eventsListView = view.findViewById(R.id.myEventsList);
         searchView = view.findViewById(R.id.myEventsSearch);
 
-        // --- Set up adapter ---
         adapter = new MyEventsAdapter(getContext(), displayedList);
         eventsListView.setAdapter(adapter);
 
-        // --- Get device ID and current user ---
         deviceIDViewModel = new ViewModelProvider(requireActivity()).get(DeviceIDViewModel.class);
         String deviceID = deviceIDViewModel.getDeviceID();
 
@@ -75,7 +72,6 @@ public class MyEventsFragment extends Fragment {
                     loadCreatedEvents();
                 });
 
-        // --- Create event button behavior ---
         createEventButton.setOnClickListener(v -> {
             NavController nav = Navigation.findNavController(view);
 
@@ -88,7 +84,6 @@ public class MyEventsFragment extends Fragment {
             }
         });
 
-        // --- Search behavior ---
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -119,10 +114,8 @@ public class MyEventsFragment extends Fragment {
                 displayedList.addAll(eventList);
                 adapter.notifyDataSetChanged();
 
-                // Track if user has created any events
                 hasAnyEvents = !eventList.isEmpty();
 
-                // Update messages
                 updateNoEventsMessage();
             }
 

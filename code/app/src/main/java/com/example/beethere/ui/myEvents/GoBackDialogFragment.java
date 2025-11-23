@@ -57,7 +57,7 @@ public class GoBackDialogFragment extends DialogFragment {
 
         confirm.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onConfirmGoBack(); // notify parent
+                listener.onConfirmGoBack();
             }
             dismiss();
         });

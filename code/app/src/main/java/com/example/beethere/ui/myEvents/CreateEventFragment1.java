@@ -130,15 +130,12 @@ public class CreateEventFragment1 extends Fragment {
 
         eventPoster.setOnClickListener(v -> choosePoster());
 
-        // ------------------ DATE PICKER ------------------
         View.OnClickListener dateClickListener = v -> showDatePicker((EditText) v);
         regStart.setOnClickListener(dateClickListener);
         regEnd.setOnClickListener(dateClickListener);
         eventStart.setOnClickListener(dateClickListener);
         eventEnd.setOnClickListener(dateClickListener);
-        // -------------------------------------------------
 
-        // ------------------ TIME PICKER ------------------
         timeStart.setOnClickListener(v -> {
             TimePickerFragment dialog = new TimePickerFragment(timeStart);
             dialog.show(getParentFragmentManager(), "timePickerStart");
@@ -148,7 +145,6 @@ public class CreateEventFragment1 extends Fragment {
             TimePickerFragment dialog = new TimePickerFragment(timeEnd);
             dialog.show(getParentFragmentManager(), "timePickerEnd");
         });
-        // -------------------------------------------------
 
         maxWaitList.setVisibility(maxWaitListSwitch.isChecked() ? View.VISIBLE : View.GONE);
 

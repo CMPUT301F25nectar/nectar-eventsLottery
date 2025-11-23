@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -39,7 +40,8 @@ public class ViewEntrantsFragment extends Fragment {
     private Event event;
 
     private ListView entrantList;
-    private Button waitListButton, invitedButton, registeredButton, backButton;
+    private Button waitListButton, invitedButton, registeredButton
+    private ImageButton backButton;
 
     public ViewEntrantsFragment() {}
 
@@ -65,19 +67,19 @@ public class ViewEntrantsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_my_events_entrants, container, false);
 
-        // UI elements
+
         waitListButton = view.findViewById(R.id.button_entrant_waitlist);
         invitedButton = view.findViewById(R.id.button_entrant_invited);
         registeredButton = view.findViewById(R.id.button_entrant_registered);
         entrantList = view.findViewById(R.id.event_entrant_list);
         backButton = view.findViewById(R.id.button_back_to_prev);
 
-        // Create adapters with empty lists
+
         waitListAdapter = new WaitListandRegisteredAdapter(getContext(), waitList);
         registeredAdapter = new WaitListandRegisteredAdapter(getContext(), registered);
         invitedAdapter = new InvitedAdapter(getContext(), invited);
 
-        // Button selector
+
         Button[] buttons = {waitListButton, invitedButton, registeredButton};
         View.OnClickListener selectionListener = v -> {
             for (Button b : buttons) b.setSelected(false);
@@ -92,7 +94,6 @@ public class ViewEntrantsFragment extends Fragment {
             }
         };
 
-        // Back button navigation
         backButton.setOnClickListener(v -> {
             NavController nav = Navigation.findNavController(view);
             nav.navigate(R.id.ViewEntrantsToMyEvents);
@@ -100,11 +101,10 @@ public class ViewEntrantsFragment extends Fragment {
 
         for (Button b : buttons) b.setOnClickListener(selectionListener);
 
-        // Default selected = waitlist
+        // Default selected is waitlist
         waitListButton.setSelected(true);
         entrantList.setAdapter(waitListAdapter);
 
-        // Load Firestore data
         FirebaseFirestore.getInstance()
                 .collection("events")
                 .document(eventID)
@@ -115,7 +115,6 @@ public class ViewEntrantsFragment extends Fragment {
 
                         if (event != null) {
 
-                            // Update lists correctly
                             waitList.clear();
                             waitList.addAll(event.getWaitList() != null ? event.getWaitList() : new ArrayList<>());
 
@@ -125,7 +124,6 @@ public class ViewEntrantsFragment extends Fragment {
                             registered.clear();
                             registered.addAll(event.getRegistered() != null ? event.getRegistered() : new ArrayList<>());
 
-                            // Notify adapters
                             waitListAdapter.notifyDataSetChanged();
                             registeredAdapter.notifyDataSetChanged();
                             invitedAdapter.notifyDataSetChanged();

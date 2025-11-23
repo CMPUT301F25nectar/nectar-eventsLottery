@@ -64,7 +64,7 @@ public class ConfirmDeleteFragment extends DialogFragment {
                     .delete()
                     .addOnSuccessListener(aVoid -> {
                         if (listener != null) {
-                            listener.onEventDeleted(eventID); // notify adapter
+                            listener.onEventDeleted(eventID);
                         }
                         dismiss();
                     })

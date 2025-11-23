@@ -39,7 +39,7 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
                 : convertView;
 
         Event event = getItem(position);
-        if (event == null) return view; // safety check
+        if (event == null) return view;
 
         TextView title = view.findViewById(R.id.myEventsTitle);
         ImageView poster = view.findViewById(R.id.myEventsPoster);
