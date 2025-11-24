@@ -1,8 +1,11 @@
 package com.example.beethere.ui.notifications;
 
 
+import com.example.beethere.DatabaseCallback;
+import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.device.DeviceId;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.beethere.R;
+import com.example.beethere.eventclasses.Event;
 import com.example.beethere.notifications_classes.Notification;
 import com.example.beethere.notifications_classes.NotificationHandler;
 
@@ -25,7 +29,7 @@ public class NotificationsFragment extends Fragment {
     private ListView notificationsList;
     private NotificationsAdapter adapter;
     private ArrayList<Notification> notificationItems;
-    private NotificationHandler notificationHandler;
+    private DatabaseFunctions dbfunctions;
     private String currentUserDeviceid;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -48,7 +52,7 @@ public class NotificationsFragment extends Fragment {
         });
         notificationsList.setAdapter(adapter);
         currentUserDeviceid = getDeviceid();
-        notificationHandler = new NotificationHandler();
+        dbfunctions = new DatabaseFunctions();
 
         loadUserNotifications();
 //        notificationsList.setOnItemClickListener((parent, view1, position, id) -> {
@@ -61,29 +65,28 @@ public class NotificationsFragment extends Fragment {
     private void loadUserNotifications(){
         String deviceId = DeviceId.get(requireContext());
 
-        notificationHandler.setupNotificationListener(deviceId, new NotificationHandler.NotificationCallback() {
+        DatabaseCallback<List<Notification>> callback = new DatabaseCallback<>() {
             @Override
-            public void onSuccess(List<Notification> notifications) {
+            public void onCallback(List<Notification> result) {
                 notificationItems.clear();
-                notificationItems.addAll(notifications);
-
-//                for (Notification notif : notifications){
+                notificationItems.addAll(result);
+                //                for (Notification notif : notifications){
 //                    String text = notif.getEventName() + "\n" + notif.getMessage() + "\n" + getTimeAgo(notif.getTimestamp());
 //                    notificationItems.add(text);
 //                }
-
                 adapter.notifyDataSetChanged();
 
-                if(notifications.isEmpty()){
+                if(result.isEmpty()){
                     Toast.makeText(requireContext(), "No notifications yet!", Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
-            public void onError(String error) {
-                Toast.makeText(requireContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
+            public void onError(Exception e) {
+                Log.d("AllEvents", "Notifications fragment error getting notifications from database");
             }
-        });
+        };
+
+        dbfunctions.getNotifsDB(deviceId, callback);
     }
 
 

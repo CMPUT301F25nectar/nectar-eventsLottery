@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.device.DeviceId;
 import com.example.beethere.R;
 import com.example.beethere.User;
@@ -24,6 +25,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class ProfileFragment extends Fragment {
     private EditText firstname, lastname, emailid, phone;
     private TextView userdeviceId;
+    DatabaseFunctions dbFunctions = new DatabaseFunctions();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -83,51 +85,20 @@ public class ProfileFragment extends Fragment {
             return;
         }
         String fullname = (first) + " " + (last);
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(deviceID)
-                .get()
-                .addOnSuccessListener(snap->{
-                    Boolean admincurrent = null;
-                    Boolean organizercurrent = null;
-                    if(snap.exists()){
-                        User exists = snap.toObject(User.class);
-                        if (exists!= null) {
-                            admincurrent = exists.getAdmin();
-                            organizercurrent=exists.getOrganizer();
-                        }
-                    }
-                    User u = new User();
-                    u.setName(fullname);
-                    u.setEmail(email);
-                    u.setPhone(phonenumber);
-                    u.setDeviceid(deviceID);
-                    if (admincurrent!=null) u.setAdmin(admincurrent);
-                    else u.setAdmin(false);
-                    if (organizercurrent!=null) u.setOrganizer(organizercurrent);
-                    else u.setOrganizer(true);
-                    FirebaseFirestore.getInstance().collection("users")
-                            .document(deviceID)
-                            .set(u)
-                            .addOnSuccessListener(unused->
-                                Toast.makeText(requireContext(), "Saved updates!", Toast.LENGTH_SHORT).show()
-                            )
-                            .addOnFailureListener(fail-> Toast.makeText(requireContext(), "failed to save",Toast.LENGTH_LONG).show()
-                            );
-                })
-                .addOnFailureListener(fail -> Toast.makeText(requireContext(), "Failed updating profile"+ fail.getMessage(), Toast.LENGTH_SHORT).show());
+
+        User u = new User();
+        u.setName(fullname);
+        u.setEmail(email);
+        u.setPhone(phonenumber);
+        u.setDeviceid(deviceID);
+        //issue here
+        u.setAdmin(false);
+        u.setOrganizer(true);
+        dbFunctions.addUserDB(u);
     }
     private void deleteprofile() {
         String deviceID = DeviceId.get(requireContext());
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(deviceID)
-                .delete()
-                .addOnSuccessListener(unused -> {
-                    Toast.makeText(requireContext(), "Deleted Profile", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(fail -> Toast.makeText(requireContext(), "Failed deleting profile", Toast.LENGTH_SHORT).show()
-                );
+        dbFunctions.deleteUserDB(deviceID);
     }
 
 }
