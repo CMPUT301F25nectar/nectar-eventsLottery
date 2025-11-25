@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() {
         NavController navController = ((NavHostFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.nav_host_main))
+                .findFragmentById(R.id.nav_host_fragment))
                 .getNavController();
         return NavigationUI.navigateUp(navController, (AppBarConfiguration) null) ||
                 super.onSupportNavigateUp();
