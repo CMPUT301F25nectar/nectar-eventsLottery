@@ -49,7 +49,7 @@ public class ProfileFragment extends Fragment {
         //notification settingss TO DO
         //notificationsSettings.setOnClickListener(v ->
                // NavHostFragment.findNavController(ProfileFragment.this)
-                   //     .navigate(R.id.personalSettingsFragment)
+                   //     .navigate(R.id.notificationsfragmentname)
         //);
         return view;
     }
