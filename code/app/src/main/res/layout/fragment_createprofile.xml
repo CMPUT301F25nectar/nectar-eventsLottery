@@ -1,50 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
     android:padding="20dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ui.profile.ProfileFragment">
 
-    <EditText
-        android:id="@+id/entername"
-        android:hint="First name Last name"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="190dp"
+        android:layout_height="95dp"
+        android:layout_marginTop="10dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/beetherelogo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/createaccount"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/work_sans_bold"
+        android:text="Create an account"
+        android:textColor="@color/dark_brown"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logo" />
+
+    <TextView
+        android:id="@+id/createaccountsubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter your email to sign up for this app"
+        android:textSize="15sp"
+        android:fontFamily="@font/work_sans"
+        android:textColor="@color/gray"
+        app:layout_constraintTop_toBottomOf="@id/createaccount"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="5dp"
         />
+    <LinearLayout
+        android:id="@+id/name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/createaccountsubtitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="30dp"
+        >
+        <EditText
+            android:id="@+id/enterfirstname"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_weight="1"
+            android:hint="Name"
+            android:background="@drawable/text_input_background"
+            android:fontFamily="@font/work_sans"
+            android:textColor="@color/dark_brown"
+            android:textColorHint="@color/gray"
+            android:inputType="textPersonName"
+            />
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="0dp"
+            />
+        <EditText
+            android:id="@+id/enterlastname"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_weight="1"
+            android:hint="Last Name"
+            android:background="@drawable/text_input_background"
+            android:fontFamily="@font/work_sans"
+            android:textColor="@color/dark_brown"
+            android:textColorHint="@color/gray"
+            android:inputType="textPersonName"
+            />
+    </LinearLayout>
     <EditText
         android:id="@+id/enteremail"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
         android:hint="email@domain.com"
+        android:background="@drawable/text_input_background"
+        android:fontFamily="@font/work_sans"
+        android:textColor="@color/dark_brown"
+        android:textColorHint="@color/gray"
         android:inputType="textEmailAddress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp"
         />
     <EditText
         android:id="@+id/enterphone"
-        android:hint="Phone number (optional)"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:hint="Phone Number (Optional)"
+        android:background="@drawable/text_input_background"
+        android:fontFamily="@font/work_sans"
+        android:textColor="@color/dark_brown"
+        android:textColorHint="@color/gray"
         android:inputType="phone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
-    <TextView
-        android:id="@+id/DeviceId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/device_id"
-        android:padding="12dp"
-        />
-    <TextView
-        android:id="@+id/is_admin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text= "Admin"
-        android:textStyle="bold"
-        />
-    <TextView
-        android:id="@+id/is_organizer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Organizer"
-        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/enteremail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp"
         />
 
-</LinearLayout>
+    <Button
+        android:id="@+id/signup_button"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/button_dark_brown"
+        android:backgroundTint="@null"
+        android:text="Sign up"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@id/enterphone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

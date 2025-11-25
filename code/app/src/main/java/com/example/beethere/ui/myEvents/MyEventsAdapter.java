@@ -1,6 +1,7 @@
 package com.example.beethere.ui.myEvents;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,18 +14,21 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.beethere.R;
 import com.example.beethere.eventclasses.Event;
+import com.example.beethere.eventclasses.eventDetails.QRCodeFragment;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class MyEventsAdapter extends ArrayAdapter<Event> {
 
-    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
     ArrayList<Event> events;
 
     public MyEventsAdapter(Context context, ArrayList<Event> events) {
@@ -48,6 +52,7 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
         ImageView poster = view.findViewById(R.id.myEventsPoster);
         TextView enrollStart = view.findViewById(R.id.enrollStart);
         TextView enrollEnd = view.findViewById(R.id.enrollEnd);
+
         ImageButton optionsMenuButton = view.findViewById(R.id.optionsMenuButton);
 
         title.setText(event.getTitle());
@@ -55,8 +60,8 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
 
         poster.setImageURI(Uri.parse(posterPath));
         title.setText(event.getTitle());
-        enrollStart.setText(event.getRegStart().toString());
-        enrollEnd.setText(event.getRegEnd().toString());
+        enrollStart.setText(event.getRegStart());
+        enrollEnd.setText(event.getRegEnd());
 
 
         // Set options menu
@@ -73,10 +78,16 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
                     // handle delete
                     return true;
                 } else if (id == R.id.qrcode) {
-                    // handle QR code
+                    QRCodeFragment qrFragment = QRCodeFragment.newInstance(event.getEventID());
+
+                    if (getContext() instanceof AppCompatActivity) {
+                        AppCompatActivity activity = (AppCompatActivity) getContext();
+                        qrFragment.show(activity.getSupportFragmentManager(), "qrCodeDialog");
+                    }
                     return true;
                 } else if (id == R.id.entrants) {
-                    // handle entrants
+                    NavController nav = Navigation.findNavController(view);
+                    nav.navigate(R.id.myEventsToViewEntrants);
                     return true;
                 }
                 return false;
