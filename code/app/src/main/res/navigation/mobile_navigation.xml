@@ -80,5 +80,9 @@
         android:label="View Entrants"
         tools:layout="@layout/fragment_my_events_entrants">
     </fragment>
+    <fragment
+        android:id="@+id/personalSettingsFragment"
+        android:name="com.example.beethere.ui.profile.PersonalSettingsFragment"
+        android:label="PersonalSettingsFragment" />
 
 </navigation>

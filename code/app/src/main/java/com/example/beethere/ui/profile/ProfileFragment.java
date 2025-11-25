@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.beethere.device.DeviceId;
 import com.example.beethere.R;
@@ -23,7 +24,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
  */
 public class ProfileFragment extends Fragment {
     private EditText firstname, lastname, emailid, phone;
-    private TextView userdeviceId;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -31,20 +31,26 @@ public class ProfileFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        firstname = view.findViewById(R.id.first_name);
-        lastname = view.findViewById(R.id.last_name);
-        emailid = view.findViewById(R.id.email);
-        phone = view.findViewById(R.id.phone);
-        userdeviceId = view.findViewById(R.id.DeviceId);
+        firstname = view.findViewById(R.id.firstname);
+        lastname = view.findViewById(R.id.lastname);
+        emailid = view.findViewById(R.id.edit_email);
+        phone = view.findViewById(R.id.edit_phone);
 
-        Button btnsave = view.findViewById(R.id.savebtn);
-        Button btndelete = view.findViewById(R.id.deletebtn);
-//device id a unique identifier
-        String deviceID = DeviceId.get(requireContext());
-        userdeviceId.setText("User device id: " + deviceID);
+        Button btnsave = view.findViewById(R.id.button_save_profile);
+        TextView personalSettings = view.findViewById(R.id.row_personal_settings);
+        TextView notificationsSettings = view.findViewById(R.id.row_notification_settings);
         profile();
         btnsave.setOnClickListener(v -> saveprofile());
-        btndelete.setOnClickListener(v -> deleteprofile());
+        //go to personal settings screen
+        personalSettings.setOnClickListener(v ->
+                NavHostFragment.findNavController(ProfileFragment.this)
+                        .navigate(R.id.personalSettingsFragment)
+        );
+        //notification settingss TO DO
+        //notificationsSettings.setOnClickListener(v ->
+               // NavHostFragment.findNavController(ProfileFragment.this)
+                   //     .navigate(R.id.personalSettingsFragment)
+        //);
         return view;
     }
 //gets profile information for a device
@@ -55,9 +61,16 @@ public class ProfileFragment extends Fragment {
                         .document(deviceID)
                         .get()
                                 .addOnSuccessListener((DocumentSnapshot snap)->{
+                                    if(!snap.exists()){
+                                        clear();//clear fields
+                                        return;
+                                    }
                                     //return nothing, if the profile doesnt exist
                                     User u = snap.toObject(User.class);//user class
-                                    if (u==null) return;
+                                    if (u==null) {
+                                        clear();
+                                        return;
+                                    }
                                     //split full name into first and last
                                     String fullname = u.getName();
                                     if (fullname!=null){
