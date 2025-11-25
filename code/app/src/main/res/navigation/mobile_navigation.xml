@@ -85,5 +85,9 @@
             android:id="@+id/ViewEntrantsToMyEvents"
             app:destination="@id/navigation_myEvents" />
     </fragment>
+    <fragment
+        android:id="@+id/personalSettingsFragment"
+        android:name="com.example.beethere.ui.profile.PersonalSettingsFragment"
+        android:label="PersonalSettingsFragment" />
 
 </navigation>

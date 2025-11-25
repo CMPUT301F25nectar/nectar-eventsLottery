@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.device.DeviceId;
@@ -33,23 +34,29 @@ public class ProfileFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        firstname = view.findViewById(R.id.first_name);
-        lastname = view.findViewById(R.id.last_name);
-        emailid = view.findViewById(R.id.email);
-        phone = view.findViewById(R.id.phone);
-        userdeviceId = view.findViewById(R.id.DeviceId);
+        firstname = view.findViewById(R.id.firstname);
+        lastname = view.findViewById(R.id.lastname);
+        emailid = view.findViewById(R.id.edit_email);
+        phone = view.findViewById(R.id.edit_phone);
 
-        Button btnsave = view.findViewById(R.id.savebtn);
-        Button btndelete = view.findViewById(R.id.deletebtn);
-
-        String deviceID = DeviceId.get(requireContext());
-        userdeviceId.setText("User device id: " + deviceID);
+        Button btnsave = view.findViewById(R.id.button_save_profile);
+        TextView personalSettings = view.findViewById(R.id.row_personal_settings);
+        TextView notificationsSettings = view.findViewById(R.id.row_notification_settings);
         profile();
         btnsave.setOnClickListener(v -> saveprofile());
-        btndelete.setOnClickListener(v -> deleteprofile());
+        //go to personal settings screen
+        personalSettings.setOnClickListener(v ->
+                NavHostFragment.findNavController(ProfileFragment.this)
+                        .navigate(R.id.personalSettingsFragment)
+        );
+        //notification settingss TO DO
+        //notificationsSettings.setOnClickListener(v ->
+               // NavHostFragment.findNavController(ProfileFragment.this)
+                   //     .navigate(R.id.notificationsfragmentname)
+        //);
         return view;
     }
-
+//gets profile information for a device
     private void profile(){
         String deviceID = DeviceId.get(requireContext());
         FirebaseFirestore.getInstance()
@@ -57,8 +64,17 @@ public class ProfileFragment extends Fragment {
                         .document(deviceID)
                         .get()
                                 .addOnSuccessListener((DocumentSnapshot snap)->{
+                                    if(!snap.exists()){
+                                        clear();//clear fields
+                                        return;
+                                    }
+                                    //return nothing, if the profile doesnt exist
                                     User u = snap.toObject(User.class);//user class
-                                    if (u==null) return;
+                                    if (u==null) {
+                                        clear();
+                                        return;
+                                    }
+                                    //split full name into first and last
                                     String fullname = u.getName();
                                     if (fullname!=null){
                                         String[] split = fullname.split(" ",2);
@@ -70,16 +86,22 @@ public class ProfileFragment extends Fragment {
                                 }
                                 );
     }
+
+    /**
+     * saving profile to firestore
+     */
     private void saveprofile() {
         String deviceID = DeviceId.get(requireContext());
         String first = firstname.getText().toString();
         String last = lastname.getText().toString();
         String email = emailid.getText().toString();
         String phonenumber = phone.getText().toString();
+        //name is a mandatory field
         if (first.isEmpty() && last.isEmpty()){
             Toast.makeText(requireContext(), "Please enter name", Toast.LENGTH_SHORT).show();
             return;
         }
+        //email is a mandatory field
         if (email.isEmpty()){
             Toast.makeText(requireContext(), "Please enter email", Toast.LENGTH_SHORT).show();
             return;
@@ -105,6 +127,9 @@ public class ProfileFragment extends Fragment {
                     u.setEmail(email);
                     u.setPhone(phonenumber);
                     u.setDeviceid(deviceID);
+
+                    //set admin and organizer default flags
+
                     u.setViolation(violationcurrent); //CHANGE MADE HERE
                     if (admincurrent!=null) u.setAdmin(admincurrent);
                     else u.setAdmin(false);
@@ -121,9 +146,26 @@ public class ProfileFragment extends Fragment {
                 })
                 .addOnFailureListener(fail -> Toast.makeText(requireContext(), "Failed updating profile"+ fail.getMessage(), Toast.LENGTH_SHORT).show());
     }
+    //deleting the device's profile and clearing the fields
     private void deleteprofile() {
         String deviceID = DeviceId.get(requireContext());
-        dbFunctions.deleteUserDB(deviceID);
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(deviceID)
+                .delete()
+                .addOnSuccessListener(unused -> {
+                    clear();
+                    Toast.makeText(requireContext(), "Deleted Profile", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(fail -> Toast.makeText(requireContext(), "Failed deleting profile", Toast.LENGTH_SHORT).show()
+                );
+    }
+
+    private void clear() {
+        firstname.setText("");
+        lastname.setText("");
+        emailid.setText("");
+        phone.setText("");
     }
 
 }
