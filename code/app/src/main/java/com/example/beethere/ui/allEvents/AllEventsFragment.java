@@ -74,7 +74,6 @@ public class AllEventsFragment extends Fragment {
                 event.setEvent((Event) parent.getItemAtPosition(position));
             }
         });
-
         loadEvents();
     }
 
