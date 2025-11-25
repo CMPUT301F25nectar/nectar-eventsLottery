@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/ic_launcher_background">
 
-    <!-- Back Button -->
+    
     <ImageButton
         android:id="@+id/back_button"
         android:layout_width="48dp"
@@ -19,7 +19,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Title -->
+
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
@@ -33,7 +33,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/back_button" />
 
-    <!-- Winning Notification Switch -->
+    
     <TextView
         android:id="@+id/winning_label"
         android:layout_width="0dp"
@@ -59,7 +59,7 @@
         app:layout_constraintTop_toTopOf="@id/winning_label"
         app:layout_constraintBottom_toBottomOf="@id/winning_label" />
 
-    <!-- Losing Notification Switch -->
+
     <TextView
         android:id="@+id/losing_label"
         android:layout_width="0dp"
@@ -85,7 +85,7 @@
         app:layout_constraintTop_toTopOf="@id/losing_label"
         app:layout_constraintBottom_toBottomOf="@id/losing_label" />
 
-    <!-- Cancelled Notification Switch -->
+
     <TextView
         android:id="@+id/cancelled_label"
         android:layout_width="0dp"
@@ -111,7 +111,7 @@
         app:layout_constraintTop_toTopOf="@id/cancelled_label"
         app:layout_constraintBottom_toBottomOf="@id/cancelled_label" />
 
-    <!-- Admin Notification Switch -->
+
     <TextView
         android:id="@+id/admin_label"
         android:layout_width="0dp"
