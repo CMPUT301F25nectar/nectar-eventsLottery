@@ -40,7 +40,7 @@ public class ViewEntrantsFragment extends Fragment {
     private Event event;
 
     private ListView entrantList;
-    private Button waitListButton, invitedButton, registeredButton
+    private Button waitListButton, invitedButton, registeredButton;
     private ImageButton backButton;
 
     public ViewEntrantsFragment() {}

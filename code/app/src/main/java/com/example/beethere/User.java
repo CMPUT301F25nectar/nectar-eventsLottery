@@ -4,6 +4,12 @@ package com.example.beethere;
 /**
  * This is a model that defines a user profile for entrant/organizer/admin profile data used across the app.
  */
+
+
+
+
+
+
 public class User {
     private String name;
     private String email;

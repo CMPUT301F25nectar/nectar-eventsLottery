@@ -22,6 +22,7 @@ import com.example.beethere.R;
 import com.example.beethere.User;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.eventclasses.EventDataViewModel;
+
 import com.example.beethere.device.DeviceIDViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -166,11 +167,11 @@ public class EventDetailsFragment extends Fragment {
 
         // Max Registered display
         TextView maxEnroll = view.findViewById(R.id.text_max_enroll);
-        maxEnroll.setText(event.getEntrantList().getMaxRegistered().toString());
+        //maxEnroll.setText(event.getEntrantList().getMaxRegistered().toString());
 
         // Number of people in waitlist
         TextView waitlist = view.findViewById(R.id.text_waitlist);
-        waitlist.setText(event.getEntrantList().waitlistSize().toString());
+        //waitlist.setText(event.getEntrantList().waitlistSize().toString());
 
 
 
@@ -181,7 +182,7 @@ public class EventDetailsFragment extends Fragment {
                 // waitlist period ended display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
 
-            } else if (event.getEntrantList().waitlistFull()) {
+            } else if (Boolean.TRUE/*event.getEntrantList().waitlistFull()*/) {
                 // waitlist full display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_full));
 
@@ -193,15 +194,15 @@ public class EventDetailsFragment extends Fragment {
             }
         } else {
             // profile is connected to deviceID
-            if(event.getEntrantList().inRegistered(user)) {
+            if(/*event.getEntrantList().inRegistered(user)*/Boolean.TRUE) {
                 // user enrolled
                 displayWaitlistStatus("Enrolled");
 
-            } else if (event.getEntrantList().isDeclined(user)) {
+            } else if (/*event.getEntrantList().isDeclined(user)*/Boolean.TRUE) {
                 // user declined, display waitlist ended
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
 
-            } else if (event.getEntrantList().inInvite(user)) {
+            } else if (/*event.getEntrantList().inInvite(user)*/Boolean.TRUE) {
                 // user invited, accept or decline invite button
 
                 InviteButtons button = new InviteButtons();
@@ -217,7 +218,7 @@ public class EventDetailsFragment extends Fragment {
                 // waitlist period ended display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
 
-            } else if (event.getEntrantList().waitlistFull()) {
+            } else if (/*event.getEntrantList().waitlistFull()*/Boolean.TRUE) {
                 // waitlist full display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_full));
 

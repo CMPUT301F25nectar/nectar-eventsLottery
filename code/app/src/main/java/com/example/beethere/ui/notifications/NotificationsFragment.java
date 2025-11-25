@@ -86,7 +86,7 @@ public class NotificationsFragment extends Fragment {
             }
         };
 
-        dbfunctions.getNotifsDB(deviceId, callback);
+        //dbfunctions.getNotifsDB(deviceId, callback);
     }
 
 

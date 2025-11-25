@@ -1,19 +1,19 @@
 package com.example.beethere.eventclasses;
 
-import android.net.Uri;
-
 import com.example.beethere.User;
+
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
-import java.util.HashMap;
 import java.util.Map;
 
+
 public class Event {
+
+
+
     private User organizer;
 
     private String title;
@@ -235,6 +235,8 @@ public class Event {
     public void setAutoRandomSelection(Boolean autoRandomSelection) {
         this.autoRandomSelection = autoRandomSelection;
     }
+
+
 
     public int getEntrantMax() {
         return entrantMax;

@@ -83,7 +83,7 @@ public class NotificationHandler {
                 organizerDeviceId
         );
 
-        dbfunctions.addNotifsDB(notification);
+        //dbfunctions.addNotifsDB(notification);
     }
 
 
@@ -110,7 +110,7 @@ public class NotificationHandler {
                 organizerDeviceId
         );
 
-        dbfunctions.addNotifsDB(notification);
+        //dbfunctions.addNotifsDB(notification);
     }
 
 
@@ -134,7 +134,7 @@ public class NotificationHandler {
                     organizerDeviceId
             );
 
-            dbfunctions.addNotifsDB(notification);
+            //dbfunctions.addNotifsDB(notification);
         }
     }
 }
