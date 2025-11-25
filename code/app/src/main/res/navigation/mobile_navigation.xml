@@ -10,10 +10,9 @@
         android:name="com.example.beethere.ui.allEvents.AllEventsFragment"
         android:label="@string/title_events"
         tools:layout="@layout/fragment_all_events">
-
         <action
             android:id="@+id/allEventToEventDetails"
-            app:destination="@+id/event_details" />
+            app:destination="@+id/navigation_event_details" />
     </fragment>
 
     <fragment
@@ -29,7 +28,13 @@
         tools:layout="@layout/fragment_my_events">
         <action
             android:id="@+id/myEventsToCreateEvents"
-            app:destination="@id/createEvents1" />
+            app:destination="@id/navigation_createEvents" />
+        <action
+            android:id="@+id/myEventsToProfileCreation"
+            app:destination="@id/navigation_profileCreation" />
+        <action
+            android:id="@+id/myEventsToViewEntrants"
+            app:destination="@id/navigation_view_entrants" />
     </fragment>
 
     <fragment
@@ -39,9 +44,8 @@
         tools:layout="@layout/fragment_notifications">
         <action
             android:id="@+id/notificationsToEventDetails"
-            app:destination="@id/event_details" />
+            app:destination="@id/navigation_event_details" />
     </fragment>
-
 
     <fragment
         android:id="@+id/navigation_profile"
@@ -50,16 +54,36 @@
         tools:layout="@layout/fragment_notifications" />
 
     <fragment
-        android:id="@+id/createEvents1"
+        android:id="@+id/navigation_createEvents"
         android:name="com.example.beethere.ui.myEvents.CreateEventFragment1"
         android:label="Create"
-        tools:layout="@layout/fragment_create_event_pg1"/>
+        tools:layout="@layout/fragment_create_event_pg1">
+    <action
+        android:id="@+id/createEventstoMyEvents"
+        app:destination="@id/navigation_myEvents" />
+    </fragment>
 
     <fragment
-        android:id="@+id/event_details"
+        android:id="@+id/navigation_profileCreation"
+        android:name="com.example.beethere.ui.profile.ProfileDialogFragment"
+        android:label="ProfileCreate"
+        tools:layout="@layout/fragment_profile"/>
+
+    <fragment
+        android:id="@+id/navigation_event_details"
         android:name="com.example.beethere.eventclasses.eventDetails.EventDetailsFragment"
         android:label="Create"
         tools:layout="@layout/fragment_event_details">
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_view_entrants"
+        android:name="com.example.beethere.ui.myEvents.ViewEntrantsFragment"
+        android:label="View Entrants"
+        tools:layout="@layout/fragment_my_events_entrants">
+        <action
+            android:id="@+id/ViewEntrantsToMyEvents"
+            app:destination="@id/navigation_myEvents" />
     </fragment>
 
 </navigation>

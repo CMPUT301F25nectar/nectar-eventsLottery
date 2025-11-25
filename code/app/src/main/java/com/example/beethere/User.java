@@ -1,5 +1,6 @@
 package com.example.beethere;
 
+
 /**
  * This is a model that defines a user profile for entrant/organizer/admin profile data used across the app.
  */
@@ -10,6 +11,7 @@ public class User {
     private String deviceid;
     private Boolean admin; //admin flag
     private Boolean organizer;//organizer flag
+    private Boolean violation;
 
     public User(){}
 
@@ -118,4 +120,18 @@ public class User {
     public void setOrganizer(boolean organizer){
         this.organizer=organizer;
     }
+
+    /**
+     * returns the violation flat
+     * @return true if the organizer has violated a policy by admin decision, false otherwise
+     */
+    public Boolean getViolation() {return violation;} //CHANGE: CHANGE MADE HERE
+
+    /**
+     * sets the violation flag
+     * @param violation initially false
+     */
+    public void setViolation(Boolean violation) {this.violation = violation;} //CHANGE: CHANGE MADE HERE
 }
+
+

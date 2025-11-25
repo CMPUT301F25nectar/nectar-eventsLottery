@@ -85,16 +85,41 @@ public class ProfileFragment extends Fragment {
             return;
         }
         String fullname = (first) + " " + (last);
-
-        User u = new User();
-        u.setName(fullname);
-        u.setEmail(email);
-        u.setPhone(phonenumber);
-        u.setDeviceid(deviceID);
-        //issue here
-        u.setAdmin(false);
-        u.setOrganizer(true);
-        dbFunctions.addUserDB(u);
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(deviceID)
+                .get()
+                .addOnSuccessListener(snap->{
+                    Boolean admincurrent = null;
+                    Boolean organizercurrent = null;
+                    Boolean violationcurrent = false; //CHANGE MADE HERE
+                    if(snap.exists()){
+                        User exists = snap.toObject(User.class);
+                        if (exists!= null) {
+                            admincurrent = exists.getAdmin();
+                            organizercurrent=exists.getOrganizer();
+                        }
+                    }
+                    User u = new User();
+                    u.setName(fullname);
+                    u.setEmail(email);
+                    u.setPhone(phonenumber);
+                    u.setDeviceid(deviceID);
+                    u.setViolation(violationcurrent); //CHANGE MADE HERE
+                    if (admincurrent!=null) u.setAdmin(admincurrent);
+                    else u.setAdmin(false);
+                    if (organizercurrent!=null) u.setOrganizer(organizercurrent);
+                    else u.setOrganizer(true);
+                    FirebaseFirestore.getInstance().collection("users")
+                            .document(deviceID)
+                            .set(u)
+                            .addOnSuccessListener(unused->
+                                Toast.makeText(requireContext(), "Saved updates!", Toast.LENGTH_SHORT).show()
+                            )
+                            .addOnFailureListener(fail-> Toast.makeText(requireContext(), "failed to save",Toast.LENGTH_LONG).show()
+                            );
+                })
+                .addOnFailureListener(fail -> Toast.makeText(requireContext(), "Failed updating profile"+ fail.getMessage(), Toast.LENGTH_SHORT).show());
     }
     private void deleteprofile() {
         String deviceID = DeviceId.get(requireContext());

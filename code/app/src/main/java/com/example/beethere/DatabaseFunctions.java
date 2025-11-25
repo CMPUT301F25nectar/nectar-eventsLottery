@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class DatabaseFunctions {
@@ -184,7 +185,7 @@ public class DatabaseFunctions {
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     Event event = document.toObject(Event.class);
                     // Assuming 'event.getWaitlistUserIds()' returns your ArrayList<String>
-                    if (event.getOrganizer() == waitlistID) {
+                    if (Objects.equals(event.getOrganizer().getDeviceid(), waitlistID.getDeviceid())) {
                         eventArrayList.add(event);
                     }
                 }

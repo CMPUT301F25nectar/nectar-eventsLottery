@@ -10,6 +10,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Event {
     private User organizer;
@@ -19,7 +21,6 @@ public class Event {
     private String eventID;
 
     private String posterPath;
-    private int qrCode;
 
     private Boolean status; //status on if the event is still active or not
 
@@ -32,11 +33,17 @@ public class Event {
     private String eventTimeEnd;
 
     private Boolean geoloc;
+    Boolean autoRandomSelection;
 
-    private UserListManager entrantList;
+    private int entrantMax;
+    private int maxWaitlist;
 
-    public Event(){
+//    private UserListManager entrantList;
+    private ArrayList<User> waitList;
+    private Map<String, Boolean> invited;
+    private ArrayList<User> registered;
 
+    public Event() {
     }
 
     /**
@@ -45,7 +52,6 @@ public class Event {
      * @param title String,title of the event
      * @param description String, details of the event
      * @param posterPath URI, advertisement poster of the event
-     * @param qrCode idk, qr code to take user to page for event
      * @param status boolean, status of if the event is active or not
      * @param regStart Date, when registration for the event begins
      * @param regEnd Date, when registration for the event ends
@@ -58,17 +64,17 @@ public class Event {
      * @param autoRandomSelection boolean, if those in the waiting list should be selected on invitees cancellation
      */
 
-    public Event(User organizer, String eventID, String title, String description, String posterPath, int qrCode,
+
+    public Event(User organizer, String eventID, String title, String description, String posterPath,
                  Boolean status, String regStart, String regEnd, String eventDateStart,
                  String eventDateEnd, String eventTimeStart, String eventTimeEnd,
-                 int entrantMax, Boolean getLocation,
-                 Boolean autoRandomSelection) {
+                 int entrantMax, Boolean getLocation, ArrayList<User> waitList, Map<String, Boolean> invited,
+                 ArrayList<User> registered, Boolean autoRandomSelection) {
         this.organizer = organizer;
         this.eventID = eventID;
         this.title = title;
         this.description = description;
         this.posterPath = posterPath;
-        this.qrCode = qrCode;
         this.status = status;
         this.regStart = regStart;
         this.regEnd = regEnd;
@@ -76,22 +82,24 @@ public class Event {
         this.eventDateEnd = eventDateEnd;
         this.eventTimeStart = eventTimeStart;
         this.eventTimeEnd = eventTimeEnd;
+        this.entrantMax = entrantMax;
         this.geoloc = getLocation;
-        this.entrantList = new UserListManager(autoRandomSelection, entrantMax);
+        this.waitList = waitList;
+        this.invited = invited;
+        this.registered = registered;
+        this.autoRandomSelection = autoRandomSelection;
     }
 
-
-    public Event(User organizer, String eventID, String title, String description, String posterPath, int qrCode,
-                 Boolean status, String regStart, String regEnd, String eventDateStart,
+    public Event(User organizer, String eventID, String title, String description, String posterPath,
+                 Boolean status,String regStart, String regEnd, String eventDateStart,
                  String eventDateEnd, String eventTimeStart, String eventTimeEnd,
-                 int entrantMax, Boolean getLocation,
-                 Boolean autoRandomSelection, int maxWaitlist) {
+                 int entrantMax, Boolean getLocation, ArrayList<User> waitList, Map<String, Boolean> invited,
+                 ArrayList<User> registered, Boolean autoRandomSelection, int maxWaitlist) {
         this.organizer = organizer;
         this.eventID = eventID;
         this.title = title;
         this.description = description;
         this.posterPath = posterPath;
-        this.qrCode = qrCode;
         this.status = status;
         this.regStart = regStart;
         this.regEnd = regEnd;
@@ -100,7 +108,12 @@ public class Event {
         this.eventTimeStart = eventTimeStart;
         this.eventTimeEnd = eventTimeEnd;
         this.geoloc = getLocation;
-        this.entrantList = new UserListManager(autoRandomSelection, entrantMax, maxWaitlist);
+        this.entrantMax = entrantMax;
+        this.waitList = waitList;
+        this.invited = invited;
+        this.registered = registered;
+        this.autoRandomSelection = autoRandomSelection;
+        this.maxWaitlist = maxWaitlist;
     }
 
     public User getOrganizer() {
@@ -141,14 +154,6 @@ public class Event {
 
     public void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
-    }
-
-    public int getQrCode() {
-        return qrCode;
-    }
-
-    public void setQrCode(int qrCode) {
-        this.qrCode = qrCode;
     }
 
     public Boolean getStatus() {
@@ -215,12 +220,52 @@ public class Event {
         this.geoloc = geoloc;
     }
 
-    public UserListManager getEntrantList() {
-        return entrantList;
+    public ArrayList<User> getWaitList() {
+        return waitList;
     }
 
-    public void setEntrantList(UserListManager entrantList) {
-        this.entrantList = entrantList;
+    public void setWaitList(ArrayList<User> waitList) {
+        this.waitList = waitList;
+    }
+
+    public Boolean getAutoRandomSelection() {
+        return autoRandomSelection;
+    }
+
+    public void setAutoRandomSelection(Boolean autoRandomSelection) {
+        this.autoRandomSelection = autoRandomSelection;
+    }
+
+    public int getEntrantMax() {
+        return entrantMax;
+    }
+
+    public void setEntrantMax(int entrantMax) {
+        this.entrantMax = entrantMax;
+    }
+
+    public int getMaxWaitlist() {
+        return maxWaitlist;
+    }
+
+    public void setMaxWaitlist(int maxWaitlist) {
+        this.maxWaitlist = maxWaitlist;
+    }
+
+    public Map<String, Boolean> getInvited() {
+        return invited;
+    }
+
+    public void setInvited(Map<String, Boolean> invited) {
+        this.invited = invited;
+    }
+
+    public ArrayList<User> getRegistered() {
+        return registered;
+    }
+
+    public void setRegistered(ArrayList<User> registered) {
+        this.registered = registered;
     }
 
 
