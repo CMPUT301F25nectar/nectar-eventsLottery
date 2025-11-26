@@ -1,6 +1,11 @@
 package com.example.beethere.notifications_classes;
 
+import android.util.Log;
+
+import com.example.beethere.DatabaseCallback;
+import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.User;
+import com.example.beethere.eventclasses.Event;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -14,7 +19,6 @@ import java.util.List;
  */
 public class NotificationHandler {
     /** Firebase Firestore instance for database operations*/
-    private FirebaseFirestore db;
 
     // Notification types
     /**Notification type constant for lottery winner*/
@@ -24,11 +28,13 @@ public class NotificationHandler {
     /**Notification type constant for organizer messages*/
     public String TYPE_ORGANIZER_MESSAGE = "organizerMessage";
 
+    private DatabaseFunctions dbfunctions;
+
     /**
      * Constructor that initializes Firebase instance
      */
     public NotificationHandler(){
-        this.db = FirebaseFirestore.getInstance();
+        dbfunctions = new DatabaseFunctions();
     }
 
 
@@ -77,7 +83,7 @@ public class NotificationHandler {
                 organizerDeviceId
         );
 
-        saveNotificationToFirebase(notification);
+        dbfunctions.addNotifsDB(notification);
     }
 
 
@@ -104,7 +110,7 @@ public class NotificationHandler {
                 organizerDeviceId
         );
 
-        saveNotificationToFirebase(notification);
+        dbfunctions.addNotifsDB(notification);
     }
 
 
@@ -128,70 +134,7 @@ public class NotificationHandler {
                     organizerDeviceId
             );
 
-            saveNotificationToFirebase(notification);
+            dbfunctions.addNotifsDB(notification);
         }
-    }
-
-
-    /**
-     * Sets up real-time listener for notifications
-     * Automatically updates when new notifications arrive
-     * @param deviceId The device id of the user
-     * @param callback Callback interface for success/error handling
-     */
-    public void setupNotificationListener(String deviceId, NotificationCallback callback) {
-        db.collection("notifications")
-                .whereArrayContains("deviceIds", deviceId)
-                //.orderBy("timestamp", Query.Direction.DESCENDING)
-                .addSnapshotListener((queryDocumentSnapshots, error) -> {
-                    if (error != null) {
-                        callback.onError(error.getMessage());
-                        return;
-                    }
-
-                    if (queryDocumentSnapshots != null) {
-                        List<Notification> notifications = new ArrayList<>();
-                        for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
-                            Notification notif = queryDocumentSnapshots.getDocuments().get(i).toObject(Notification.class);
-                            if (notif != null) {
-                                notifications.add(notif);
-                            }
-                        }
-                        callback.onSuccess(notifications);
-                    }
-                });
-    }
-
-    /**
-     * Saves a notification to Firebase Firestore
-     * @param notification The notification object to save
-     */
-    private void saveNotificationToFirebase(Notification notification){
-        db.collection("notifications")
-                .add(notification)
-                .addOnSuccessListener(aVoid -> {
-                    android.util.Log.d("NotificationHandler", "notif saved" +notification.getEventName());
-                })
-                .addOnFailureListener(e ->{
-                    android.util.Log.e("NotificationHandler", "failed " + e.getMessage());
-                });
-                //.set(notification);
-    }
-
-    /**
-     * Callback interface for asynchronous notification retrieval
-     */
-    public interface NotificationCallback {
-        /**
-         * Called when notifications are successfully retrieved
-         * @param notifications List of notifications
-         */
-        void onSuccess(List<Notification> notifications);
-
-        /**
-         * Called when an error occurs
-         * @param error Error message
-         */
-        void onError(String error);
     }
 }

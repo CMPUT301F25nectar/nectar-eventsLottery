@@ -16,16 +16,19 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_gallery" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/button_back"
-        android:layout_width="wrap_content"
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/event_detail_back_button"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="70dp"
-        android:clickable="true"
+        android:background="@drawable/button_back_arrow"
+        android:backgroundTint="@color/dark_brown"
+        android:drawableEnd="@drawable/outline_arrow_back_24"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="?attr/homeAsUpIndicator" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/text_event_name"

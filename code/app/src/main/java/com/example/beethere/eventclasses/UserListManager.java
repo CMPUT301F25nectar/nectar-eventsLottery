@@ -26,6 +26,9 @@ public class UserListManager {
     private Random random;
 
     // Constructors
+
+    // Empty constructor
+    public UserListManager(){}
     /**
      * This initializes the 3 different types of user lists associated with an event
      * and a random object.
