@@ -156,9 +156,9 @@ public class DatabaseFunctions {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     Event event = document.toObject(Event.class);
-                    UserListManager userlist = event.getEntrantList();
+                    UserListManager userlist = new UserListManager(event);
                     // Assuming 'event.getWaitlistUserIds()' returns your ArrayList<String>
-                    if (userlist.getWaitlist().contains(waitlistID)) {
+                    if (userlist.inWaitlist(waitlistID)) {
                         eventArrayList.add(event);
                     }
                 }
