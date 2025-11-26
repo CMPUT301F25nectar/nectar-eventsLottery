@@ -57,7 +57,7 @@ dependencies {
     implementation(libs.navigation.ui)
     //implementation(libs.cardview)
     implementation("com.google.android.material:material:1.10.0")
-    implementation(libs.fragment.testing)
+    //implementation(libs.fragment.testing)
     implementation(libs.cardview)
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation(libs.play.services.maps)

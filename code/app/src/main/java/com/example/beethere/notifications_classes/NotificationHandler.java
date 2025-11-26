@@ -38,6 +38,19 @@ public class NotificationHandler {
     }
 
 
+    // THIS FUCKING LINE
+    // THIS FUCKING LINE
+    // THIS FUCKING LINE
+    // THIS FUCKING LINE
+    // THIS FUCKING LINE
+    // THIS FUCKING LINE
+    // THIS FUCKING LINE
+    // THIS FUCKING LINE
+    // THIS FUCKING LINE
+    // THIS FUCKING LINE
+    // THIS FUCKING LINE
+    // THIS FUCKING LINE
+
     /**
      * Sends lottery result notifications to winners and losers
      * @param eventId The unique identifier for the event
