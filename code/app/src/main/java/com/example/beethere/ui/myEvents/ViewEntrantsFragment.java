@@ -6,10 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.beethere.R;
 import com.example.beethere.User;
@@ -22,21 +26,39 @@ import java.util.Map;
 
 public class ViewEntrantsFragment extends Fragment {
 
-    private InvitedAdapter invitedAdapter;
-    private WaitListandRegisteredAdapter waitListandRegisteredAdapter;
+    private static final String ARG_EVENT_ID = "eventID";
 
-    private ArrayList<User> waitList;
-    private Map<User, Boolean> invited;
-    private ArrayList<User> registered;
+    private InvitedAdapter invitedAdapter;
+    private WaitListandRegisteredAdapter waitListAdapter;
+    private WaitListandRegisteredAdapter registeredAdapter;
+
+    private ArrayList<User> waitList = new ArrayList<>();
+    private Map<String, Boolean> invited = new HashMap<>();
+    private ArrayList<User> registered = new ArrayList<>();
 
     private String eventID;
     private Event event;
 
     private ListView entrantList;
-    private Button waitListButton, invitedButton, registeredButton;
+    private Button waitListButton, invitedButton, registeredButton
+    private ImageButton backButton;
 
-    public ViewEntrantsFragment(String eventID) {
-        this.eventID = eventID;
+    public ViewEntrantsFragment() {}
+
+    public static ViewEntrantsFragment newInstance(String eventID) {
+        ViewEntrantsFragment fragment = new ViewEntrantsFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_EVENT_ID, eventID);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            eventID = getArguments().getString(ARG_EVENT_ID);
+        }
     }
 
     @Override
@@ -45,88 +67,75 @@ public class ViewEntrantsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_my_events_entrants, container, false);
 
-        // Initialize views
+
         waitListButton = view.findViewById(R.id.button_entrant_waitlist);
         invitedButton = view.findViewById(R.id.button_entrant_invited);
         registeredButton = view.findViewById(R.id.button_entrant_registered);
         entrantList = view.findViewById(R.id.event_entrant_list);
+        backButton = view.findViewById(R.id.button_back_to_prev);
 
-        // Button selection handling
+
+        waitListAdapter = new WaitListandRegisteredAdapter(getContext(), waitList);
+        registeredAdapter = new WaitListandRegisteredAdapter(getContext(), registered);
+        invitedAdapter = new InvitedAdapter(getContext(), invited);
+
+
         Button[] buttons = {waitListButton, invitedButton, registeredButton};
         View.OnClickListener selectionListener = v -> {
             for (Button b : buttons) b.setSelected(false);
             v.setSelected(true);
+
+            if (v == waitListButton) {
+                entrantList.setAdapter(waitListAdapter);
+            } else if (v == registeredButton) {
+                entrantList.setAdapter(registeredAdapter);
+            } else if (v == invitedButton) {
+                entrantList.setAdapter(invitedAdapter);
+            }
         };
+
+        backButton.setOnClickListener(v -> {
+            NavController nav = Navigation.findNavController(view);
+            nav.navigate(R.id.ViewEntrantsToMyEvents);
+        });
+
         for (Button b : buttons) b.setOnClickListener(selectionListener);
 
-        // Load event from Firestore
+        // Default selected is waitlist
+        waitListButton.setSelected(true);
+        entrantList.setAdapter(waitListAdapter);
+
         FirebaseFirestore.getInstance()
-                .collection("events1")
+                .collection("events")
                 .document(eventID)
                 .get()
                 .addOnSuccessListener(snap -> {
                     if (snap.exists()) {
                         event = snap.toObject(Event.class);
 
-                        // Assign to fields (NOT local variables!)
-                        waitList = event.getWaitList();
-                        invited = event.getInvited();
-                        registered = event.getRegistered();
+                        if (event != null) {
 
-                        // Set default list (waitlist) after data loads
-                        if (waitList != null) {
-                            waitListandRegisteredAdapter = new WaitListandRegisteredAdapter(getContext(), waitList);
-                            entrantList.setAdapter(waitListandRegisteredAdapter);
+                            waitList.clear();
+                            waitList.addAll(event.getWaitList() != null ? event.getWaitList() : new ArrayList<>());
+
+                            invited.clear();
+                            invited.putAll(event.getInvited() != null ? event.getInvited() : new HashMap<>());
+
+                            registered.clear();
+                            registered.addAll(event.getRegistered() != null ? event.getRegistered() : new ArrayList<>());
+
+                            waitListAdapter.notifyDataSetChanged();
+                            registeredAdapter.notifyDataSetChanged();
+                            invitedAdapter.notifyDataSetChanged();
                         }
-
-                        // Set click listeners AFTER data is loaded
-                        waitListButton.setOnClickListener(v -> {
-                            if (waitList != null) {
-                                waitListandRegisteredAdapter = new WaitListandRegisteredAdapter(getContext(), waitList);
-                                entrantList.setAdapter(waitListandRegisteredAdapter);
-                            }
-                        });
-
-                        invitedButton.setOnClickListener(v -> {
-                            if (invited != null) {
-                                invitedAdapter = new InvitedAdapter(getContext(), invited);
-                                entrantList.setAdapter(invitedAdapter);
-                            }
-                        });
-
-                        registeredButton.setOnClickListener(v -> {
-                            if (registered != null) {
-                                waitListandRegisteredAdapter = new WaitListandRegisteredAdapter(getContext(), registered);
-                                entrantList.setAdapter(waitListandRegisteredAdapter);
-                            }
-                        });
                     }
                 })
                 .addOnFailureListener(e -> Log.e("ViewEntrants", "Failed to load event.", e));
-
-        // Initial button selection
-        for (Button b : buttons) b.setSelected(false);
-        waitListButton.setSelected(true);
 
         return view;
     }
 }
 
-
-
-
-
-
-//for the edititng fragment, just copy paste the create fragment 1 and take off switches and pre fill fields
-//im sure theres things to consider with that tho
-
-//TODO
-//first, create the content view for invited, keep in mind, this is also going to have a dropdown menu to delete
-//then, create content view for registered and wait list
-//then, create adapters for each content view
-//then, in the adapter add the activity (this one)
-//qrcode display class
-//honestly just do the whole damn thing
 
 
 
