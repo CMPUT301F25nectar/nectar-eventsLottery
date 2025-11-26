@@ -1,44 +1,56 @@
 package com.example.beethere.eventclasses;
 
-import android.net.Uri;
-
 import com.example.beethere.User;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
-public class Event {
-    private User organizer;
-    private String title;
-    private String description;
-    private String eventID;
 
+public class Event {
+
+    private User organizer;
+    private String eventID;
     private String posterPath;
 
-    private Boolean status; //status on if the event is still active or not
+    //status on if the event is still active or not
+    private Boolean status;
 
+    // geolocation requirement for joining event
+    private Boolean geoloc;
+
+    // event details
+    private String title;
+    private String description;
+
+    // waitlist opens/closes dates
     private String regStart;
     private String regEnd;
 
+    // actual event dates and time
     private String eventDateStart;
     private String eventDateEnd;
     private String eventTimeStart;
     private String eventTimeEnd;
 
-    private Boolean geoloc;
+    // randomly selects new invite when person declines
     Boolean autoRandomSelection;
 
-    private int entrantMax;
     private int maxWaitlist;
-
-//    private UserListManager entrantList;
     private ArrayList<User> waitList;
+
     private Map<String, Boolean> invited;
+
+    private int entrantMax;
     private ArrayList<User> registered;
 
-    public Event() {
-    }
+
+    /** Constructors */
+    // empty constructor for database
+    public Event() {}
 
     /**
      *
@@ -57,8 +69,6 @@ public class Event {
      * @param getLocation boolean, organizer requires geolocation of participants to be collected
      * @param autoRandomSelection boolean, if those in the waiting list should be selected on invitees cancellation
      */
-
-
     public Event(User organizer, String eventID, String title, String description, String posterPath,
                  Boolean status, String regStart, String regEnd, String eventDateStart,
                  String eventDateEnd, String eventTimeStart, String eventTimeEnd,
@@ -126,22 +136,6 @@ public class Event {
         this.eventID = eventID;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getPosterPath() {
         return posterPath;
     }
@@ -156,6 +150,30 @@ public class Event {
 
     public void setStatus(Boolean status) {
         this.status = status;
+    }
+
+    public Boolean getGeoloc() {
+        return geoloc;
+    }
+
+    public void setGeoloc(Boolean geoloc) {
+        this.geoloc = geoloc;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getRegStart() {
@@ -206,36 +224,12 @@ public class Event {
         this.eventTimeEnd = eventTimeEnd;
     }
 
-    public Boolean getGeoloc() {
-        return geoloc;
-    }
-
-    public void setGeoloc(Boolean geoloc) {
-        this.geoloc = geoloc;
-    }
-
-    public ArrayList<User> getWaitList() {
-        return waitList;
-    }
-
-    public void setWaitList(ArrayList<User> waitList) {
-        this.waitList = waitList;
-    }
-
     public Boolean getAutoRandomSelection() {
         return autoRandomSelection;
     }
 
     public void setAutoRandomSelection(Boolean autoRandomSelection) {
         this.autoRandomSelection = autoRandomSelection;
-    }
-
-    public int getEntrantMax() {
-        return entrantMax;
-    }
-
-    public void setEntrantMax(int entrantMax) {
-        this.entrantMax = entrantMax;
     }
 
     public int getMaxWaitlist() {
@@ -246,12 +240,31 @@ public class Event {
         this.maxWaitlist = maxWaitlist;
     }
 
+    // PROBLEM IN ULM WITH NOTIFICATIONS
+    public ArrayList<User> getWaitList() {
+        return waitList;
+    }
+
+    public void setWaitList(ArrayList<User> waitList) {
+        this.waitList = waitList;
+    }
+
+    // PROBLEM IN ULM WITH NOTIFICATIONS
     public Map<String, Boolean> getInvited() {
         return invited;
     }
 
     public void setInvited(Map<String, Boolean> invited) {
         this.invited = invited;
+    }
+
+    // EVENT DETAILS FRAGMENT
+    public int getEntrantMax() {
+        return entrantMax;
+    }
+
+    public void setEntrantMax(int entrantMax) {
+        this.entrantMax = entrantMax;
     }
 
     public ArrayList<User> getRegistered() {
@@ -261,4 +274,34 @@ public class Event {
     public void setRegistered(ArrayList<User> registered) {
         this.registered = registered;
     }
+
+
+
+
+
+
+
+    public LocalDate converRegEnd() {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        return LocalDate.parse(this.regEnd, dateFormatter);
+    }
+
+    public LocalDate convertDate(String stringDate) {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        return LocalDate.parse(stringDate, dateFormatter);
+    }
+
+    public LocalTime convertTime(String stringTime) {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US);
+
+        return LocalTime.parse(stringTime, timeFormatter);
+    }
+
+
+
+
+
+
 }

@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.device.DeviceId;
 import com.example.beethere.R;
 import com.example.beethere.User;
@@ -24,6 +25,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
  */
 public class ProfileFragment extends Fragment {
     private EditText firstname, lastname, emailid, phone;
+    private TextView userdeviceId;
+    DatabaseFunctions dbFunctions = new DatabaseFunctions();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -37,9 +40,8 @@ public class ProfileFragment extends Fragment {
         phone = view.findViewById(R.id.edit_phone);
 
         Button btnsave = view.findViewById(R.id.button_save_profile);
-        TextView personalSettings = view.findViewById(R.id.personal_settings);
-        TextView notificationsSettings = view.findViewById(R.id.notification_settings);
-        TextView howtouse = view.findViewById(R.id.row_how_to_use);
+        TextView personalSettings = view.findViewById(R.id.row_personal_settings);
+        TextView notificationsSettings = view.findViewById(R.id.row_notification_settings);
         profile();
         btnsave.setOnClickListener(v -> saveprofile());
         //go to personal settings screen
@@ -52,9 +54,6 @@ public class ProfileFragment extends Fragment {
                // NavHostFragment.findNavController(ProfileFragment.this)
                    //     .navigate(R.id.notificationsfragmentname)
         //);
-        //how to use
-        howtouse.setOnClickListener(v->
-                NavHostFragment.findNavController(ProfileFragment.this).navigate(R.id.howToUseFragment));
         return view;
     }
 //gets profile information for a device

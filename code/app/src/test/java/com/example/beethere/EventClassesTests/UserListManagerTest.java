@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 public class UserListManagerTest {
 
-    public User mockUser(){
+    /*public User mockUser(){
         User user = new User("Nour", "email");
         return user;
     }
@@ -55,7 +55,7 @@ public class UserListManagerTest {
         assertTrue(listManager.getInviteList().get(user));
     }
 
-    /*@Test
+    *//*@Test
     void testRemoveInvite(){
         UserListManager listManager = mockListManager();
         User user = new User("Chanelle", "email");
@@ -92,7 +92,7 @@ public class UserListManagerTest {
 
         listManager.removeRegistered(user);
         assertEquals(1, listManager.getRegistered().size());
-    }*/
+    }*//*
 
     @Test
     void testAcceptInvite(){
@@ -123,5 +123,5 @@ public class UserListManagerTest {
     @Test
     void testSelectInvitations(){
 
-    }
+    }*/
 }

@@ -1,4 +1,4 @@
-package com.example.beethere.eventclasses.eventDetails;
+package com.example.beethere.eventDetails;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import com.example.beethere.R;
 import com.example.beethere.User;
 import com.example.beethere.eventclasses.Event;
+import com.example.beethere.eventclasses.UserListManager;
 import com.google.android.material.snackbar.Snackbar;
 
 public class WaitlistButtons extends Fragment {
@@ -35,9 +36,10 @@ public class WaitlistButtons extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event_details_waitlist_buttons, container, false);
+        UserListManager manager = new UserListManager(event);
 
         Button waitlistButton = view.findViewById(R.id.button_waitlist);
-        if (userCreated && Boolean.TRUE/*event.getEntrantList().inWaitlist(user)*/) {
+        if (userCreated && event.inWaitlist(user)) {
             leaveButton(waitlistButton);
         }
 
@@ -49,15 +51,15 @@ public class WaitlistButtons extends Fragment {
                     //TODO
                     // create profile dialog popup
                 }
-                else if (/*event.getEntrantList().inWaitlist(user)*/Boolean.TRUE) {
-                    //event.getEntrantList().removeWaitlist(user);
+                else if (event.inWaitlist(user)) {
+                    manager.removeWaitlist(user);
                     Snackbar
                             .make(view, "You have left the waitlist!", Snackbar.LENGTH_SHORT)
                             .show();
                     joinButton(waitlistButton);
                 }
                 else {
-                    //event.getEntrantList().addWaitlist(user);
+                    manager.addWaitlist(user);
                     Snackbar
                             .make(view, "You have joined the waitlist!", com.google.android.material.snackbar.Snackbar.LENGTH_SHORT)
                             .show();

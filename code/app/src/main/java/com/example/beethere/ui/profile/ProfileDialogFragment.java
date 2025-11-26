@@ -16,6 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.device.DeviceId;
 import com.example.beethere.R;
 import com.example.beethere.User;
@@ -23,6 +24,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ProfileDialogFragment extends DialogFragment {
     public static Runnable saved;
+    private DatabaseFunctions dbfunctions;
+
     public static void show(androidx.fragment.app.FragmentManager fragmentmanager, Runnable cb){
         saved =cb;
         new ProfileDialogFragment().show(fragmentmanager, "New Profile Dialog");
@@ -31,6 +34,7 @@ public class ProfileDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog (Bundle savedInstanceState){
+        dbfunctions = new DatabaseFunctions();
         View view = LayoutInflater.from(getContext()).inflate(R.layout.fragment_createprofile,null);
 
         EditText EnterFirstName = view.findViewById(R.id.enterfirstname);
@@ -63,7 +67,8 @@ public class ProfileDialogFragment extends DialogFragment {
             u.setOrganizer(true);
             u.setViolation(false);
 
-            FirebaseFirestore.getInstance()
+            dbfunctions.addUserDB(u);
+            /*FirebaseFirestore.getInstance()
                     .collection("users")
                     .document(deviceId)
                     .set(u)
@@ -74,7 +79,7 @@ public class ProfileDialogFragment extends DialogFragment {
                     })
                     .addOnFailureListener(fail ->
                             Toast.makeText(requireContext(), "Failed: " + fail.getMessage(), Toast.LENGTH_LONG).show()
-                    );
+                    );*/
         });
        return dialog;
     }

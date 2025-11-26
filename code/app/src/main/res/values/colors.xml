@@ -12,6 +12,7 @@
     <color name="faded_brown2">#A5928D</color>
 
     <color name="yellow">#FFF4CA6B</color>
-    <color name="light_yellow">#FFFAE488</color>
     <color name="second_yellow">#D9F4D6B1</color>
+    <color name="light_yellow">#FFFAE488</color>
+
 </resources>
