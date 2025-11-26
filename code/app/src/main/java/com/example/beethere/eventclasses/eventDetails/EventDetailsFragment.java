@@ -181,7 +181,7 @@ public class EventDetailsFragment extends Fragment {
             if (currentDate.isAfter(convertDate(event.getRegEnd(), dateFormatter))){
                 // waitlist period ended display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
-            } else if (eventListManager.waitlistFull()) {
+            } else if (/*eventListManager.waitlistFull()*/Boolean.FALSE) {
                 // waitlist full display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_full));
             }
@@ -251,5 +251,7 @@ public class EventDetailsFragment extends Fragment {
     public LocalDate convertDate(String stringDate, DateTimeFormatter dateFormatter) {
         return LocalDate.parse(stringDate, dateFormatter);
     }
+
+
 
 }
