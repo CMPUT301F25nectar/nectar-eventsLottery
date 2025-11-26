@@ -40,18 +40,10 @@ public class ViewEntrantsFragment extends Fragment {
     private Event event;
 
     private ListView entrantList;
-    private Button waitListButton, invitedButton, registeredButton
+    private Button waitListButton, invitedButton, registeredButton;
     private ImageButton backButton;
 
     public ViewEntrantsFragment() {}
-
-    public static ViewEntrantsFragment newInstance(String eventID) {
-        ViewEntrantsFragment fragment = new ViewEntrantsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_EVENT_ID, eventID);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,8 +92,7 @@ public class ViewEntrantsFragment extends Fragment {
         });
 
         for (Button b : buttons) b.setOnClickListener(selectionListener);
-
-        // Default selected is waitlist
+        //default to waitlist list
         waitListButton.setSelected(true);
         entrantList.setAdapter(waitListAdapter);
 

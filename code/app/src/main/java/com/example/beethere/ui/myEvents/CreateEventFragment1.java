@@ -156,7 +156,7 @@ public class CreateEventFragment1 extends Fragment {
         geoLocationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> wantGeoLocation = isChecked);
         randomSelectSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> wantRandomSelect = isChecked);
 
-        Button completeButton = view.findViewById(R.id.completeButton);
+        AppCompatButton completeButton = view.findViewById(R.id.completeButton);
         completeButton.setOnClickListener(v -> complete());
 
         AppCompatImageButton backButton = view.findViewById(R.id.backButton);
@@ -258,6 +258,8 @@ public class CreateEventFragment1 extends Fragment {
             FragmentManager fragmentManager = getParentFragmentManager();
             fragmentManager.popBackStack();
             Toast.makeText(getActivity(), "Event created successfully!", Toast.LENGTH_SHORT).show();
+
+            organizer.setOrganizer(true);
 
         } catch (Exception e) {
             Log.e("CreateEventFragment", "Parsing error: " + e.getMessage());

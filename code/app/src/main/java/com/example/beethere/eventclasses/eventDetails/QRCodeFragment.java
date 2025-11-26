@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.beethere.R;
@@ -31,8 +32,7 @@ public class QRCodeFragment extends DialogFragment {
 
     private String eventID;
     private ImageView qrCode;
-    private Button exit;
-    private Button scan;
+    private AppCompatButton exit,  scan;
 
     public static QRCodeFragment newInstance(String eventID) {
         QRCodeFragment fragment = new QRCodeFragment();

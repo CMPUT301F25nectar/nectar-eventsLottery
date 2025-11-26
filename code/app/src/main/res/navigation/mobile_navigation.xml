@@ -35,6 +35,9 @@
         <action
             android:id="@+id/myEventsToViewEntrants"
             app:destination="@id/navigation_view_entrants" />
+        <action
+            android:id="@+id/myEventsToEditEvents"
+            app:destination="@id/navigation_edit_event" />
     </fragment>
 
     <fragment
@@ -63,7 +66,7 @@
         app:destination="@id/navigation_myEvents" />
     </fragment>
 
-    <fragment
+    <dialog
         android:id="@+id/navigation_profileCreation"
         android:name="com.example.beethere.ui.profile.ProfileDialogFragment"
         android:label="ProfileCreate"
@@ -85,5 +88,17 @@
             android:id="@+id/ViewEntrantsToMyEvents"
             app:destination="@id/navigation_myEvents" />
     </fragment>
+
+    <fragment
+        android:id="@+id/navigation_edit_event"
+        android:name="com.example.beethere.ui.myEvents.EditingEventFragment"
+        android:label="Edit Events"
+        tools:layout="@layout/fragment_editing_event">
+        <action
+            android:id="@+id/EditEventsToMyEvents"
+            app:destination="@id/navigation_myEvents" />
+    </fragment>
+
+
 
 </navigation>
