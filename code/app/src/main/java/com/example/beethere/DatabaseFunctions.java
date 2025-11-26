@@ -1,5 +1,6 @@
 package com.example.beethere;
 
+import com.example.beethere.eventclasses.UserListManager;
 import com.example.beethere.notifications_classes.Notification;
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -144,9 +145,10 @@ public class DatabaseFunctions {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     Event event = document.toObject(Event.class);
-                    //UserListManager userlist = event.getEntrantList();
+                    UserListManager userlist = new UserListManager(event);
                     // Assuming 'event.getWaitlistUserIds()' returns your ArrayList<String>
-                    if (Boolean.TRUE) {
+
+                    if (userlist.inWaitlist(waitlistID)) {
                         eventArrayList.add(event);
                     }
                 }

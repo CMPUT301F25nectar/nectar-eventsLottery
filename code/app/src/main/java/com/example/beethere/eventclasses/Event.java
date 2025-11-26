@@ -278,9 +278,6 @@ public class Event {
 
 
 
-
-
-
     public LocalDate converRegEnd() {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 

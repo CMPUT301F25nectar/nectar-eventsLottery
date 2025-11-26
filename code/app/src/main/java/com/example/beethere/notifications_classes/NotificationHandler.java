@@ -38,20 +38,6 @@ public class NotificationHandler {
         dbfunctions = new DatabaseFunctions();
     }
 
-
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-
     /**
      * Sends lottery result notifications to winners and losers
      * @param eventId The unique identifier for the event
@@ -72,7 +58,6 @@ public class NotificationHandler {
             sendLotteryLostNotification(loser, eventId, eventName, organizerDeviceId);
         }
     }
-
 
     /**
      * Sends "you won the lottery!" notification to a selected user

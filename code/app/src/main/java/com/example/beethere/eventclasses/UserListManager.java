@@ -198,6 +198,7 @@ public class UserListManager {
     }
 
     public Boolean waitlistFull() {
+        if(event.getWaitList() == null) return Boolean.FALSE;
         if (event.getMaxWaitlist() > waitlistSize()) return Boolean.FALSE;
         return Boolean.TRUE;
     }
@@ -227,4 +228,6 @@ public class UserListManager {
         }
         writer.close();
     }
+
+
 }

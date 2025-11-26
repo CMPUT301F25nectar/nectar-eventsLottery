@@ -40,7 +40,7 @@
             android:inputType="textPersonName"
             android:fontFamily="@font/work_sans"
             android:textColor="@color/dark_brown"
-            android:textColorHint="@color/gray"/>
+            android:textColorHint="@color/grey"/>
 
         <Space
             android:layout_width="12dp"
@@ -57,7 +57,7 @@
             android:inputType="textPersonName"
             android:fontFamily="@font/work_sans"
             android:textColor="@color/dark_brown"
-            android:textColorHint="@color/gray"/>
+            android:textColorHint="@color/grey"/>
     </LinearLayout>
 
     <TextView
@@ -110,7 +110,7 @@
                 android:inputType="phone"
                 android:fontFamily="@font/work_sans"
                 android:textColor="@color/dark_brown"
-                android:textColorHint="@color/gray"/>
+                android:textColorHint="@color/grey"/>
         </LinearLayout>
 
         <View
@@ -146,7 +146,7 @@
                 android:inputType="textEmailAddress"
                 android:fontFamily="@font/work_sans"
                 android:textColor="@color/dark_brown"
-                android:textColorHint="@color/gray"/>
+                android:textColorHint="@color/grey"/>
         </LinearLayout>
 
     </LinearLayout>
