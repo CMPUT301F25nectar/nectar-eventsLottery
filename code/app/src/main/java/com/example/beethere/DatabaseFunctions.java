@@ -1,6 +1,6 @@
 package com.example.beethere;
 
-import android.app.Notification;
+import com.example.beethere.notifications_classes.Notification;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;

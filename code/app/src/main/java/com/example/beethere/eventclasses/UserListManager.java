@@ -85,7 +85,7 @@ public class UserListManager {
     public void addInvite(User user){
         // must be in waitlist to get invite in the first place
         if(inWaitlist(user)){
-            event.getInvited().put(user.getName(), Boolean.TRUE);
+            event.getInvited().put(user.getDeviceid(), Boolean.TRUE);
             removeWaitlist(user);
         }
         // option to also automatically send the invite notif
@@ -99,7 +99,7 @@ public class UserListManager {
     private void removeInvite(User user){
         // check if user has been invited/in invite list
         if(inInvite(user)){
-            event.getInvited().remove(user.getName());
+            event.getInvited().remove(user.getDeviceid());
         }
     }
 
@@ -162,8 +162,9 @@ public class UserListManager {
      * from the waitlist and adds them to the invite list
      */
     public void selectInvitations(Integer range){
+        // if the registered list would be overfilled if all invites sent were accepted, don't do it
 
-        if(waitlistSize() < event.getEntrantMax()) range = waitlistSize();
+        if(waitlistSize() < range) range = waitlistSize();
 
         for(int i = 0; i < range; i++){
             selectNewInvite();
