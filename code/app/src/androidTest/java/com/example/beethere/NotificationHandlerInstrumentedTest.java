@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import android.util.Log;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -23,11 +25,13 @@ import java.util.List;
 @RunWith(AndroidJUnit4.class)
 public class NotificationHandlerInstrumentedTest {
 
+    private DatabaseFunctions dbfunctions;
     private NotificationHandler notificationHandler;
 
     @Before
     public void setup() {
-        notificationHandler = new NotificationHandler();  // no need for db as FirebaseFirestore.getInstance() is used directly
+        dbfunctions = new DatabaseFunctions();  // no need for db as FirebaseFirestore.getInstance() is used directly
+        notificationHandler = new NotificationHandler();
     }
 
     @Test
@@ -37,21 +41,20 @@ public class NotificationHandlerInstrumentedTest {
         alice.setDeviceid("device_alice_123");
 
         // Set up the listener for this user
-        notificationHandler.setupNotificationListener(alice.getDeviceid(), new NotificationHandler.NotificationCallback() {
+        DatabaseCallback<List<Notification>> callback = new DatabaseCallback<>() {
             @Override
-            public void onSuccess(List<Notification> notifications) {
-                // Verify that the notifications list is not empty and contains the notification sent
+            public void onCallback(List<Notification> notifications) {
                 assertTrue(!notifications.isEmpty());
                 assertEquals("Sample Event", notifications.get(0).getEventName());
                 android.util.Log.d("NotificationTest", "Real-time notifications received");
             }
-
             @Override
-            public void onError(String error) {
+            public void onError(Exception e) {
                 // Fail the test if there is an error in fetching notifications
-                fail("Error receiving notifications: " + error);
+                fail("Error receiving notifications: " + e);
             }
-        });
+        };
+        //dbfunctions.getNotifsDB(alice.getDeviceid(), callback);
 
         // Send a new notification for this user
         HashMap<User, Boolean> inviteList = new HashMap<>();

@@ -1,12 +1,18 @@
 package com.example.beethere.notifications_classes;
 
+import android.util.Log;
+
+import com.example.beethere.DatabaseCallback;
+import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.User;
+import com.example.beethere.eventclasses.Event;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *This is a class that handles all notifications operations for the BEE-THERE app
@@ -14,7 +20,6 @@ import java.util.List;
  */
 public class NotificationHandler {
     /** Firebase Firestore instance for database operations*/
-    private FirebaseFirestore db;
 
     // Notification types
     /**Notification type constant for lottery winner*/
@@ -24,13 +29,14 @@ public class NotificationHandler {
     /**Notification type constant for organizer messages*/
     public String TYPE_ORGANIZER_MESSAGE = "organizerMessage";
 
+    private DatabaseFunctions dbfunctions;
+
     /**
      * Constructor that initializes Firebase instance
      */
     public NotificationHandler(){
-        this.db = FirebaseFirestore.getInstance();
+        dbfunctions = new DatabaseFunctions();
     }
-
 
     /**
      * Sends lottery result notifications to winners and losers
@@ -41,10 +47,10 @@ public class NotificationHandler {
      * @param organizerDeviceId The device id of the organizer who sends the notifications
      */
     public void sendLotteryNotifications(String eventId, String eventName,
-                                         HashMap<User, Boolean> inviteList,
+                                         Map<String, Boolean> inviteList,
                                          ArrayList<User> waitlist,
                                          String organizerDeviceId){
-        for (User winner : inviteList.keySet()){
+        for (String winner : inviteList.keySet()){
             sendLotteryWonNotification(winner, eventId, eventName, organizerDeviceId);
         }
 
@@ -53,19 +59,18 @@ public class NotificationHandler {
         }
     }
 
-
     /**
      * Sends "you won the lottery!" notification to a selected user
-     * @param user The user who won/selected
+     * @param deviceID The deviceID of the user who won/selected
      * @param eventId The unique identifier of the event
      * @param eventName The event name
      * @param organizerDeviceId The device id of the organizer
      */
-    private void sendLotteryWonNotification(User user, String eventId, String eventName, String organizerDeviceId) {
+    private void sendLotteryWonNotification(String deviceID, String eventId, String eventName, String organizerDeviceId) {
         String message = "Congratulations! You've been selected for " + eventName + ". Accept your invitation now!";
 
         List<String> deviceIds = new ArrayList<>();
-        deviceIds.add(user.getDeviceid());
+        deviceIds.add(deviceID);
 
         Notification notification = new Notification(
                 eventId,
@@ -77,7 +82,7 @@ public class NotificationHandler {
                 organizerDeviceId
         );
 
-        saveNotificationToFirebase(notification);
+        dbfunctions.addNotifsDB(notification);
     }
 
 
@@ -104,7 +109,7 @@ public class NotificationHandler {
                 organizerDeviceId
         );
 
-        saveNotificationToFirebase(notification);
+        dbfunctions.addNotifsDB(notification);
     }
 
 
@@ -128,70 +133,7 @@ public class NotificationHandler {
                     organizerDeviceId
             );
 
-            saveNotificationToFirebase(notification);
+            dbfunctions.addNotifsDB(notification);
         }
-    }
-
-
-    /**
-     * Sets up real-time listener for notifications
-     * Automatically updates when new notifications arrive
-     * @param deviceId The device id of the user
-     * @param callback Callback interface for success/error handling
-     */
-    public void setupNotificationListener(String deviceId, NotificationCallback callback) {
-        db.collection("notifications")
-                .whereArrayContains("deviceIds", deviceId)
-                //.orderBy("timestamp", Query.Direction.DESCENDING)
-                .addSnapshotListener((queryDocumentSnapshots, error) -> {
-                    if (error != null) {
-                        callback.onError(error.getMessage());
-                        return;
-                    }
-
-                    if (queryDocumentSnapshots != null) {
-                        List<Notification> notifications = new ArrayList<>();
-                        for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
-                            Notification notif = queryDocumentSnapshots.getDocuments().get(i).toObject(Notification.class);
-                            if (notif != null) {
-                                notifications.add(notif);
-                            }
-                        }
-                        callback.onSuccess(notifications);
-                    }
-                });
-    }
-
-    /**
-     * Saves a notification to Firebase Firestore
-     * @param notification The notification object to save
-     */
-    private void saveNotificationToFirebase(Notification notification){
-        db.collection("notifications")
-                .add(notification)
-                .addOnSuccessListener(aVoid -> {
-                    android.util.Log.d("NotificationHandler", "notif saved" +notification.getEventName());
-                })
-                .addOnFailureListener(e ->{
-                    android.util.Log.e("NotificationHandler", "failed " + e.getMessage());
-                });
-                //.set(notification);
-    }
-
-    /**
-     * Callback interface for asynchronous notification retrieval
-     */
-    public interface NotificationCallback {
-        /**
-         * Called when notifications are successfully retrieved
-         * @param notifications List of notifications
-         */
-        void onSuccess(List<Notification> notifications);
-
-        /**
-         * Called when an error occurs
-         * @param error Error message
-         */
-        void onError(String error);
     }
 }

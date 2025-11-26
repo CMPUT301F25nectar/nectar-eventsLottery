@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services")
+    alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
 }
 
 android {
@@ -29,13 +30,20 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     buildFeatures {
         viewBinding = true
     }
+}
+
+secrets {
+    propertiesFileName = "secrets.properties"
+    defaultPropertiesFileName = "local.defaults.properties"
 }
 
 dependencies {
@@ -47,8 +55,12 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+    //implementation(libs.cardview)
+    implementation("com.google.android.material:material:1.10.0")
+    //implementation(libs.fragment.testing)
     implementation(libs.cardview)
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation(libs.play.services.maps)
     implementation("com.google.zxing:core:3.5.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
