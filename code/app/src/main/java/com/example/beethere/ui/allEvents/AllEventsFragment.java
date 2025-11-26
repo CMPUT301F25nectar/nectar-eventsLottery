@@ -21,13 +21,11 @@ import androidx.navigation.Navigation;
 import com.example.beethere.DatabaseCallback;
 import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.R;
-import com.example.beethere.User;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.eventclasses.EventDataViewModel;
 import com.example.beethere.eventclasses.EventsAdapter;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 
 
@@ -105,7 +103,7 @@ public class AllEventsFragment extends Fragment {
         };
         functions.getEventsDB(Boolean.FALSE, callback);
         LocalDate currentDate = LocalDate.now();
-        eventList.removeIf(event -> currentDate.isAfter(event.converRegEnd()));
+        eventList.removeIf(event -> currentDate.isAfter(event.convertRegEnd()));
 
     }
 

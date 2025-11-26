@@ -22,6 +22,8 @@ public class UserListManager {
 
     // Constructors
 
+    public UserListManager (){}
+
     public UserListManager (Event event){
         this.event = event;
         this.random = new Random();

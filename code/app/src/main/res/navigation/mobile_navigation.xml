@@ -19,7 +19,12 @@
         android:id="@+id/navigation_joined"
         android:name="com.example.beethere.ui.joined.JoinedFragment"
         android:label="@string/title_joined"
-        tools:layout="@layout/fragment_joined" />
+        tools:layout="@layout/fragment_joined">
+        <action
+            android:id="@+id/joinedToEventDetails"
+            app:destination="@+id/navigation_event_details"
+            />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_myEvents"
@@ -85,6 +90,7 @@
             android:id="@+id/ViewEntrantsToMyEvents"
             app:destination="@id/navigation_myEvents" />
     </fragment>
+
     <fragment
         android:id="@+id/personalSettingsFragment"
         android:name="com.example.beethere.ui.profile.PersonalSettingsFragment"

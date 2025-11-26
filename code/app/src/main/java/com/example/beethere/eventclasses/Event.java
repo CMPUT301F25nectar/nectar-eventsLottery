@@ -39,12 +39,12 @@ public class Event {
     // randomly selects new invite when person declines
     Boolean autoRandomSelection;
 
-    private int maxWaitlist;
+    private Integer maxWaitlist;
     private ArrayList<User> waitList;
 
     private Map<String, Boolean> invited;
 
-    private int entrantMax;
+    private Integer entrantMax;
     private ArrayList<User> registered;
 
 
@@ -65,14 +65,14 @@ public class Event {
      * @param eventDateEnd Date, when the event itself ends
      * @param eventTimeStart Date, the time the event starts
      * @param eventTimeEnd  Date, the time the event ends
-     * @param entrantMax   integer, max number of entrants, individuals who can attend the event
+     * @param entrantMax   Integereger, max number of entrants, individuals who can attend the event
      * @param getLocation boolean, organizer requires geolocation of participants to be collected
      * @param autoRandomSelection boolean, if those in the waiting list should be selected on invitees cancellation
      */
     public Event(User organizer, String eventID, String title, String description, String posterPath,
                  Boolean status, String regStart, String regEnd, String eventDateStart,
                  String eventDateEnd, String eventTimeStart, String eventTimeEnd,
-                 int entrantMax, Boolean getLocation, ArrayList<User> waitList, Map<String, Boolean> invited,
+                 Integer entrantMax, Boolean getLocation, ArrayList<User> waitList, Map<String, Boolean> invited,
                  ArrayList<User> registered, Boolean autoRandomSelection) {
         this.organizer = organizer;
         this.eventID = eventID;
@@ -97,8 +97,8 @@ public class Event {
     public Event(User organizer, String eventID, String title, String description, String posterPath,
                  Boolean status,String regStart, String regEnd, String eventDateStart,
                  String eventDateEnd, String eventTimeStart, String eventTimeEnd,
-                 int entrantMax, Boolean getLocation, ArrayList<User> waitList, Map<String, Boolean> invited,
-                 ArrayList<User> registered, Boolean autoRandomSelection, int maxWaitlist) {
+                 Integer entrantMax, Boolean getLocation, ArrayList<User> waitList, Map<String, Boolean> invited,
+                 ArrayList<User> registered, Boolean autoRandomSelection, Integer maxWaitlist) {
         this.organizer = organizer;
         this.eventID = eventID;
         this.title = title;
@@ -232,11 +232,11 @@ public class Event {
         this.autoRandomSelection = autoRandomSelection;
     }
 
-    public int getMaxWaitlist() {
+    public Integer getMaxWaitlist() {
         return maxWaitlist;
     }
 
-    public void setMaxWaitlist(int maxWaitlist) {
+    public void setMaxWaitlist(Integer maxWaitlist) {
         this.maxWaitlist = maxWaitlist;
     }
 
@@ -259,11 +259,11 @@ public class Event {
     }
 
     // EVENT DETAILS FRAGMENT
-    public int getEntrantMax() {
+    public Integer getEntrantMax() {
         return entrantMax;
     }
 
-    public void setEntrantMax(int entrantMax) {
+    public void setEntrantMax(Integer entrantMax) {
         this.entrantMax = entrantMax;
     }
 
@@ -278,7 +278,7 @@ public class Event {
 
 
 
-    public LocalDate converRegEnd() {
+    public LocalDate convertRegEnd() {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         return LocalDate.parse(this.regEnd, dateFormatter);
