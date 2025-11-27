@@ -44,13 +44,18 @@ public class EventsAdapter extends ArrayAdapter<Event> {
         TextView title = view.findViewById(R.id.EventsTitle);
         ImageView poster = view.findViewById(R.id.EventsPoster);
         TextView enrollStart = view.findViewById(R.id.EventEnrollStart);
-        TextView enrollEnd = view.findViewById(R.id.EventEnrollEnd);
+        /*TextView enrollEnd = view.findViewById(R.id.EventEnrollEnd);*/
 
         if (event != null) {
             title.setText(event.getTitle());
             // poster poster.setImageResource(event.getPoster());
-            enrollStart.setText(event.getRegStart());
-            enrollEnd.setText(event.getRegEnd());
+            enrollStart.setText(String
+                    .format(
+                            getContext().getString(R.string.event_date),
+                            event.getRegStart(),
+                            event.getRegEnd()));
+            /*enrollStart.setText(event.getRegStart());
+            enrollEnd.setText(event.getRegEnd());*/
         }
 
         return view;

@@ -21,7 +21,7 @@
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="80dp"
         android:background="@drawable/button_back_arrow"
         android:backgroundTint="@color/dark_brown"
         android:drawableEnd="@drawable/outline_arrow_back_24"
@@ -38,7 +38,7 @@
         android:text="@string/placeholder"
         android:textColor="@color/dark_brown"
         android:fontFamily="@font/work_sans_bold"
-        android:textSize="32sp"
+        android:textSize="40sp"
         app:layout_constraintEnd_toStartOf="@+id/button_QR"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/event_image" />
@@ -48,9 +48,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/qr_code"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/event_image"
-        android:src="@drawable/qr_code"/>
+        app:layout_constraintTop_toBottomOf="@+id/event_image" />
 
     <TextView
         android:id="@+id/hostedBy"
@@ -68,7 +69,7 @@
         android:id="@+id/text_host_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/work_sans"
+        android:fontFamily="@font/work_sans_medium"
         android:text="@string/placeholder"
         android:textColor="@color/dark_brown"
         android:textSize="18sp"
@@ -80,11 +81,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="20dp"
-        android:textColor="@color/dark_brown"
-        android:fontFamily="@font/work_sans"
-        android:textSize="12sp"
+        android:fontFamily="@font/work_sans_medium"
         android:text="@string/placeholder"
+        android:textColor="@color/dark_brown"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -95,10 +97,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
         android:fontFamily="@font/work_sans_bold"
-        android:textColor="@color/dark_brown"
         android:text="Geo-Location Required: "
-        android:textSize="12sp"
+        android:textColor="@color/dark_brown"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_description" />
 
@@ -106,10 +109,11 @@
         android:id="@+id/text_geoloc_req"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/work_sans"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/work_sans_medium"
         android:text="@string/placeholder"
         android:textColor="@color/dark_brown"
-        android:textSize="12sp"
+        android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/geoLocReq"
         app:layout_constraintTop_toBottomOf="@+id/text_description" />
 
@@ -121,7 +125,7 @@
         android:fontFamily="@font/work_sans_bold"
         android:textColor="@color/dark_brown"
         android:text="Event Date: "
-        android:textSize="12sp"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/geoLocReq" />
 
@@ -129,9 +133,9 @@
         android:id="@+id/text_event_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/work_sans"
+        android:fontFamily="@font/work_sans_medium"
         android:textColor="@color/dark_brown"
-        android:textSize="12sp"
+        android:textSize="18sp"
         android:text="@string/placeholder"
         app:layout_constraintStart_toEndOf="@+id/event_date_header"
         app:layout_constraintTop_toBottomOf="@+id/text_geoloc_req" />
@@ -144,7 +148,7 @@
         android:fontFamily="@font/work_sans_bold"
         android:textColor="@color/dark_brown"
         android:text="Event Time: "
-        android:textSize="12sp"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/event_date_header" />
 
@@ -152,10 +156,10 @@
         android:id="@+id/text_event_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/work_sans"
+        android:fontFamily="@font/work_sans_medium"
         android:text="@string/placeholder"
         android:textColor="@color/dark_brown"
-        android:textSize="12sp"
+        android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/event_time_header"
         app:layout_constraintTop_toBottomOf="@+id/text_event_date" />
 
@@ -167,7 +171,7 @@
         android:fontFamily="@font/work_sans_bold"
         android:textColor="@color/dark_brown"
         android:text="Max Attendees: "
-        android:textSize="12sp"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/event_time_header" />
 
@@ -175,10 +179,10 @@
         android:id="@+id/text_max_enroll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/work_sans"
+        android:fontFamily="@font/work_sans_medium"
         android:text="@string/placeholder"
         android:textColor="@color/dark_brown"
-        android:textSize="12sp"
+        android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/maximum_enroll"
         app:layout_constraintTop_toBottomOf="@+id/text_event_time" />
 
@@ -189,8 +193,8 @@
         android:layout_marginStart="20dp"
         android:fontFamily="@font/work_sans_bold"
         android:textColor="@color/dark_brown"
-        android:text="Number of People Waitlisted: "
-        android:textSize="12sp"
+        android:text="Number of People Waitlisted:  "
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/maximum_enroll" />
 
@@ -198,10 +202,10 @@
         android:id="@+id/text_waitlist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/work_sans"
+        android:fontFamily="@font/work_sans_medium"
         android:text="@string/placeholder"
         android:textColor="@color/dark_brown"
-        android:textSize="12sp"
+        android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/current_waitlist"
         app:layout_constraintTop_toBottomOf="@+id/text_max_enroll" />
 

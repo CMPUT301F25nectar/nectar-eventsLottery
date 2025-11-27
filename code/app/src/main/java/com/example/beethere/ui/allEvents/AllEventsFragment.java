@@ -26,18 +26,27 @@ import com.example.beethere.eventclasses.EventDataViewModel;
 import com.example.beethere.adapters.EventsAdapter;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Objects;
 
 
 public class AllEventsFragment extends Fragment {
 
     private ArrayList<Event> eventList;
+    private ArrayList<Event> displayedList;
     private EventsAdapter eventsAdapter;
+    DateTimeFormatter dateFormatter;
+    DateTimeFormatter timeFormatter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_all_events, container, false);
 
+        dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US);
         return view;
     }
 
@@ -49,13 +58,13 @@ public class AllEventsFragment extends Fragment {
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                filterEvents(query);
+                searchEvents(query);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                filterEvents(newText);
+                searchEvents(newText);
                 return true;
             }
         });
@@ -65,12 +74,23 @@ public class AllEventsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // filter dialog fragment
+
+
+
+
+
+                /*displayedList.clear();
+                filterDate(someDate, someDate, "reg");
+                filterDate(someDate, someDate, "eventDate");
+                filterTime(someTime, someTime);
+                filterTags(someTags);*/
             }
         });
 
 
         eventList = new ArrayList<Event>();
-        eventsAdapter = new EventsAdapter(getContext(), eventList);
+        displayedList = new ArrayList<>();
+        eventsAdapter = new EventsAdapter(getContext(), displayedList);
         ListView events = view.findViewById(R.id.event_display);
         events.setAdapter(eventsAdapter);
         events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -93,11 +113,14 @@ public class AllEventsFragment extends Fragment {
         DatabaseCallback<ArrayList<Event>> callback = new DatabaseCallback<>() {
             @Override
             public void onCallback(ArrayList<Event> result) {
+                eventList.clear();
                 for (Event event : result) {
                     if(currentDate.isBefore(event.convertRegEnd())) {
                         eventList.add(event);
                     }
                 }
+                displayedList.clear();
+                displayedList.addAll(eventList);
                 eventsAdapter.notifyDataSetChanged();
             }
             @Override
@@ -106,25 +129,87 @@ public class AllEventsFragment extends Fragment {
             }
         };
         functions.getEventsDB(Boolean.FALSE, callback);
-
-        //eventList.removeIf(event -> currentDate.isAfter(event.convertRegEnd()));
     }
 
-    private void filterEvents(String query) {
+    private void searchEvents(String query) {
         String lowerQuery = query.toLowerCase().trim();
 
-        eventList.clear();
+        displayedList.clear();
         if (lowerQuery.isEmpty()) {
-            eventList.addAll(eventList);
+            displayedList.addAll(eventList);
         } else {
             for (Event event : eventList) {
-                if (event.getTitle().toLowerCase().contains(lowerQuery)) {
-                    eventList.add(event);
+                String title = event.getTitle().toLowerCase();
+                String description = event.getDescription().toLowerCase();
+                if (title.contains(lowerQuery) || description.contains(lowerQuery)) {
+                    displayedList.add(event);
                 }
             }
         }
-
         eventsAdapter.notifyDataSetChanged();
     }
 
+    private void filterDate(LocalDate filterStart, LocalDate filterEnd, String tag){
+        LocalDate startDate;
+        LocalDate endDate;
+
+        for (Event event : eventList) {
+
+            if (Objects.equals(tag, "reg")) {
+                startDate = convertDate(event.getRegStart());
+                endDate = convertDate(event.getRegEnd());
+            } else {
+                startDate = convertDate(event.getEventDateStart());
+                endDate = convertDate(event.getEventDateEnd());
+            }
+
+            if (startDate.isAfter(filterStart) && endDate.isBefore(filterEnd)) {
+                displayedList.add(event);
+            }
+        }
+
+    }
+
+    private void filterTime(LocalTime filterStart, LocalTime filterEnd){
+        LocalTime startTime;
+        LocalTime endTime;
+        for (Event event : eventList) {
+
+            startTime = convertTime(event.getEventTimeStart());
+            endTime = convertTime(event.getEventTimeEnd());
+
+            if (startTime.isAfter(filterStart) && endTime.isBefore(filterEnd)) {
+                displayedList.add(event);
+            }
+        }
+
+    }
+
+    /*private void filterTags(ArrayList<String> filterTags){
+
+        ArrayList<String> tags;
+        for (Event event : eventList) {
+
+            tags = event.getTags();
+
+            for (String tag : filterTags) {
+
+                tag = tag.toLowerCase();
+                if (tags.contains(tag) && !displayedList.contains(event)) {
+                    displayedList.add(event);
+                }
+
+            }
+
+        }
+
+    }*/
+
+    public LocalDate convertDate(String stringDate) {
+        return LocalDate.parse(stringDate, dateFormatter);
+    }
+
+    public LocalTime convertTime(String stringTime) {
+        return LocalTime.parse(stringTime, timeFormatter);
+    }
 }

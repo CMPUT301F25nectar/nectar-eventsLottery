@@ -5,58 +5,58 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent">
 
-    <!--<SearchView
-        android:id="@+id/searchView"
-        android:layout_width="325dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="60dp"
+    <TextView
+        android:id="@+id/joinedTitle"
+        android:layout_width="225dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="65dp"
+        android:fontFamily="@font/space_mono_bold"
+        android:text="@string/title_joined"
+        android:textColor="@color/dark_brown"
+        android:textSize="35sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageButton
-        android:id="@+id/button_filter"
-        android:layout_width="40dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="60dp"
-        android:src="@drawable/filter"
-        app:layout_constraintStart_toEndOf="@+id/searchView"
-        app:layout_constraintTop_toTopOf="parent" />-->
 
     <Button
         android:id="@+id/button_waitlisted"
         android:layout_width="125dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
+        android:fontFamily="@font/work_sans_semibold"
         android:text="@string/waitlisted"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toStartOf="@+id/button_enrolled"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/joinedTitle" />
 
     <Button
         android:id="@+id/button_enrolled"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/work_sans_semibold"
         android:text="@string/enrolled"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/joinedTitle" />
 
     <Button
         android:id="@+id/button_history"
         android:layout_width="125dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="20dp"
+        android:fontFamily="@font/work_sans_semibold"
         android:text="@string/history"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/button_enrolled"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/joinedTitle" />
 
     <ListView
         android:id="@+id/event_display"

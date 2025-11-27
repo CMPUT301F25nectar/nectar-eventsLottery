@@ -81,7 +81,7 @@
                 android:lineSpacingExtra="-6dp"
                 android:fontFamily="@font/space_mono_bold"
                 android:textColor="@color/dark_brown"
-                android:text="GGGGGGGGGGGGGGGGGGGGGG" />
+                android:text="@string/placeholder" />
 
             <TextView
                 android:id="@+id/EventEnrollPeriod"
@@ -104,8 +104,8 @@
                 android:fontFamily="@font/work_sans_semibold"
                 android:textColor="@color/dark_brown"
                 android:textSize="15sp"
-                android:text="00-00-0000" />
-
+                android:text="@string/placeholder" />
+<!--
             <TextView
                 android:id="@+id/EventDash"
                 android:layout_width="wrap_content"
@@ -126,7 +126,7 @@
                 android:fontFamily="@font/work_sans_semibold"
                 android:textColor="@color/dark_brown"
                 android:textSize="15sp"
-                android:text="00-00-0000"/>
+                android:text="@string/placeholder"/>-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
