@@ -24,15 +24,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.R;
 import com.example.beethere.adapters.MyEventsAdapter;
 import com.example.beethere.eventclasses.Event;
-import com.example.beethere.eventclasses.EventDataViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -44,36 +43,31 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class EditingEventFragment extends Fragment implements NavigationBarView.OnItemSelectedListener {
+public class EditingEventFragment extends Fragment {
 
     private ImageView eventPoster;
     public Uri imageURL;
 
-    DatabaseFunctions dbFunctions = new DatabaseFunctions();
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private DatabaseFunctions dbFunctions = new DatabaseFunctions();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private EditText eventTitle, regStart, regEnd, eventStart,
             eventEnd, timeStart, timeEnd, eventDesc;
     private AppCompatButton deleteEventButton;
+    private TextView errorMessage;
 
     private Uri posterUri;
-    private TextView errorMessage;
-    private MyEventsAdapter myEventsAdapter;
-
-    private String eventTitleInput, regStartInput, regEndInput, eventStartInput,
-            eventEndInput, timeStartInput, timeEndInput, eventDescInput, posterInput;
-
-    LocalDate currentDate = LocalDate.now();
-
-    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US);
-    private ActivityResultLauncher<Intent> pickImageLauncher;
-
     private ArrayList<Event> events;
     private static final String ARG_EVENT_ID = "eventID";
 
     private Event event;
     private String eventID;
+
+    LocalDate currentDate = LocalDate.now();
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US);
+
+    private ActivityResultLauncher<Intent> pickImageLauncher;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,7 +79,8 @@ public class EditingEventFragment extends Fragment implements NavigationBarView.
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_editing_event, container, false);
 
         eventPoster = view.findViewById(R.id.poster);
@@ -99,8 +94,81 @@ public class EditingEventFragment extends Fragment implements NavigationBarView.
         eventDesc = view.findViewById(R.id.description);
         errorMessage = view.findViewById(R.id.errorMessage);
         deleteEventButton = view.findViewById(R.id.deleteEvent);
-        
 
+        loadEventData();
+
+        pickImageLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        Uri uri = result.getData().getData();
+                        try {
+                            requireContext().getContentResolver().takePersistableUriPermission(
+                                    uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            );
+                        } catch (SecurityException e) {
+                            e.printStackTrace();
+                        }
+                        imageURL = uri;
+                        eventPoster.setImageURI(imageURL);
+                        eventPoster.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    }
+                }
+        );
+
+        eventPoster.setOnClickListener(v -> choosePoster());
+
+        timeStart.setOnClickListener(v -> {
+            TimePickerFragment dialog = new TimePickerFragment(timeStart);
+            dialog.show(getParentFragmentManager(), "timePickerStart");
+        });
+
+        timeEnd.setOnClickListener(v -> {
+            TimePickerFragment dialog = new TimePickerFragment(timeEnd);
+            dialog.show(getParentFragmentManager(), "timePickerEnd");
+        });
+
+        AppCompatButton completeButton = view.findViewById(R.id.completeButton);
+        completeButton.setOnClickListener(v -> complete(view));
+
+        AppCompatImageButton backButton = view.findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> showGoBackDialog(view));
+
+        deleteEventButton.setOnClickListener(v -> showDeleteDialog());
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        BottomNavigationView bottomNav = requireActivity().findViewById(R.id.nav_view);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+
+            if (bottomNav.getSelectedItemId() == itemId) return true;
+
+            NavController navController = NavHostFragment.findNavController(this);
+            int currentDestination = navController.getCurrentDestination().getId();
+
+            if (currentDestination == R.id.navigation_edit_event) {
+                GoBackDialogFragment dialog = new GoBackDialogFragment();
+                dialog.setGoBackListener(() -> {
+                    navigateTo(itemId);
+                    bottomNav.setSelectedItemId(itemId);
+                });
+                dialog.show(getParentFragmentManager(), "GoBackDialog");
+                return false;
+            } else {
+                navigateTo(itemId);
+                bottomNav.setSelectedItemId(itemId);
+                return true;
+            }
+        });
+    }
+
+    private void loadEventData() {
         db.collection("events")
                 .document(eventID)
                 .get()
@@ -123,109 +191,48 @@ public class EditingEventFragment extends Fragment implements NavigationBarView.
                         eventPoster.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     }
 
-                    if (!regStart.getText().toString().isEmpty() && !regEnd.getText().toString().isEmpty()) {
-                        LocalDate regStartDate = LocalDate.parse(regStart.getText().toString(), dateFormatter);
-                        LocalDate regEndDate = LocalDate.parse(regEnd.getText().toString(), dateFormatter);
-
-                        if (!currentDate.isBefore(regStartDate)) {
-                            regStart.setEnabled(false);
-                            regStart.setBackgroundColor(Color.LTGRAY); //TODO this needs fixing
-                        } else {
-                            regStart.setOnClickListener(v -> showDatePicker(regStart));
-                        }
-                        if (!currentDate.isBefore(regEndDate)) {
-                            regEnd.setEnabled(false);
-                            regEnd.setBackgroundColor(Color.LTGRAY);  //TODO this needs fixing
-                        } else {
-                            regEnd.setOnClickListener(v -> showDatePicker(regEnd));
-                        }
-                    }
-
-                    eventStart.setOnClickListener(v -> showDatePicker(eventStart));
-                    eventEnd.setOnClickListener(v -> showDatePicker(eventEnd));
+                    setupDatePickers();
                 });
-
-        BottomNavigationView bottomNav = requireActivity().findViewById(R.id.nav_view);
-
-        BottomNavigationView.OnItemSelectedListener listener;
-
-        listener = item -> {
-            int itemId = item.getItemId();
-
-            GoBackDialogFragment dialog = new GoBackDialogFragment();
-            dialog.setGoBackListener(() -> {
-                NavController nav = Navigation.findNavController(requireView());
-                if (itemId == R.id.navigation_events) {
-                    nav.navigate(R.id.EditEventsToAllEvents);
-                } else if (itemId == R.id.navigation_joined) {
-                    nav.navigate(R.id.EditEventsToJoinedEvents);
-                } else if (itemId == R.id.navigation_myEvents) {
-                    nav.navigate(R.id.EditEventsToMyEvents);
-                } else if (itemId == R.id.navigation_notifications) {
-                    nav.navigate(R.id.EditEventsToNotifications);
-                } else if (itemId == R.id.navigation_profile) {
-                    nav.navigate(R.id.EditEventsToProfile);
-                }
-            });
-
-            dialog.show(getParentFragmentManager(), "GoBackDialog");
-
-            return false;
-        };
-
-        bottomNav.setOnItemSelectedListener(listener);
-
-
-        pickImageLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        Uri uri = result.getData().getData();
-
-                        try {
-                            requireContext().getContentResolver().takePersistableUriPermission(
-                                    uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
-                            );
-                        } catch (SecurityException e) {
-                            e.printStackTrace();
-                        }
-
-                        imageURL = uri;
-                        eventPoster.setImageURI(imageURL);
-
-                        eventPoster.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    }
-                }
-        );
-
-        eventPoster.setOnClickListener(v -> choosePoster());
-        View.OnClickListener dateClickListener = v -> showDatePicker((EditText) v);
-
-        eventStart.setOnClickListener(dateClickListener);
-        eventEnd.setOnClickListener(dateClickListener);
-
-        timeStart.setOnClickListener(v -> {
-            TimePickerFragment dialog = new TimePickerFragment(timeStart);
-            dialog.show(getParentFragmentManager(), "timePickerStart");
-        });
-
-        timeEnd.setOnClickListener(v -> {
-            TimePickerFragment dialog = new TimePickerFragment(timeEnd);
-            dialog.show(getParentFragmentManager(), "timePickerEnd");
-        });
-
-        AppCompatButton completeButton = view.findViewById(R.id.completeButton);
-        completeButton.setOnClickListener(v -> complete(view));
-
-        AppCompatImageButton backButton = view.findViewById(R.id.backButton);
-        backButton.setOnClickListener(v -> showGoBackDialog(view));
-        
-        deleteEventButton.setOnClickListener(v -> showDeleteDialog());
-
-
-        return view;
     }
 
+    private void setupDatePickers() {
+        if (!regStart.getText().toString().isEmpty() && !regEnd.getText().toString().isEmpty()) {
+            LocalDate regStartDate = LocalDate.parse(regStart.getText().toString(), dateFormatter);
+            LocalDate regEndDate = LocalDate.parse(regEnd.getText().toString(), dateFormatter);
+
+            if (!currentDate.isBefore(regStartDate)) {
+                regStart.setEnabled(false);
+                regStart.setBackgroundColor(Color.LTGRAY);
+            } else {
+                regStart.setOnClickListener(v -> showDatePicker(regStart));
+            }
+
+            if (!currentDate.isBefore(regEndDate)) {
+                regEnd.setEnabled(false);
+                regEnd.setBackgroundColor(Color.LTGRAY);
+            } else {
+                regEnd.setOnClickListener(v -> showDatePicker(regEnd));
+            }
+        }
+
+        eventStart.setOnClickListener(v -> showDatePicker(eventStart));
+        eventEnd.setOnClickListener(v -> showDatePicker(eventEnd));
+    }
+
+    private void navigateTo(final int itemId) {
+        NavController nav = NavHostFragment.findNavController(this); // safer
+        if (itemId == R.id.navigation_events) {
+            nav.navigate(R.id.navigation_events);
+        } else if (itemId == R.id.navigation_joined) {
+            nav.navigate(R.id.navigation_joined);
+        } else if (itemId == R.id.navigation_myEvents) {
+            nav.navigate(R.id.navigation_myEvents);
+        } else if (itemId == R.id.navigation_notifications) {
+            nav.navigate(R.id.navigation_notifications);
+        } else if (itemId == R.id.navigation_profile) {
+            nav.navigate(R.id.navigation_profile);
+        }
+    }
 
     private void choosePoster() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -271,7 +278,6 @@ public class EditingEventFragment extends Fragment implements NavigationBarView.
         String newTimeEnd = timeEnd.getText().toString().trim();
         String newDesc = eventDesc.getText().toString().trim();
 
-        // Validation
         if (newTitle.isEmpty() || newRegStart.isEmpty() || newRegEnd.isEmpty() ||
                 newStartDate.isEmpty() || newEndDate.isEmpty() ||
                 newTimeStart.isEmpty() || newTimeEnd.isEmpty()
@@ -302,7 +308,6 @@ public class EditingEventFragment extends Fragment implements NavigationBarView.
             LocalTime startTime = LocalTime.parse(newTimeStart.trim(), timeFormatter);
             LocalTime endTime = LocalTime.parse(newTimeEnd.trim(), timeFormatter);
 
-
             if (regStartDate.isAfter(regEndDate) || eventStartDate.isAfter(eventEndDate)) {
                 errorMessage.setText("Ensure start date is before end date.");
                 errorMessage.setVisibility(View.VISIBLE);
@@ -323,11 +328,10 @@ public class EditingEventFragment extends Fragment implements NavigationBarView.
             Toast.makeText(getActivity(), "Event updated successfully!", Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
-            Log.e("CreateEventFragment", "Parsing error: " + e.getMessage());
+            Log.e("EditingEventFragment", "Parsing error: " + e.getMessage());
             errorMessage.setText("Ensure input formats are correct.");
             errorMessage.setVisibility(View.VISIBLE);
         }
-
     }
 
     private void updateEvent(String titleInput, String regStartInput, String regEndInput,
@@ -346,13 +350,11 @@ public class EditingEventFragment extends Fragment implements NavigationBarView.
         updateDB();
     }
 
-    public void updateDB(){
+    private void updateDB() {
         db.collection("events")
                 .document(eventID)
                 .set(event)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d("EditingEvent", "Event updated successfully in Firestore.");
-                })
+                .addOnSuccessListener(aVoid -> Log.d("EditingEvent", "Event updated successfully."))
                 .addOnFailureListener(e -> {
                     Log.e("EditingEvent", "Failed to update: " + e.getMessage());
                     Toast.makeText(getContext(), "Failed to update event.", Toast.LENGTH_SHORT).show();
@@ -361,20 +363,13 @@ public class EditingEventFragment extends Fragment implements NavigationBarView.
 
     private void showDeleteDialog() {
         ConfirmDeleteFragment dialog = new ConfirmDeleteFragment(eventID);
-
         dialog.setOnEventDeletedListener(id -> {
-            NavController navController = Navigation.findNavController(requireView());
-            navController.navigate(R.id.EditEventsToMyEvents);
+            View fragmentView = getView();
+            if (fragmentView != null) {
+                NavController navController = Navigation.findNavController(fragmentView);
+                navController.navigate(R.id.EditEventsToMyEvents);
+            }
         });
-
         dialog.show(getParentFragmentManager(), "ConfirmDelete");
     }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        return false;
-    }
 }
-
-
-

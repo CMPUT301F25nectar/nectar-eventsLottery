@@ -13,7 +13,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_margin="20dp"
-        android:textSize="15dp"
+        android:textSize="16sp"
         android:fontFamily="@font/work_sans_medium"
         android:textColor="@color/dark_brown"
         android:text="Name Here"/>
@@ -25,7 +25,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/name"
         android:layout_marginStart="20dp"
-        android:textSize="10dp"
+        android:textSize="13sp"
         android:layout_marginTop="5dp"
         android:fontFamily="@font/work_sans_bold"
         android:textColor="@color/dark_brown"
@@ -38,10 +38,20 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/inviteTitle"
         app:layout_constraintTop_toBottomOf="@id/name"
-        android:textSize="10dp"
+        android:textSize="13sp"
         android:layout_marginTop="5dp"
         android:fontFamily="@font/work_sans_bold"
         android:textColor="@drawable/invite_decline"
         android:alpha="0.6"
         android:text="Status"/>
+
+    <ImageButton
+        android:layout_width="27dp"
+        android:layout_height="27dp"
+        android:background="@drawable/delete_invited"
+        android:layout_marginTop="25dp"
+        android:layout_marginStart="200dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/name"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
