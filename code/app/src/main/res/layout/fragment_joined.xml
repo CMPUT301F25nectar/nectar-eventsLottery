@@ -18,7 +18,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_waitlisted"
         android:layout_width="125dp"
         android:layout_height="wrap_content"
@@ -28,11 +28,13 @@
         android:fontFamily="@font/work_sans_semibold"
         android:text="@string/waitlisted"
         android:textAllCaps="false"
+        android:textSize="16sp"
+        android:background="@drawable/button_dark_brown"
         app:layout_constraintEnd_toStartOf="@+id/button_enrolled"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/joinedTitle" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_enrolled"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -40,11 +42,13 @@
         android:fontFamily="@font/work_sans_semibold"
         android:text="@string/enrolled"
         android:textAllCaps="false"
+        android:textSize="16sp"
+        android:background="@drawable/button_dark_brown"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/joinedTitle" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_history"
         android:layout_width="125dp"
         android:layout_height="wrap_content"
@@ -54,6 +58,8 @@
         android:fontFamily="@font/work_sans_semibold"
         android:text="@string/history"
         android:textAllCaps="false"
+        android:textSize="16sp"
+        android:background="@drawable/button_dark_brown"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/button_enrolled"
         app:layout_constraintTop_toBottomOf="@+id/joinedTitle" />

@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
@@ -57,19 +58,25 @@ public class JoinedFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        // inflate view
         View view = inflater.inflate(R.layout.fragment_joined, container, false);
+
+        // get deviceID
         deviceID = new ViewModelProvider(requireActivity()).get(DeviceIDViewModel.class);
+
+        // checking if user exists for deviceID
         userCreated = Boolean.FALSE;
         user = new User();
         checkUserDB();
 
-
+        // AllEvents
         eventList = new ArrayList<>();
         loadEvents();
 
+        // comparison date for history
         currentDate = LocalDate.now();
 
-
+        // each user list (stored, so not calced everytime
         userWaitlist = new ArrayList<>();
         userEnrollList = new ArrayList<>();
         userHistory = new ArrayList<>();
@@ -135,6 +142,10 @@ public class JoinedFragment extends Fragment {
             }
         });
 
+
+
+
+
         ListView events = view.findViewById(R.id.event_display);
         events.setAdapter(eventsAdapter);
         events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -151,6 +162,12 @@ public class JoinedFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
+        super.onViewCreated(view, savedInstanceState);
+    }
+
     public LocalDate convertDate(String stringDate) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -158,7 +175,6 @@ public class JoinedFragment extends Fragment {
     }
 
     public void checkUserDB(){
-
         FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(deviceID.getDeviceID())
@@ -177,21 +193,55 @@ public class JoinedFragment extends Fragment {
     }
 
     public void loadEvents(){
-
         DatabaseFunctions functions = new DatabaseFunctions();
+        // setting up the callback
         DatabaseCallback<ArrayList<Event>> callback = new DatabaseCallback<>() {
             @Override
             public void onCallback(ArrayList<Event> result) {
-                eventList.addAll(result);
-                eventsAdapter.notifyDataSetChanged();
+                // if there is a user account attached to deviceID
+                if (userCreated) {
+                    // get event manager
+                    UserListManager manager = new UserListManager();
+                    // go through each event
+                    for (Event event : result) {
+                        // set manager for event
+                        manager.setEvent(event);
+                        // if user in event waitlist/invite/registered
+                        // add event to list
+                        if(manager.inWaitlist(user)
+                                || manager.inInvite(user)
+                                || manager.inRegistered(user)) {
+                            eventList.add(event);
+                        }
+                    }
+                }
+                // if not user created handled elsewhere, no events added
             }
             @Override
             public void onError(Exception e) {
                 Log.d("Joined", "Joined fragment error getting events from database");
             }
         };
+        // no filtering for actually getting the events
+        // getting the events function call
         functions.getEventsDB(Boolean.FALSE, callback);
     }
+
+
+    public void loadDisplay(String tag){
+        UserListManager manager = new UserListManager();
+        // userList.clear();
+        for (Event event : eventList){
+            if(tag == "waitlist"){
+                // TODO
+            } else if (tag == "enrolled") {
+                // TODO
+            } else if (tag == "history") {
+                // TODO
+            }
+        }
+    }
+
 
     public void loadWaitlist(){
         UserListManager manager = new UserListManager();
@@ -241,6 +291,13 @@ public class JoinedFragment extends Fragment {
             }
         }
     }
+
+
+
+
+
+
+
 
     public void buttonClicked(Button clicked, Button notClicked1, Button notClicked2){
         clicked.setBackgroundColor(getContext().getColor(R.color.yellow));
