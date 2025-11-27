@@ -65,7 +65,7 @@ public class Event {
      * @param eventDateEnd Date, when the event itself ends
      * @param eventTimeStart Date, the time the event starts
      * @param eventTimeEnd  Date, the time the event ends
-     * @param entrantMax   Integereger, max number of entrants, individuals who can attend the event
+     * @param entrantMax   Integer, max number of entrants, individuals who can attend the event
      * @param getLocation boolean, organizer requires geolocation of participants to be collected
      * @param autoRandomSelection boolean, if those in the waiting list should be selected on invitees cancellation
      */
@@ -92,6 +92,7 @@ public class Event {
         this.invited = invited;
         this.registered = registered;
         this.autoRandomSelection = autoRandomSelection;
+        this.maxWaitlist = Integer.MAX_VALUE;
     }
 
     public Event(User organizer, String eventID, String title, String description, String posterPath,

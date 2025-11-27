@@ -20,7 +20,7 @@ import androidx.navigation.Navigation;
 
 import com.example.beethere.R;
 import com.example.beethere.eventclasses.Event;
-import com.example.beethere.eventDetails.QRCodeFragment;
+import com.example.beethere.eventclasses.eventDetails.QRCodeFragment;
 import com.example.beethere.ui.myEvents.ConfirmDeleteFragment;
 
 import java.util.ArrayList;

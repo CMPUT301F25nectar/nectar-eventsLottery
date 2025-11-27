@@ -88,12 +88,16 @@ public class AllEventsFragment extends Fragment {
     }
 
     public void loadEvents(){
-
+        LocalDate currentDate = LocalDate.now();
         DatabaseFunctions functions = new DatabaseFunctions();
         DatabaseCallback<ArrayList<Event>> callback = new DatabaseCallback<>() {
             @Override
             public void onCallback(ArrayList<Event> result) {
-                eventList.addAll(result);
+                for (Event event : result) {
+                    if(currentDate.isBefore(event.convertRegEnd())) {
+                        eventList.add(event);
+                    }
+                }
                 eventsAdapter.notifyDataSetChanged();
             }
             @Override
@@ -102,9 +106,8 @@ public class AllEventsFragment extends Fragment {
             }
         };
         functions.getEventsDB(Boolean.FALSE, callback);
-        LocalDate currentDate = LocalDate.now();
-        eventList.removeIf(event -> currentDate.isAfter(event.convertRegEnd()));
 
+        //eventList.removeIf(event -> currentDate.isAfter(event.convertRegEnd()));
     }
 
     private void filterEvents(String query) {
