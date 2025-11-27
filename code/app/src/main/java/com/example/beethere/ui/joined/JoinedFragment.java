@@ -1,6 +1,5 @@
 package com.example.beethere.ui.joined;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -50,7 +49,7 @@ public class JoinedFragment extends Fragment {
     private DeviceIDViewModel deviceID;
 
     LocalDate currentDate;
-    UserListManager manager;
+
 
     ArrayList<Event> userWaitlist;
     ArrayList<Event> userEnrollList;
@@ -69,7 +68,7 @@ public class JoinedFragment extends Fragment {
         loadEvents();
 
         currentDate = LocalDate.now();
-        manager = new UserListManager();
+
 
         userWaitlist = new ArrayList<>();
         userEnrollList = new ArrayList<>();
@@ -195,7 +194,7 @@ public class JoinedFragment extends Fragment {
     }
 
     public void loadWaitlist(){
-
+        UserListManager manager = new UserListManager();
         userHistory.clear();
         for (Event event : eventList) {
             // current date is before the start of the event
@@ -214,7 +213,7 @@ public class JoinedFragment extends Fragment {
     }
 
     public void loadEnrolled(){
-
+        UserListManager manager = new UserListManager();
         userHistory.clear();
         for (Event event : eventList) {
             manager.setEvent(event);
@@ -228,7 +227,7 @@ public class JoinedFragment extends Fragment {
     }
 
     public void loadHistory(){
-
+        UserListManager manager = new UserListManager();
         userHistory.clear();
         for (Event event: eventList) {
             manager.setEvent(event);
@@ -244,16 +243,16 @@ public class JoinedFragment extends Fragment {
     }
 
     public void buttonClicked(Button clicked, Button notClicked1, Button notClicked2){
-        clicked.setBackgroundColor(Color.RED);
-        clicked.setTextColor(Color.WHITE);
+        clicked.setBackgroundColor(getContext().getColor(R.color.yellow));
+        clicked.setTextColor(getContext().getColor(R.color.dark_brown));
 
         buttonNotClicked(notClicked1);
         buttonNotClicked(notClicked2);
     }
 
     public void buttonNotClicked(Button button){
-        button.setBackgroundColor(Color.BLUE);
-        button.setTextColor(Color.LTGRAY);
+        button.setBackgroundColor(getContext().getColor(R.color.dark_brown));
+        button.setTextColor(getContext().getColor(R.color.yellow));
     }
 
 }

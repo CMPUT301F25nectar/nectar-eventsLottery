@@ -200,9 +200,16 @@ public class UserListManager {
     }
 
     public Boolean waitlistFull() {
-        if(event.getWaitList() == null) return Boolean.FALSE;
-        if (event.getMaxWaitlist() > waitlistSize()) return Boolean.FALSE;
-        return Boolean.TRUE;
+        Boolean result = Boolean.FALSE;
+        //return Boolean.FALSE;
+        if(event.getWaitList() == null) {
+            result = Boolean.FALSE;
+        } else if (event.getMaxWaitlist() > waitlistSize()) {
+            result = Boolean.FALSE;
+        } else if (event.getMaxWaitlist() == waitlistSize()){
+            result = Boolean.TRUE;
+        }
+        return result;
     }
 
     /**
