@@ -285,7 +285,7 @@ public class CreateEventFragment1 extends Fragment {
         Map<String, Boolean> invited = new HashMap<>();
         ArrayList<User> registered = new ArrayList<>();
 
-        Event event;
+        Event event; //TODO: integer.maxvalue, integer instead of int
         if (wantMaxWaitList) {
             event = new Event(organizer, eventID, title, description, posterPath,
                     status, regStart, regEnd, eventStart, eventEnd, timeStart, timeEnd,

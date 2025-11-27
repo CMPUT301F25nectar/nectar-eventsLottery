@@ -6,7 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,7 +23,9 @@ import java.util.Map;
 public class InvitedAdapter extends ArrayAdapter<String> {
 
     private Map<String, Boolean> invitedList;
+    private User user;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private ImageButton deleteInvited;
 
     public InvitedAdapter(Context context, Map<String, Boolean> invitedList) {
         super(context, 0, new ArrayList<>(invitedList.keySet()));
@@ -49,9 +53,24 @@ public class InvitedAdapter extends ArrayAdapter<String> {
         db.collection("users").document(userID)
                 .get()
                 .addOnSuccessListener(document -> {
-                    User user = document.toObject(User.class);
+                    user = document.toObject(User.class);
                     name.setText(user.getName());
                 });
+
+        deleteInvited.setOnClickListener(v -> {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("users").document(userID)
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(getContext(), user.getName() +
+                                "was removed from invites list", Toast.LENGTH_LONG).show();
+                        notifyDataSetChanged();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(getContext(), "Error" + user.getName() +
+                                "could not be removed from invites list", Toast.LENGTH_LONG).show();
+                    });
+        });
 
 
         if (Boolean.TRUE.equals(invited)) {
