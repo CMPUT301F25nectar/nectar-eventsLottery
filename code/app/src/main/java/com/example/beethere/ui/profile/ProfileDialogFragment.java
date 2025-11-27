@@ -68,7 +68,7 @@ public class ProfileDialogFragment extends DialogFragment {
             u.setViolation(false);
 
             dbfunctions.addUserDB(u);
-            /*FirebaseFirestore.getInstance()
+            FirebaseFirestore.getInstance()
                     .collection("users")
                     .document(deviceId)
                     .set(u)
@@ -79,7 +79,7 @@ public class ProfileDialogFragment extends DialogFragment {
                     })
                     .addOnFailureListener(fail ->
                             Toast.makeText(requireContext(), "Failed: " + fail.getMessage(), Toast.LENGTH_LONG).show()
-                    );*/
+                    );
         });
        return dialog;
     }

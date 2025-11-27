@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
 
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -13,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -21,6 +20,7 @@ import androidx.navigation.Navigation;
 import com.example.beethere.DatabaseCallback;
 import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.User;
+import com.example.beethere.adapters.MyEventsAdapter;
 import com.example.beethere.device.DeviceIDViewModel;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.R;
@@ -50,10 +50,10 @@ public class MyEventsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_my_events, container, false);
 
-        Button createEventButton = view.findViewById(R.id.createEventButton);
+        AppCompatButton createEventButton = view.findViewById(R.id.createEventButton);
         noEventsMessage1 = view.findViewById(R.id.noEventsMessage1);
         noEventsMessage2 = view.findViewById(R.id.noEventsMessage2);
-        searchNoEventsMessage = view.findViewById(R.id.searchNoEventsMessage); // make sure this exists in XML
+        searchNoEventsMessage = view.findViewById(R.id.searchNoEventsMessage);
         eventsListView = view.findViewById(R.id.myEventsList);
         searchView = view.findViewById(R.id.myEventsSearch);
 
@@ -68,16 +68,22 @@ public class MyEventsFragment extends Fragment {
                 .document(deviceID)
                 .get()
                 .addOnSuccessListener(snap -> {
-                    currentUser = snap.toObject(User.class);
-                    loadCreatedEvents();
+
+                    if (snap.exists()) {
+                        currentUser = snap.toObject(User.class);
+                        loadCreatedEvents();
+                    } else {
+                        currentUser = null;
+                    }
                 });
+
 
         createEventButton.setOnClickListener(v -> {
             NavController nav = Navigation.findNavController(view);
 
             if (currentUser == null) {
                 nav.navigate(R.id.myEventsToProfileCreation);
-            } else if (currentUser.getViolation()) {
+            } else if (Boolean.TRUE.equals(currentUser.getViolation())) {
                 Toast.makeText(getContext(), "Unable to create events with past organizer violations committed", Toast.LENGTH_SHORT).show();
             } else {
                 nav.navigate(R.id.myEventsToCreateEvents);
@@ -152,11 +158,9 @@ public class MyEventsFragment extends Fragment {
                 noEventsMessage1.setVisibility(View.VISIBLE);
                 noEventsMessage2.setVisibility(View.VISIBLE);
             } else if (!query.isEmpty()) {
-                // User has events but search returned nothing
                 searchNoEventsMessage.setVisibility(View.VISIBLE);
             }
         } else {
-            // There are events to display
             noEventsMessage1.setVisibility(View.GONE);
             noEventsMessage2.setVisibility(View.GONE);
             searchNoEventsMessage.setVisibility(View.GONE);

@@ -20,6 +20,16 @@
           <theme>@style/Theme.BeeThere</theme>
         </config>
       </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/event_image_rounding_no_stroke.xml">
+        <config>
+          <theme>@style/Theme.BeeThere</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/honeycomb.xml">
+        <config>
+          <theme>@style/Theme.BeeThere</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/ic_dashboard_black_24dp.xml">
         <config>
           <theme>@style/Theme.BeeThere</theme>
@@ -31,6 +41,36 @@
         </config>
       </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/ic_profile.xml">
+        <config>
+          <theme>@style/Theme.BeeThere</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/image_button.xml">
+        <config>
+          <theme>@style/Theme.BeeThere</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/invite_decline.xml">
+        <config>
+          <theme>@style/Theme.BeeThere</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/left_arrow.xml">
+        <config>
+          <theme>@style/Theme.BeeThere</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/map_icon.xml">
+        <config>
+          <theme>@style/Theme.BeeThere</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/menu_background.xml">
+        <config>
+          <theme>@style/Theme.BeeThere</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/drawable/outline_arrow_back_24.xml">
         <config>
           <theme>@style/Theme.BeeThere</theme>
         </config>
@@ -192,6 +232,7 @@
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/ui/allEvents/AllEventsFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/ui/allEvents/AllEventsFragment.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/ui/joined/JoinedFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/ui/joined/JoinedFragment.java" afterDir="false" />
     </list>
+    <list default="true" id="167f4968-96f1-45cd-9f7e-c1c07ad4384e" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -227,8 +268,11 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="resourceFile" />
+        <option value="layoutResourceFile" />
         <option value="Class" />
         <option value="layoutResourceFile" />
+        <option value="resourceFile" />
+        <option value="valueResourceFile" />
       </list>
     </option>
   </component>
@@ -280,6 +324,7 @@
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/nour/Desktop/project/code&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/hanakasahun/Desktop/School /CMPUT 301/Nectarother/nectar-eventsLottery/code/app/src/main/res/drawable&quot;,
     &quot;recommended.upgrade.last.time.stamp&quot;: &quot;1763085381102&quot;,
     &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;
   }
@@ -287,6 +332,12 @@
   <component name="RecentsManager">
     <key name="android.template.1029845342">
       <recent name="com.example.beethere" />
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/src/main/res/drawable" />
+      <recent name="$PROJECT_DIR$/app/src/main/res/layout" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.example.beethere.ui.myEvents" />
     </key>
   </component>
   <component name="RunManager" selected="Android App.app">
@@ -452,11 +503,13 @@
         <entry key="com.example.beethere">
           <value>
             <CheckInfo lastCheckTimestamp="1764097342533" />
+            <CheckInfo lastCheckTimestamp="1764112916061" />
           </value>
         </entry>
         <entry key="com.example.beethere.test">
           <value>
             <CheckInfo lastCheckTimestamp="1764097342535" />
+            <CheckInfo lastCheckTimestamp="1764112916061" />
           </value>
         </entry>
       </map>

@@ -13,9 +13,16 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.beethere.R;
+import com.example.beethere.eventclasses.Event;
+import com.example.beethere.eventclasses.EventDataViewModel;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.LuminanceSource;
@@ -31,8 +38,10 @@ public class QRCodeFragment extends DialogFragment {
 
     private String eventID;
     private ImageView qrCode;
-    private Button exit;
-    private Button scan;
+    private AppCompatButton exit,  scan;
+    private Event event;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
 
     public static QRCodeFragment newInstance(String eventID) {
         QRCodeFragment fragment = new QRCodeFragment();
@@ -71,6 +80,9 @@ public class QRCodeFragment extends DialogFragment {
         exit = view.findViewById(R.id.qrExit);
         scan = view.findViewById(R.id.scanButton);
 
+        EventDataViewModel eventDataViewModel =
+                new ViewModelProvider(requireActivity()).get(EventDataViewModel.class);
+
 
         generateQRCode(eventID);
 
@@ -80,13 +92,33 @@ public class QRCodeFragment extends DialogFragment {
             Bitmap bitmap = ((BitmapDrawable) qrCode.getDrawable()).getBitmap();
             String scannedData = decodeQRCode(bitmap);
 
-            if(scannedData != null) {
+            if (scannedData != null) {
                 Toast.makeText(getContext(), "Scanned: " + scannedData, Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(getContext(), "No QR code found in image", Toast.LENGTH_SHORT).show();
-            }
 
-            //TODO go to event details associated
+                db.collection("events")
+                        .document(scannedData)
+                        .get()
+                        .addOnSuccessListener(snapshot -> {
+                            event = snapshot.toObject(Event.class);
+
+                            if (event == null) {
+                                Toast.makeText(getContext(), "Error: Event Not Found", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            eventDataViewModel.setEvent(event);
+
+                            NavController nav = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                            nav.navigate(R.id.MyEventsToEventDetails);
+                            dismiss(); // close the dialog after navigation
+
+                        })
+                        .addOnFailureListener(e ->
+                                Toast.makeText(getContext(), "Error loading event", Toast.LENGTH_SHORT).show()
+                        );
+            } else {
+                Toast.makeText(getContext(), "Error: Event Details Not Found", Toast.LENGTH_SHORT).show();
+            }
         });
 
         return view;

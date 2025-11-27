@@ -9,9 +9,19 @@
     <SearchView
         android:id="@+id/searchView"
         android:layout_width="325dp"
-        android:layout_height="32dp"
+        android:layout_height="37dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="60dp"
+        android:queryHint="Search"
+        android:iconifiedByDefault="false"
+        android:closeIcon="@null"
+        android:searchIcon="@null"
+        android:submitBackground="@null"
+        android:focusable="true"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/search_bar"
+        android:textColor="@color/dark_brown"
+        android:queryBackground="@null"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,6 +32,7 @@
         android:layout_marginStart="12dp"
         android:layout_marginTop="60dp"
         android:src="@drawable/filter"
+        android:background="@android:color/transparent"
         app:layout_constraintStart_toEndOf="@+id/searchView"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -29,14 +40,10 @@
         android:id="@+id/event_display"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="12dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/searchView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchView" />
-
-
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <FrameLayout
         android:id="@+id/event_details_layout"

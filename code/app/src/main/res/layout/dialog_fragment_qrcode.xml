@@ -21,35 +21,35 @@
             tools:srcCompat="@tools:sample/avatars"
             app:layout_constraintBottom_toTopOf="@+id/scanButton" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/scanButton"
-                android:layout_width="112.5dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/waitlist_button"
-                android:fontFamily="@font/work_sans_semibold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:background="@drawable/button_background"
+                android:backgroundTint="@color/yellow"
+                android:textColor="@color/dark_brown"
+                android:fontFamily="@font/work_sans_medium"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/qrCode"
-                android:layout_marginEnd="130dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                android:textSize="12dp"
+                app:layout_constraintEnd_toStartOf="@id/qrExit"
+                android:textAllCaps="false"
+                android:textSize="18sp"
                 android:text="Scan" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/qrExit"
-                android:layout_width="112.5dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/waitlist_button"
-                android:fontFamily="@font/work_sans_semibold"
-                app:layout_constraintTop_toBottomOf="@id/qrCode"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:backgroundTint="@color/yellow"
+                android:background="@drawable/button_background"
+                android:fontFamily="@font/work_sans_medium"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/qrCode"
                 app:layout_constraintStart_toEndOf="@id/scanButton"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                android:textSize="12dp"
+                android:textSize="18sp"
+                android:textAllCaps="false"
                 android:text="Exit" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
