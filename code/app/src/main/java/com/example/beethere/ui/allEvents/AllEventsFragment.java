@@ -23,7 +23,7 @@ import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.R;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.eventclasses.EventDataViewModel;
-import com.example.beethere.eventclasses.EventsAdapter;
+import com.example.beethere.adapters.EventsAdapter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

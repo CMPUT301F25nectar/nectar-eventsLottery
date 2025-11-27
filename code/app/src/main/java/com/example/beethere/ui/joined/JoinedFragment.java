@@ -25,7 +25,7 @@ import com.example.beethere.User;
 import com.example.beethere.device.DeviceIDViewModel;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.eventclasses.EventDataViewModel;
-import com.example.beethere.eventclasses.EventsAdapter;
+import com.example.beethere.adapters.EventsAdapter;
 import com.example.beethere.eventclasses.UserListManager;
 import com.example.beethere.eventclasses.eventDetails.StatusFragment;
 import com.google.firebase.firestore.DocumentSnapshot;

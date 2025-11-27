@@ -48,7 +48,7 @@ public class EventsAdapter extends ArrayAdapter<Event> {
 
         if (event != null) {
             title.setText(event.getTitle());
-            // poster
+            // poster poster.setImageResource(event.getPoster());
             enrollStart.setText(event.getRegStart());
             enrollEnd.setText(event.getRegEnd());
         }
