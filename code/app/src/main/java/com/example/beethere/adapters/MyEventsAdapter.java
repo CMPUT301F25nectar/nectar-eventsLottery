@@ -3,6 +3,7 @@ package com.example.beethere.adapters;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,7 @@ import androidx.navigation.Navigation;
 
 import com.example.beethere.R;
 import com.example.beethere.eventclasses.Event;
-import com.example.beethere.eventDetails.QRCodeFragment;
+import com.example.beethere.eventclasses.eventDetails.QRCodeFragment;
 import com.example.beethere.ui.myEvents.ConfirmDeleteFragment;
 
 import java.util.ArrayList;
@@ -56,12 +57,22 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
         enrollEnd.setText(event.getRegEnd());
 
         optionsMenuButton.setOnClickListener(v -> {
-            PopupMenu popupMenu = new PopupMenu(getContext(), v);
+            Context wrapper = new ContextThemeWrapper(getContext(), R.style.CustomPopupMenu);
+            PopupMenu popupMenu = new PopupMenu(wrapper, v);
             popupMenu.getMenuInflater().inflate(R.menu.event_options_menu, popupMenu.getMenu());
 
             popupMenu.setOnMenuItemClickListener(menuItem -> {
                 int id = menuItem.getItemId();
                 if (id == R.id.edit) {
+                    if (getContext() instanceof AppCompatActivity) {
+                        AppCompatActivity activity = (AppCompatActivity) getContext();
+                        NavController nav = Navigation.findNavController(
+                                activity.findViewById(R.id.nav_host_fragment)
+                        );
+                        Bundle bundle = new Bundle();
+                        bundle.putString("eventID", event.getEventID());
+                        nav.navigate(R.id.myEventsToEditEvents, bundle);
+                    }
                     return true;
                 } else if (id == R.id.delete) {
                     ConfirmDeleteFragment confirmDeleteFragment = new ConfirmDeleteFragment(event.getEventID());

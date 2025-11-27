@@ -1,5 +1,6 @@
 package com.example.beethere.ui.joined;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -243,16 +244,16 @@ public class JoinedFragment extends Fragment {
     }
 
     public void buttonClicked(Button clicked, Button notClicked1, Button notClicked2){
-        clicked.setBackgroundColor();
-        clicked.setTextColor();
+        clicked.setBackgroundColor(Color.RED);
+        clicked.setTextColor(Color.WHITE);
 
         buttonNotClicked(notClicked1);
         buttonNotClicked(notClicked2);
     }
 
     public void buttonNotClicked(Button button){
-        button.setBackgroundColor();
-        button.setTextColor();
+        button.setBackgroundColor(Color.BLUE);
+        button.setTextColor(Color.LTGRAY);
     }
 
 }

@@ -43,6 +43,10 @@
         <action
             android:id="@+id/myEventsToEditEvents"
             app:destination="@id/navigation_edit_event" />
+
+        <action
+            android:id="@+id/MyEventsToEventDetails"
+            app:destination="@id/navigation_event_details" />
     </fragment>
 
     <fragment
@@ -100,8 +104,21 @@
         android:label="Edit Events"
         tools:layout="@layout/fragment_editing_event">
         <action
+            android:id="@+id/EditEventsToAllEvents"
+            app:destination="@id/navigation_events" />
+        <action
             android:id="@+id/EditEventsToMyEvents"
             app:destination="@id/navigation_myEvents" />
+        <action
+            android:id="@+id/EditEventsToJoinedEvents"
+            app:destination="@id/navigation_joined" />
+        <action
+            android:id="@+id/EditEventsToNotifications"
+            app:destination="@id/navigation_notifications" />
+        <action
+            android:id="@+id/EditEventsToProfile"
+            app:destination="@id/navigation_profile" />
+
     </fragment>
 
 

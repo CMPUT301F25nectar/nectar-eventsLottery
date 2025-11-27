@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -26,7 +25,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import com.example.beethere.device.DeviceId;
+import com.example.beethere.adapters.MyEventsAdapter;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.R;
 import com.example.beethere.User;
@@ -245,8 +244,14 @@ public class CreateEventFragment1 extends Fragment {
             int maxAttendeesInt = Integer.parseInt(maxAttendInput);
             int maxWaitListInt = wantMaxWaitList && !maxWaitListInput.isEmpty() ? Integer.parseInt(maxWaitListInput) : 0;
 
-            if (regStartDate.isAfter(regEndDate) || eventStartDate.isAfter(eventEndDate) || startTime.isAfter(endTime)) {
-                errorMessage.setText("Ensure start date/time is after end date/time.");
+            if (regStartDate.isAfter(regEndDate) || eventStartDate.isAfter(eventEndDate)) {
+                errorMessage.setText("Ensure start date is before end date.");
+                errorMessage.setVisibility(View.VISIBLE);
+                return;
+            }
+
+            if (startTime.isAfter(endTime)) {
+                errorMessage.setText("Ensure start time is before end time.");
                 errorMessage.setVisibility(View.VISIBLE);
                 return;
             }

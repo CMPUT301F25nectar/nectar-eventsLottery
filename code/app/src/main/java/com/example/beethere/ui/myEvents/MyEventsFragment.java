@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
 
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -22,6 +20,7 @@ import androidx.navigation.Navigation;
 import com.example.beethere.DatabaseCallback;
 import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.User;
+import com.example.beethere.adapters.MyEventsAdapter;
 import com.example.beethere.device.DeviceIDViewModel;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.R;

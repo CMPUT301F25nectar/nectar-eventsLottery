@@ -9,9 +9,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,14 +24,17 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.R;
+import com.example.beethere.adapters.MyEventsAdapter;
 import com.example.beethere.eventclasses.Event;
-import com.example.beethere.eventclasses.eventDetails.QRCodeFragment;
+import com.example.beethere.eventclasses.EventDataViewModel;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDate;
@@ -41,7 +44,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class EditingEventFragment extends Fragment {
+public class EditingEventFragment extends Fragment implements NavigationBarView.OnItemSelectedListener {
 
     private ImageView eventPoster;
     public Uri imageURL;
@@ -126,14 +129,13 @@ public class EditingEventFragment extends Fragment {
 
                         if (!currentDate.isBefore(regStartDate)) {
                             regStart.setEnabled(false);
-                            regStart.setBackgroundColor(Color.LTGRAY);
+                            regStart.setBackgroundColor(Color.LTGRAY); //TODO this needs fixing
                         } else {
                             regStart.setOnClickListener(v -> showDatePicker(regStart));
                         }
-
                         if (!currentDate.isBefore(regEndDate)) {
                             regEnd.setEnabled(false);
-                            regEnd.setBackgroundColor(Color.LTGRAY);
+                            regEnd.setBackgroundColor(Color.LTGRAY);  //TODO this needs fixing
                         } else {
                             regEnd.setOnClickListener(v -> showDatePicker(regEnd));
                         }
@@ -143,6 +145,35 @@ public class EditingEventFragment extends Fragment {
                     eventEnd.setOnClickListener(v -> showDatePicker(eventEnd));
                 });
 
+        BottomNavigationView bottomNav = requireActivity().findViewById(R.id.nav_view);
+
+        BottomNavigationView.OnItemSelectedListener listener;
+
+        listener = item -> {
+            int itemId = item.getItemId();
+
+            GoBackDialogFragment dialog = new GoBackDialogFragment();
+            dialog.setGoBackListener(() -> {
+                NavController nav = Navigation.findNavController(requireView());
+                if (itemId == R.id.navigation_events) {
+                    nav.navigate(R.id.EditEventsToAllEvents);
+                } else if (itemId == R.id.navigation_joined) {
+                    nav.navigate(R.id.EditEventsToJoinedEvents);
+                } else if (itemId == R.id.navigation_myEvents) {
+                    nav.navigate(R.id.EditEventsToMyEvents);
+                } else if (itemId == R.id.navigation_notifications) {
+                    nav.navigate(R.id.EditEventsToNotifications);
+                } else if (itemId == R.id.navigation_profile) {
+                    nav.navigate(R.id.EditEventsToProfile);
+                }
+            });
+
+            dialog.show(getParentFragmentManager(), "GoBackDialog");
+
+            return false;
+        };
+
+        bottomNav.setOnItemSelectedListener(listener);
 
 
         pickImageLauncher = registerForActivityResult(
@@ -273,13 +304,13 @@ public class EditingEventFragment extends Fragment {
 
 
             if (regStartDate.isAfter(regEndDate) || eventStartDate.isAfter(eventEndDate)) {
-                errorMessage.setText("Ensure start date is after end date.");
+                errorMessage.setText("Ensure start date is before end date.");
                 errorMessage.setVisibility(View.VISIBLE);
                 return;
             }
 
             if (startTime.isAfter(endTime)) {
-                errorMessage.setText("Ensure start time is after end time.");
+                errorMessage.setText("Ensure start time is before end time.");
                 errorMessage.setVisibility(View.VISIBLE);
                 return;
             }
@@ -337,6 +368,11 @@ public class EditingEventFragment extends Fragment {
         });
 
         dialog.show(getParentFragmentManager(), "ConfirmDelete");
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        return false;
     }
 }
 
