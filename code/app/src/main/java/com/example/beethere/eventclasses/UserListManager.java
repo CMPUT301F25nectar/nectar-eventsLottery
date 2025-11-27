@@ -1,9 +1,12 @@
 package com.example.beethere.eventclasses;
 
 import com.example.beethere.User;
-import com.example.beethere.notifications_classes.Notification;
 import com.example.beethere.notifications_classes.NotificationHandler;
+import com.example.beethere.notifications_classes.Notification;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -14,127 +17,43 @@ import java.util.Random;
  */
 public class UserListManager {
 
-    private Integer maxWaitlist;
-    private ArrayList<User> waitlist;
-
-    private HashMap<User, Boolean> inviteList;
-    private Boolean autoSelect;
-
-    private ArrayList<User> registered;
-    private Integer maxRegistered;
-
+    private Event event;
     private Random random;
 
     // Constructors
 
-    // Empty constructor
-    public UserListManager(){}
-    /**
-     * This initializes the 3 different types of user lists associated with an event
-     * and a random object.
-     * It defines and saves the max number of people who can be registered.
-     * It defines and saves the max number of people who can join the waitlist.
-     * @param maxRegistered The max number of people of who can register/enroll
-     * @param maxWaitlist The max number of people who can join the waitlist
-     */
-    public UserListManager(Boolean autoSelect,int maxRegistered, int maxWaitlist){
-        this.maxWaitlist = maxWaitlist;
-        this.waitlist = new ArrayList<User>();
+    public UserListManager (){}
 
-        this.inviteList = new HashMap<User, Boolean>();
-        this.autoSelect = autoSelect;
-
-        this.maxRegistered = maxRegistered;
-        this.registered = new ArrayList<User>();
-
-        this.random = new Random();
-    }
-
-    /**
-     * This initializes the 3 different types of user lists associated with an event
-     * and a random object.
-     * It defines and saves the max number of people who can be registered.
-     * It defines and saves the max number of people who can join the waitlist as the max Integer Value.
-     * @param maxRegistered the max number of people who can register/enroll
-     */
-    public UserListManager(Boolean autoSelect, int maxRegistered){
-        this.maxWaitlist = Integer.MAX_VALUE;
-        this.waitlist = new ArrayList<User>();
-
-        this.inviteList = new HashMap<User, Boolean>();
-        this.autoSelect = autoSelect;
-
-        this.maxRegistered = maxRegistered;
-        this.registered = new ArrayList<User>();
-
+    public UserListManager (Event event){
+        this.event = event;
         this.random = new Random();
     }
 
     //Getters and Setter
-    public Integer getMaxWaitlist() {
-        return maxWaitlist;
-    }
 
-    public void setMaxWaitlist(Integer maxWaitlist) {
-        this.maxWaitlist = maxWaitlist;
+    public Event getEvent() {
+        return event;
     }
-
-    public ArrayList<User> getWaitlist() {
-        return waitlist;
-    }
-
-    public void setWaitlist(ArrayList<User> waitlist) {
-        this.waitlist = waitlist;
-    }
-
-    public HashMap<User, Boolean> getInviteList() {
-        return inviteList;
-    }
-
-    public void setInviteList(HashMap<User, Boolean> inviteList) {
-        this.inviteList = inviteList;
-    }
-
-    public ArrayList<User> getRegistered() {
-        return registered;
-    }
-
-    public void setRegistered(ArrayList<User> registered) {
-        this.registered = registered;
-    }
-
-    public Integer getMaxRegistered() {
-        return maxRegistered;
-    }
-
-    public void setMaxRegistered(Integer maxRegistered) {
-        this.maxRegistered = maxRegistered;
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
     public Random getRandom() {
         return random;
     }
-
     public void setRandom(Random random) {
         this.random = random;
     }
 
-    public Boolean getAutoSelect() {
-        return autoSelect;
-    }
-
-    public void setAutoSelect(Boolean autoSelect) {
-        this.autoSelect = autoSelect;
-    }
 
 
-// Waitlist Management
+    // Waitlist Management
     /**
      * Finds and returns the size of the waitlist
      * @return the size of the waitlist
      */
     public Integer waitlistSize(){
-        return waitlist.size();
+        return event.getWaitList().size();
     }
 
     /**
@@ -143,8 +62,8 @@ public class UserListManager {
      */
     public void addWaitlist(User user) {
 
-        if (waitlistSize() < maxWaitlist && !inWaitlist(user)) {
-            waitlist.add(user);
+        if (waitlistSize() < event.getMaxWaitlist() && !inWaitlist(user)) {
+            event.getWaitList().add(user);
         }
     }
 
@@ -155,7 +74,7 @@ public class UserListManager {
     public void removeWaitlist(User user) {
         // TODO
         // check if user in waitlist
-        if(inWaitlist(user)) {waitlist.remove(user);}
+        if(inWaitlist(user)) {event.getWaitList().remove(user);}
 
     }
 
@@ -168,7 +87,7 @@ public class UserListManager {
     public void addInvite(User user){
         // must be in waitlist to get invite in the first place
         if(inWaitlist(user)){
-            inviteList.put(user, Boolean.TRUE);
+            event.getInvited().put(user.getDeviceid(), Boolean.TRUE);
             removeWaitlist(user);
         }
         // option to also automatically send the invite notif
@@ -182,9 +101,8 @@ public class UserListManager {
     private void removeInvite(User user){
         // check if user has been invited/in invite list
         if(inInvite(user)){
-
+            event.getInvited().remove(user.getDeviceid());
         }
-        inviteList.remove(user);
     }
 
     // Registered list management
@@ -194,8 +112,8 @@ public class UserListManager {
      */
     private void addRegistered(User user){
         // check if user is in registered
-        if(maxRegistered > registered.size()){
-            registered.add(user);
+        if(event.getEntrantMax() > event.getRegistered().size()){
+            event.getRegistered().add(user);
         }
     }
 
@@ -205,7 +123,7 @@ public class UserListManager {
      */
     public void removeRegistered(User user){
         // check if user is in registered
-        registered.remove(user);
+        event.getRegistered().remove(user);
     }
 
     /**
@@ -214,7 +132,7 @@ public class UserListManager {
      * @param user the user who is move from one list to the other
      */
     public void acceptInvite(User user){
-        if(maxRegistered > registered.size()) {
+        if(event.getEntrantMax() > event.getRegistered().size()) {
             addRegistered(user);
             removeInvite(user);
         }
@@ -227,8 +145,8 @@ public class UserListManager {
      * @param user the user whose status is to be change
      */
     public void declineInvite(User user){
-        inviteList.replace(user, Boolean.FALSE);
-        if(autoSelect){
+        event.getInvited().replace(user.getName(), Boolean.FALSE);
+        if(event.autoRandomSelection){
             selectNewInvite();
         }
     }
@@ -237,7 +155,7 @@ public class UserListManager {
      * Selects a random user from the waitlist and adds them to the invite list
      */
     public void selectNewInvite(){
-        User user = waitlist.get(random.nextInt(waitlistSize()));
+        User user = event.getWaitList().get(random.nextInt(waitlistSize()));
         addInvite(user);
     }
 
@@ -245,42 +163,73 @@ public class UserListManager {
      * Randomly selects max number of users who can register
      * from the waitlist and adds them to the invite list
      */
-    public void selectInvitations(){
-        Integer range = maxRegistered;
-        if(waitlistSize() < maxRegistered) range = waitlistSize();
+    public void selectInvitations(Integer range){
+        // if the registered list would be overfilled if all invites sent were accepted, don't do it
+
+        if(waitlistSize() < range) range = waitlistSize();
+
         for(int i = 0; i < range; i++){
             selectNewInvite();
         }
-        
-        /*NotificationHandler notificationHandler = new NotificationHandler();
+
+        // Send lottery notifications
+        NotificationHandler notificationHandler = new NotificationHandler();
         notificationHandler.sendLotteryNotifications(
-                eventId,
-                eventName,
-                this.inviteList,    // Winners
-                this.waitlist,      // Losers (remaining on waitlist)
-                organizerDeviceId
-        );*/
+                event.getEventID(),
+                event.getTitle(),
+                event.getInvited(),
+                event.getWaitList(),
+                event.getOrganizer().getDeviceid()
+        );
     }
 
     public Boolean inWaitlist(User user) {
-        return waitlist.contains(user);
+        return event.getWaitList().contains(user);
     }
 
     public boolean inInvite(User user) {
-        return inviteList.containsKey(user);
+        return event.getInvited().containsKey(user);
     }
 
     public Boolean isDeclined(User user) {
-        return inviteList.get(user);
+        return event.getInvited().get(user);
     }
 
     public Boolean inRegistered(User user){
-        return registered.contains(user);
-    }
-    public Boolean waitlistFull() {
-        return (Objects.equals(maxWaitlist, waitlistSize()));
+        return event.getRegistered().contains(user);
     }
 
-    // TODO
-    // export invite list in CSV format
+    public Boolean waitlistFull() {
+        if(event.getWaitList() == null) return Boolean.FALSE;
+        if (event.getMaxWaitlist() > waitlistSize()) return Boolean.FALSE;
+        return Boolean.TRUE;
+    }
+
+    /**
+     * Creates CSV file of users in registered list
+     * @throws IOException
+     *          if fails to create file
+     *          if fails to create writer
+     *          if fails to write with writer
+     *          if fails to close writer
+     */
+    public void exportCSV() throws IOException {
+        File file = new File("Registered.csv");
+        file.createNewFile();
+        FileWriter writer = new FileWriter(file);
+        writer.write("name,email,phone\n");
+
+        for (User user : event.getRegistered()){
+            String phone = "";
+            if (user.getPhone() != null) phone = user.getPhone();
+            writer.write(
+                    user.getName() + "," +
+                            user.getEmail() + "," +
+                            phone +
+                            "\n");
+        }
+        writer.close();
+    }
+
+
 }

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="20dp"
+        android:textSize="15dp"
+        android:fontFamily="@font/work_sans_medium"
+        android:textColor="@color/dark_brown"
+        android:text="Name Here"/>
+
+    <TextView
+        android:id="@+id/inviteTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/name"
+        android:layout_marginStart="20dp"
+        android:textSize="10dp"
+        android:layout_marginTop="5dp"
+        android:fontFamily="@font/work_sans_bold"
+        android:textColor="@color/dark_brown"
+        android:alpha="0.6"
+        android:text="Invite Status: "/>
+
+    <TextView
+        android:id="@+id/inviteStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/inviteTitle"
+        app:layout_constraintTop_toBottomOf="@id/name"
+        android:textSize="10dp"
+        android:layout_marginTop="5dp"
+        android:fontFamily="@font/work_sans_bold"
+        android:textColor="@drawable/invite_decline"
+        android:alpha="0.6"
+        android:text="Status"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -37,7 +37,7 @@ public class WaitlistButtons extends Fragment {
         View view = inflater.inflate(R.layout.fragment_event_details_waitlist_buttons, container, false);
 
         Button waitlistButton = view.findViewById(R.id.button_waitlist);
-        if (userCreated && event.getEntrantList().inWaitlist(user)) {
+        if (userCreated && Boolean.TRUE/*event.getEntrantList().inWaitlist(user)*/) {
             leaveButton(waitlistButton);
         }
 
@@ -49,15 +49,15 @@ public class WaitlistButtons extends Fragment {
                     //TODO
                     // create profile dialog popup
                 }
-                else if (event.getEntrantList().inWaitlist(user)) {
-                    event.getEntrantList().removeWaitlist(user);
+                else if (/*event.getEntrantList().inWaitlist(user)*/Boolean.TRUE) {
+                    //event.getEntrantList().removeWaitlist(user);
                     Snackbar
                             .make(view, "You have left the waitlist!", Snackbar.LENGTH_SHORT)
                             .show();
                     joinButton(waitlistButton);
                 }
                 else {
-                    event.getEntrantList().addWaitlist(user);
+                    //event.getEntrantList().addWaitlist(user);
                     Snackbar
                             .make(view, "You have joined the waitlist!", com.google.android.material.snackbar.Snackbar.LENGTH_SHORT)
                             .show();

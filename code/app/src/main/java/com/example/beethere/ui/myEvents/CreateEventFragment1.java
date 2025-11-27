@@ -3,8 +3,6 @@ package com.example.beethere.ui.myEvents;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,9 +17,14 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.beethere.device.DeviceId;
 import com.example.beethere.eventclasses.Event;
@@ -30,16 +33,18 @@ import com.example.beethere.User;
 import com.example.beethere.device.DeviceIDViewModel;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
 import com.example.beethere.DatabaseFunctions;
 
-import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import android.app.DatePickerDialog;
+import android.widget.Toast;
+import java.util.Calendar;
 
 
 public class CreateEventFragment1 extends Fragment {
@@ -47,9 +52,11 @@ public class CreateEventFragment1 extends Fragment {
     private ImageView eventPoster;
     public Uri imageURL;
 
+    private DeviceIDViewModel deviceIDViewModel;
     private User organizer;
-    private DeviceIDViewModel deviceIDProvider;
 
+    DatabaseFunctions dbFunctions = new DatabaseFunctions();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private boolean wantMaxWaitList, wantRandomSelect, wantGeoLocation = false;
 
@@ -60,13 +67,8 @@ public class CreateEventFragment1 extends Fragment {
     private MyEventsAdapter myEventsAdapter;
     public ArrayList<Event> events;
 
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    DatabaseFunctions dbFunctions = new DatabaseFunctions();
-
-
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US);  // Use Locale.US for AM/PM format
-
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US);
 
     // Launcher for selecting image
     private ActivityResultLauncher<Intent> pickImageLauncher;
@@ -79,24 +81,36 @@ public class CreateEventFragment1 extends Fragment {
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        imageURL = result.getData().getData();
+                        Uri uri = result.getData().getData();
+
+                        try {
+                            requireContext().getContentResolver().takePersistableUriPermission(
+                                    uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            );
+                        } catch (SecurityException e) {
+                            e.printStackTrace();
+                        }
+
+                        imageURL = uri;
                         eventPoster.setImageURI(imageURL);
+
+                        eventPoster.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     }
                 }
         );
 
+
+
         events = new ArrayList<>();
         myEventsAdapter = new MyEventsAdapter(getContext(), events);
 
-        String deviceID = DeviceId.get(requireContext());
+        deviceIDViewModel = new ViewModelProvider(requireActivity()).get(DeviceIDViewModel.class);
+        String deviceID = deviceIDViewModel.getDeviceID();
         FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(deviceID)
                 .get()
-                .addOnSuccessListener(snap -> {
-                    organizer = snap.toObject(User.class);
-                });
-
+                .addOnSuccessListener(snap -> organizer = snap.toObject(User.class));
 
         eventPoster = view.findViewById(R.id.poster);
         eventTitle = view.findViewById(R.id.eventTitle);
@@ -113,48 +127,74 @@ public class CreateEventFragment1 extends Fragment {
         randomSelectSwitch = view.findViewById(R.id.randomSelectSwitch);
         geoLocationSwitch = view.findViewById(R.id.geoLocSwitch);
         maxWaitList = view.findViewById(R.id.maxWaitFill);
+
         eventPoster.setOnClickListener(v -> choosePoster());
+
+        View.OnClickListener dateClickListener = v -> showDatePicker((EditText) v);
+        regStart.setOnClickListener(dateClickListener);
+        regEnd.setOnClickListener(dateClickListener);
+        eventStart.setOnClickListener(dateClickListener);
+        eventEnd.setOnClickListener(dateClickListener);
+
+        timeStart.setOnClickListener(v -> {
+            TimePickerFragment dialog = new TimePickerFragment(timeStart);
+            dialog.show(getParentFragmentManager(), "timePickerStart");
+        });
+
+        timeEnd.setOnClickListener(v -> {
+            TimePickerFragment dialog = new TimePickerFragment(timeEnd);
+            dialog.show(getParentFragmentManager(), "timePickerEnd");
+        });
 
         maxWaitList.setVisibility(maxWaitListSwitch.isChecked() ? View.VISIBLE : View.GONE);
 
-        // Add listeners to handle switch state changes
         maxWaitListSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                maxWaitList.setVisibility(View.VISIBLE);  // Show maxWaitList input
-            } else {
-                maxWaitList.setVisibility(View.GONE);  // Hide maxWaitList input
-            }
+            maxWaitList.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            wantMaxWaitList = isChecked;
         });
 
-        // GeoLocation Switch listener
-        geoLocationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            wantGeoLocation = isChecked;  // Set the value of wantGeoLocation based on the switch state
-        });
-
-        // Random Select Switch listener
-        randomSelectSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            wantRandomSelect = isChecked;  // Set the value of wantRandomSelect based on the switch state
-        });
+        geoLocationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> wantGeoLocation = isChecked);
+        randomSelectSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> wantRandomSelect = isChecked);
 
         Button completeButton = view.findViewById(R.id.completeButton);
         completeButton.setOnClickListener(v -> complete());
 
-        Button backButton = view.findViewById(R.id.backButton);
-        backButton.setOnClickListener(v -> backMain());
-
+        AppCompatImageButton backButton = view.findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> showGoBackDialog(view));
 
         return view;
     }
 
-    private void backMain () {
-//        DialogFragment goBack
-        FragmentManager fragmentManager = getParentFragmentManager();
-        fragmentManager.popBackStack();
+    private void showDatePicker(EditText targetEditText) {
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog dialog = new DatePickerDialog(requireContext(),
+                (view, selectedYear, selectedMonth, selectedDay) -> {
+                    String date = String.format("%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear);
+                    targetEditText.setText(date);
+                }, year, month, day);
+        dialog.show();
     }
+
+    private void backMain(View view) {
+        NavController nav = Navigation.findNavController(view);
+        nav.navigate(R.id.createEventstoMyEvents);
+    }
+
+    private void showGoBackDialog(View view) {
+        GoBackDialogFragment dialog = new GoBackDialogFragment();
+        dialog.setGoBackListener(() -> backMain(view));
+        dialog.show(getParentFragmentManager(), "GoBackDialog");
+    }
+
     private void choosePoster() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.setType("image/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
         pickImageLauncher.launch(intent);
     }
 
@@ -176,15 +216,24 @@ public class CreateEventFragment1 extends Fragment {
                 eventStartInput.isEmpty() || eventEndInput.isEmpty() ||
                 timeStartInput.isEmpty() || timeEndInput.isEmpty() ||
                 maxAttendInput.isEmpty() || descInput.isEmpty() ||
-                (wantMaxWaitList && maxWaitListInput.isEmpty()) || imageURL == null) { //just add an asterick by the fill input line
+                (wantMaxWaitList && maxWaitListInput.isEmpty()) || imageURL == null) {
+            errorMessage.setText("Please fill all required fields.");
             errorMessage.setVisibility(View.VISIBLE);
             return;
         }
+
         if (descInput.length() > 500) {
             errorMessage.setText("Description cannot be longer than 500 characters.");
             errorMessage.setVisibility(View.VISIBLE);
             return;
         }
+
+        if (titleInput.length() > 24) {
+            errorMessage.setText("Title cannot be longer than 24 characters.");
+            errorMessage.setVisibility(View.VISIBLE);
+            return;
+        }
+
         try {
             LocalDate regStartDate = LocalDate.parse(regStartInput, dateFormatter);
             LocalDate regEndDate = LocalDate.parse(regEndInput, dateFormatter);
@@ -194,84 +243,57 @@ public class CreateEventFragment1 extends Fragment {
             LocalTime startTime = LocalTime.parse(timeStartInput, timeFormatter);
             LocalTime endTime = LocalTime.parse(timeEndInput, timeFormatter);
             int maxAttendeesInt = Integer.parseInt(maxAttendInput);
-            int maxWaitListInt = 0;
-
-            if (wantMaxWaitList && !maxWaitListInput.isEmpty()) {
-                maxWaitListInt = Integer.parseInt(maxWaitListInput);
-            }
+            int maxWaitListInt = wantMaxWaitList && !maxWaitListInput.isEmpty() ? Integer.parseInt(maxWaitListInput) : 0;
 
             if (regStartDate.isAfter(regEndDate) || eventStartDate.isAfter(eventEndDate) || startTime.isAfter(endTime)) {
-                errorMessage.setText("Ensure start dates/times are before end dates/times.");
+                errorMessage.setText("Ensure start date/time is after end date/time.");
                 errorMessage.setVisibility(View.VISIBLE);
+                return;
             }
 
-            addToDatabase(titleInput, regStartDate, regEndDate, eventStartDate, eventEndDate,
-                    startTime, endTime, maxAttendeesInt, descInput, imageURL.toString(),
+            addToDatabase(titleInput, regStartInput, regEndInput, eventStartInput, eventEndInput,
+                    timeStartInput, timeEndInput, maxAttendeesInt, descInput, imageURL.toString(),
                     wantMaxWaitList, wantGeoLocation, wantRandomSelect, maxWaitListInt);
 
             FragmentManager fragmentManager = getParentFragmentManager();
             fragmentManager.popBackStack();
-            android.widget.Toast.makeText(getActivity(), "Event created successfully!", android.widget.Toast.LENGTH_SHORT).show();
-
-
+            Toast.makeText(getActivity(), "Event created successfully!", Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             Log.e("CreateEventFragment", "Parsing error: " + e.getMessage());
             errorMessage.setText("Ensure input formats are correct.");
             errorMessage.setVisibility(View.VISIBLE);
         }
-
     }
 
-    private void addToDatabase(String title, LocalDate regStart, LocalDate regEnd, LocalDate eventStart,
-                               LocalDate eventEnd, LocalTime timeStart, LocalTime timeEnd, int maxAttendees,
+    private void addToDatabase(String title, String regStart, String regEnd, String eventStart,
+                               String eventEnd, String timeStart, String timeEnd, int maxAttendees,
                                String description, String posterPath, boolean wantMaxWaitList, boolean wantGeoLocation,
-                               boolean wantRandomSelect, int maxWaitListInt) throws WriterException {
+                               boolean wantRandomSelect, int maxWaitListInt) {
 
-        DocumentReference newEventRef = db.collection("events").document(); // auto-generated ID
+        DocumentReference newEventRef = db.collection("events").document();
         String eventID = newEventRef.getId();
-
         boolean status = true;
+        ArrayList<User> waitList = new ArrayList<>();
+        Map<String, Boolean> invited = new HashMap<>();
+        ArrayList<User> registered = new ArrayList<>();
 
-
-        //TODO: add QR code to the collection of QR codes
-
-        /*if (wantMaxWaitList) {
-            Event event = new Event(organizer, eventID, title, description, posterPath,
+        Event event;
+        if (wantMaxWaitList) {
+            event = new Event(organizer, eventID, title, description, posterPath,
                     status, regStart, regEnd, eventStart, eventEnd, timeStart, timeEnd,
-                    maxAttendees, wantGeoLocation, wantRandomSelect);
-            dbFunctions.addEventDB(event);
-            events.add(event);
-            myEventsAdapter.notifyDataSetChanged();
-
+                    maxAttendees, wantGeoLocation, waitList, invited,
+                    registered, wantRandomSelect);
         } else {
-            Event event = new Event(organizer, eventID, title, description, posterPath,
+            event = new Event(organizer, eventID, title, description, posterPath,
                     status, regStart, regEnd, eventStart, eventEnd, timeStart, timeEnd,
-                    maxAttendees, wantGeoLocation, wantRandomSelect, maxWaitListInt);
-
-            dbFunctions.addEventDB(event);
-            events.add(event);
-            myEventsAdapter.notifyDataSetChanged();
-        }*/
-    }
-
-    private byte[] convertBitmapToByteArray(Bitmap bitmap) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream); // You can use PNG or JPEG format
-        return stream.toByteArray();
-    }
-
-    private Bitmap convertBitMatrixToBitmap(BitMatrix matrix) {
-        int width = matrix.getWidth();
-        int height = matrix.getHeight();
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                bitmap.setPixel(x, y, matrix.get(x, y) ? Color.BLACK : Color.WHITE);
-            }
+                    maxAttendees, wantGeoLocation, waitList, invited,
+                    registered, wantRandomSelect, maxWaitListInt);
         }
-        return bitmap;
+
+        dbFunctions.addEventDB(event);
+        events.add(event);
+        myEventsAdapter.notifyDataSetChanged();
     }
 }
 

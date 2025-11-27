@@ -12,6 +12,7 @@ import com.google.firebase.firestore.Query;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *This is a class that handles all notifications operations for the BEE-THERE app
@@ -37,7 +38,6 @@ public class NotificationHandler {
         dbfunctions = new DatabaseFunctions();
     }
 
-
     /**
      * Sends lottery result notifications to winners and losers
      * @param eventId The unique identifier for the event
@@ -47,10 +47,10 @@ public class NotificationHandler {
      * @param organizerDeviceId The device id of the organizer who sends the notifications
      */
     public void sendLotteryNotifications(String eventId, String eventName,
-                                         HashMap<User, Boolean> inviteList,
+                                         Map<String, Boolean> inviteList,
                                          ArrayList<User> waitlist,
                                          String organizerDeviceId){
-        for (User winner : inviteList.keySet()){
+        for (String winner : inviteList.keySet()){
             sendLotteryWonNotification(winner, eventId, eventName, organizerDeviceId);
         }
 
@@ -59,19 +59,18 @@ public class NotificationHandler {
         }
     }
 
-
     /**
      * Sends "you won the lottery!" notification to a selected user
-     * @param user The user who won/selected
+     * @param deviceID The deviceID of the user who won/selected
      * @param eventId The unique identifier of the event
      * @param eventName The event name
      * @param organizerDeviceId The device id of the organizer
      */
-    private void sendLotteryWonNotification(User user, String eventId, String eventName, String organizerDeviceId) {
+    private void sendLotteryWonNotification(String deviceID, String eventId, String eventName, String organizerDeviceId) {
         String message = "Congratulations! You've been selected for " + eventName + ". Accept your invitation now!";
 
         List<String> deviceIds = new ArrayList<>();
-        deviceIds.add(user.getDeviceid());
+        deviceIds.add(deviceID);
 
         Notification notification = new Notification(
                 eventId,

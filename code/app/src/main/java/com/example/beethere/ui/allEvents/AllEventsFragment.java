@@ -21,13 +21,11 @@ import androidx.navigation.Navigation;
 import com.example.beethere.DatabaseCallback;
 import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.R;
-import com.example.beethere.User;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.eventclasses.EventDataViewModel;
 import com.example.beethere.eventclasses.EventsAdapter;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 
 
@@ -39,7 +37,7 @@ public class AllEventsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_all_events, container, false);
-        System.out.println("OnCreateView for AllEventsFragment");
+
         return view;
     }
 
@@ -48,6 +46,19 @@ public class AllEventsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         SearchView search = view.findViewById(R.id.searchView);
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                filterEvents(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterEvents(newText);
+                return true;
+            }
+        });
 
         ImageButton filter = view.findViewById(R.id.button_filter);
         filter.setOnClickListener(new View.OnClickListener() {
@@ -57,10 +68,9 @@ public class AllEventsFragment extends Fragment {
             }
         });
 
+
         eventList = new ArrayList<Event>();
         eventsAdapter = new EventsAdapter(getContext(), eventList);
-
-        //EventsAdapter eventAdapter = new EventsAdapter(getContext(), eventList);
         ListView events = view.findViewById(R.id.event_display);
         events.setAdapter(eventsAdapter);
         events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -79,24 +89,39 @@ public class AllEventsFragment extends Fragment {
 
     public void loadEvents(){
 
-        Log.d("loadEvents", "start of loadEvents");
         DatabaseFunctions functions = new DatabaseFunctions();
         DatabaseCallback<ArrayList<Event>> callback = new DatabaseCallback<>() {
             @Override
             public void onCallback(ArrayList<Event> result) {
                 eventList.addAll(result);
                 eventsAdapter.notifyDataSetChanged();
-
-                System.out.println(result);
-                System.out.println(eventList);
             }
             @Override
             public void onError(Exception e) {
                 Log.d("AllEvents", "All events fragment error getting events from database");
             }
         };
-
         functions.getEventsDB(Boolean.FALSE, callback);
+        LocalDate currentDate = LocalDate.now();
+        eventList.removeIf(event -> currentDate.isAfter(event.convertRegEnd()));
+
+    }
+
+    private void filterEvents(String query) {
+        String lowerQuery = query.toLowerCase().trim();
+
+        eventList.clear();
+        if (lowerQuery.isEmpty()) {
+            eventList.addAll(eventList);
+        } else {
+            for (Event event : eventList) {
+                if (event.getTitle().toLowerCase().contains(lowerQuery)) {
+                    eventList.add(event);
+                }
+            }
+        }
+
+        eventsAdapter.notifyDataSetChanged();
     }
 
 }
