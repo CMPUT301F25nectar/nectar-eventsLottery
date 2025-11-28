@@ -24,8 +24,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ProfileDialogFragment extends DialogFragment {
     public static Runnable saved;
-    private DatabaseFunctions dbfunctions;
-
     public static void show(androidx.fragment.app.FragmentManager fragmentmanager, Runnable cb){
         saved =cb;
         new ProfileDialogFragment().show(fragmentmanager, "New Profile Dialog");
@@ -34,7 +32,7 @@ public class ProfileDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog (Bundle savedInstanceState){
-        dbfunctions = new DatabaseFunctions();
+        DatabaseFunctions dbFunctions = new DatabaseFunctions();
         View view = LayoutInflater.from(getContext()).inflate(R.layout.fragment_createprofile,null);
 
         EditText EnterFirstName = view.findViewById(R.id.enterfirstname);
@@ -67,22 +65,11 @@ public class ProfileDialogFragment extends DialogFragment {
             u.setOrganizer(true);
             u.setViolation(false);
 
-            dbfunctions.addUserDB(u);
-            FirebaseFirestore.getInstance()
-                    .collection("users")
-                    .document(deviceId)
-                    .set(u)
-                    .addOnSuccessListener(unused -> {
-                        Toast.makeText(requireContext(), "Account created!", Toast.LENGTH_SHORT).show();
-                        if (saved != null) saved.run();
-                        dialog.dismiss();
-                    })
-                    .addOnFailureListener(fail ->
-                            Toast.makeText(requireContext(), "Failed: " + fail.getMessage(), Toast.LENGTH_LONG).show()
-                    );
+            dbFunctions.addUserDB(u);
         });
-       return dialog;
+        return dialog;
     }
 
 }
+
 
