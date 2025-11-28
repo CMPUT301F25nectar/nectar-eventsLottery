@@ -1,6 +1,7 @@
 package com.example.beethere.adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,13 +45,18 @@ public class EventsAdapter extends ArrayAdapter<Event> {
         TextView title = view.findViewById(R.id.EventsTitle);
         ImageView poster = view.findViewById(R.id.EventsPoster);
         TextView enrollStart = view.findViewById(R.id.EventEnrollStart);
-        TextView enrollEnd = view.findViewById(R.id.EventEnrollEnd);
+        /*TextView enrollEnd = view.findViewById(R.id.EventEnrollEnd);*/
 
         if (event != null) {
             title.setText(event.getTitle());
-            // poster
-            enrollStart.setText(event.getRegStart());
-            enrollEnd.setText(event.getRegEnd());
+            if (event.getPosterPath() != null) {
+                //poster.setImageURI(Uri.parse(event.getPosterPath()));
+            }
+            enrollStart.setText(String
+                    .format(
+                            getContext().getString(R.string.event_date),
+                            event.getRegStart(),
+                            event.getRegEnd()));
         }
 
         return view;

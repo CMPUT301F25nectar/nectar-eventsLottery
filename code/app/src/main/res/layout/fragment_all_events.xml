@@ -4,37 +4,51 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".ui.allEvents.AllEventsFragment">
+
+    <TextView
+        android:id="@+id/allEventsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="65dp"
+        android:fontFamily="@font/space_mono_bold"
+        android:text="@string/title_events"
+        android:textColor="@color/dark_brown"
+        android:textSize="35sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <SearchView
         android:id="@+id/searchView"
         android:layout_width="325dp"
         android:layout_height="37dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/search_bar"
         android:queryHint="Search"
-        android:iconifiedByDefault="false"
         android:closeIcon="@null"
         android:searchIcon="@null"
         android:submitBackground="@null"
-        android:focusable="true"
-        android:layout_marginEnd="8dp"
-        android:background="@drawable/search_bar"
-        android:textColor="@color/dark_brown"
         android:queryBackground="@null"
+        android:focusable="true"
+        android:iconifiedByDefault="false"
+        android:textColor="@color/dark_brown"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/allEventsTitle" />
 
     <ImageButton
         android:id="@+id/button_filter"
         android:layout_width="40dp"
         android:layout_height="32dp"
         android:layout_marginStart="12dp"
-        android:layout_marginTop="60dp"
-        android:src="@drawable/filter"
+        android:layout_marginBottom="13dp"
         android:background="@android:color/transparent"
-        app:layout_constraintStart_toEndOf="@+id/searchView"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:contentDescription="Filter icon that opens filter selection for events"
+        android:src="@drawable/filter"
+        app:layout_constraintBottom_toTopOf="@+id/event_display"
+        app:layout_constraintStart_toEndOf="@+id/searchView" />
 
     <ListView
         android:id="@+id/event_display"
