@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
@@ -188,11 +189,12 @@ public class UserListManager {
     }
 
     public boolean inInvite(User user) {
-        return event.getInvited().containsKey(user);
+        return event.getInvited().containsKey(user.getDeviceid());
     }
 
     public Boolean isDeclined(User user) {
-        return event.getInvited().get(user);
+        Map<String, Boolean> invited = event.getInvited();
+        return invited.getOrDefault(user.getDeviceid(), Boolean.FALSE);
     }
 
     public Boolean inRegistered(User user){

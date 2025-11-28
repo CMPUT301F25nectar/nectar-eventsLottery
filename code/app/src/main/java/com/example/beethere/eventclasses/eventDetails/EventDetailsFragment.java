@@ -160,7 +160,7 @@ public class EventDetailsFragment extends Fragment {
         UserListManager eventListManager = new UserListManager(event);
         // bottom display choices
         LocalDate currentDate = LocalDate.now();
-        if(!userCreated){ // no profile connected to deviceID
+        if(user == null){ // no profile connected to deviceID
             if (currentDate.isAfter(convertDate(event.getRegEnd(), dateFormatter))){
                 // waitlist period ended display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
@@ -172,7 +172,7 @@ public class EventDetailsFragment extends Fragment {
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_full));
             }  else {
                 // waitlist button display that prompts create profile dialog
-                displayWaitlistButton(user, userCreated);
+                displayWaitlistButton();
             }
         } else {
             // profile is connected to deviceID
@@ -199,23 +199,23 @@ public class EventDetailsFragment extends Fragment {
             } else if (currentDate.isAfter(convertDate(event.getRegEnd(), dateFormatter))){
                 // waitlist period ended display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
-            } else if (eventListManager.waitlistFull()) {
+            } else if (/*eventListManager.waitlistFull()*/Boolean.FALSE) {
                 // waitlist full display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_full));
             } else {
                 // join waitlist buttons added
-                displayWaitlistButton(user, userCreated);
+                displayWaitlistButton();
             }
         }
 
         super.onViewCreated(view, savedInstanceState);
     }
 
-    public void displayWaitlistButton(User user, Boolean created){
+    public void displayWaitlistButton(){
         WaitlistButtons button = new WaitlistButtons();
 
         button.setUser(user);
-        button.setUserCreated(created);
+        button.setUserCreated(userCreated);
         button.setEvent(event);
 
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
@@ -241,13 +241,17 @@ public class EventDetailsFragment extends Fragment {
                 .collection("users")
                 .document(deviceID.getDeviceID())
                 .get()
-                .addOnSuccessListener((DocumentSnapshot snapshot) -> {
+                .addOnSuccessListener(snapshot -> {
                     // User does not exists related to deviceID
-                    if (!snapshot.exists()){
+                    if (snapshot.exists()){
+                        userCreated = Boolean.TRUE;
+                        user = snapshot.toObject(User.class);
+                    } else {
+                        //user = null;
                         userCreated = Boolean.FALSE;
                     }
                     // User does exist related to deviceID
-                    user = snapshot.toObject(User.class);
+
                 })
                 .addOnFailureListener(fail ->
                         userCreated = Boolean.FALSE

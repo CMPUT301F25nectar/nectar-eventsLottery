@@ -53,7 +53,7 @@ public class WaitlistButtons extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if (!userCreated){
+                if (user == null){
                     NavController nav = Navigation.findNavController(view);
                     nav.navigate(R.id.eventDetailsToProfileCreation);
 
