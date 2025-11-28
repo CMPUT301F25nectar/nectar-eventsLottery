@@ -20,7 +20,8 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_waitlisted"
-        android:layout_width="125dp"
+        android:minWidth="125dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="8dp"
@@ -29,13 +30,15 @@
         android:text="@string/waitlisted"
         android:textAllCaps="false"
         android:textSize="16sp"
-        android:background="@drawable/button_dark_brown"
+        android:background="@drawable/view_entrants_buttons"
+        android:textColor="@drawable/view_entrants_buttons_text"
         app:layout_constraintEnd_toStartOf="@+id/button_enrolled"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/joinedTitle" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_enrolled"
+        android:minWidth="120dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -43,14 +46,16 @@
         android:text="@string/enrolled"
         android:textAllCaps="false"
         android:textSize="16sp"
-        android:background="@drawable/button_dark_brown"
+        android:background="@drawable/view_entrants_buttons"
+        android:textColor="@drawable/view_entrants_buttons_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/joinedTitle" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_history"
-        android:layout_width="125dp"
+        android:minWidth="125dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
@@ -59,7 +64,8 @@
         android:text="@string/history"
         android:textAllCaps="false"
         android:textSize="16sp"
-        android:background="@drawable/button_dark_brown"
+        android:background="@drawable/view_entrants_buttons"
+        android:textColor="@drawable/view_entrants_buttons_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/button_enrolled"
         app:layout_constraintTop_toBottomOf="@+id/joinedTitle" />

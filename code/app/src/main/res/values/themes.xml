@@ -13,6 +13,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorOnPrimary</item>
         <!-- Customize your theme here. -->
+
     </style>
 
     <style name="CustomPopupMenu" parent="Widget.AppCompat.PopupMenu">

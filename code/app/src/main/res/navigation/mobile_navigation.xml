@@ -86,6 +86,9 @@
         android:name="com.example.beethere.eventclasses.eventDetails.EventDetailsFragment"
         android:label="Create"
         tools:layout="@layout/fragment_event_details">
+        <action
+            android:id="@+id/eventDetailsToProfileCreation"
+            app:destination="@id/navigation_profileCreation"/>
     </fragment>
 
     <fragment

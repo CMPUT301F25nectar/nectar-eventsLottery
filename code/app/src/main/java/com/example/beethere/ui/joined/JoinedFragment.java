@@ -7,14 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -28,29 +25,24 @@ import com.example.beethere.eventclasses.Event;
 import com.example.beethere.eventclasses.EventDataViewModel;
 import com.example.beethere.adapters.EventsAdapter;
 import com.example.beethere.eventclasses.UserListManager;
-import com.example.beethere.eventclasses.eventDetails.StatusFragment;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class JoinedFragment extends Fragment {
 
-    private ArrayList<Event> eventList;
-    private ArrayList<Event> userEvents;
-    private EventsAdapter eventsAdapter;
-
+    private DeviceIDViewModel deviceID;
+    private DateTimeFormatter dateFormatter;
 
     private User user;
     private Boolean userCreated;
 
-    private DeviceIDViewModel deviceID;
-
-    LocalDate currentDate;
-
+    private ArrayList<Event> eventList;
+    private ArrayList<Event> displayList;
+    private EventsAdapter eventsAdapter;
 
     ArrayList<Event> userWaitlist;
     ArrayList<Event> userEnrollList;
@@ -63,7 +55,14 @@ public class JoinedFragment extends Fragment {
 
         // get deviceID
         deviceID = new ViewModelProvider(requireActivity()).get(DeviceIDViewModel.class);
+        // initialize formatter
+        dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         // checking if user exists for deviceID
         userCreated = Boolean.FALSE;
         user = new User();
@@ -73,38 +72,35 @@ public class JoinedFragment extends Fragment {
         eventList = new ArrayList<>();
         loadEvents();
 
-        // comparison date for history
-        currentDate = LocalDate.now();
-
-        // each user list (stored, so not calced everytime
+        // each user list (stored, so not calced everytime)
         userWaitlist = new ArrayList<>();
         userEnrollList = new ArrayList<>();
         userHistory = new ArrayList<>();
 
-        userEvents = new ArrayList<>();
-        loadWaitlist();
-        userEvents.addAll(userWaitlist);
-        eventsAdapter = new EventsAdapter(getContext(), userEvents);
+        displayList = new ArrayList<>();
+        if (userCreated){
+            loadLists();
+            displayList.addAll(userWaitlist);
+        }
+        eventsAdapter = new EventsAdapter(getContext(), displayList);
 
 
         Button waitlisted = view.findViewById(R.id.button_waitlisted);
+        waitlisted.setSelected(true);
         Button enrolled = view.findViewById(R.id.button_enrolled);
         Button history = view.findViewById(R.id.button_history);
-
-        buttonClicked(waitlisted, enrolled, history);
 
 
         waitlisted.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                buttonClicked(waitlisted, enrolled, history);
+                /*buttonClicked(waitlisted, enrolled, history);*/
 
                 if(!userCreated){
                     // display message of no events in list
                 } else {
-                    loadWaitlist();
-                    userEvents.clear();
-                    userEvents.addAll(userWaitlist);
+                    displayList.clear();
+                    displayList.addAll(userWaitlist);
                     eventsAdapter.notifyDataSetChanged();
                 }
             }
@@ -113,14 +109,12 @@ public class JoinedFragment extends Fragment {
         enrolled.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                buttonClicked(enrolled, waitlisted, history);
 
                 if(!userCreated){
                     // display message of no events in list
                 } else {
-                    loadEnrolled();
-                    userEvents.clear();
-                    userEvents.addAll(userEnrollList);
+                    displayList.clear();
+                    displayList.addAll(userEnrollList);
                     eventsAdapter.notifyDataSetChanged();
                 }
             }
@@ -129,22 +123,16 @@ public class JoinedFragment extends Fragment {
         history.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                buttonClicked(history, waitlisted, enrolled);
 
                 if(!userCreated){
                     // display message of no events in list
                 } else {
-                    loadHistory();
-                    userEvents.clear();
-                    userEvents.addAll(userHistory);
+                    displayList.clear();
+                    displayList.addAll(userHistory);
                     eventsAdapter.notifyDataSetChanged();
                 }
             }
         });
-
-
-
-
 
         ListView events = view.findViewById(R.id.event_display);
         events.setAdapter(eventsAdapter);
@@ -159,18 +147,11 @@ public class JoinedFragment extends Fragment {
                 event.setEvent((Event) parent.getItemAtPosition(position));
             }
         });
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
         super.onViewCreated(view, savedInstanceState);
     }
 
     public LocalDate convertDate(String stringDate) {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
         return LocalDate.parse(stringDate, dateFormatter);
     }
 
@@ -228,88 +209,43 @@ public class JoinedFragment extends Fragment {
     }
 
 
-    public void loadDisplay(String tag){
+    // user must exist
+    // events are filtered already
+    // for user existing & being in waitlist/invited/registered of event
+    public void loadLists(){
         UserListManager manager = new UserListManager();
-        // userList.clear();
-        for (Event event : eventList){
-            if(tag == "waitlist"){
-                // TODO
-            } else if (tag == "enrolled") {
-                // TODO
-            } else if (tag == "history") {
-                // TODO
-            }
-        }
-    }
+        LocalDate currentDate = LocalDate.now();
+        LocalDate eventEnd, eventStart;
 
-
-    public void loadWaitlist(){
-        UserListManager manager = new UserListManager();
+        userWaitlist.clear();
+        userEnrollList.clear();
         userHistory.clear();
-        for (Event event : eventList) {
-            // current date is before the start of the event
-            // which is basically shows up until there is no way that the user could enroll
-            // user in waitlist
-            // user has been invited
-            // user has declined their invite but still has been invited
-            // remove event if user has declined?
+
+        for (Event event : eventList){
+            // set event manager, and conver event dates
             manager.setEvent(event);
-            if(currentDate.isBefore(convertDate(event.getEventDateStart()))
-                    && manager.inWaitlist(user)
-                    && manager.inInvite(user)){
+            eventStart = convertDate(event.getEventDateStart());
+            eventEnd = convertDate(event.getEventDateEnd());
+
+            // currentDate before the start of the event
+            // so waitlist has opened
+            // waitlist may have closed
+            // user is in waitlist or user has been invited to register
+            if(currentDate.isBefore(eventStart) && !manager.inRegistered(user)){
                 userWaitlist.add(event);
             }
-        }
-    }
-
-    public void loadEnrolled(){
-        UserListManager manager = new UserListManager();
-        userHistory.clear();
-        for (Event event : eventList) {
-            manager.setEvent(event);
-            // current date is before the end of the event
-            // and the user has registered for the event
-            if(currentDate.isBefore(convertDate(event.getEventDateEnd()))
-                    && manager.inRegistered(user)) {
+            // before the end of the event
+            // user has registered for the event
+            if(currentDate.isBefore(eventEnd) && manager.inRegistered(user)) {
                 userEnrollList.add(event);
             }
-        }
-    }
-
-    public void loadHistory(){
-        UserListManager manager = new UserListManager();
-        userHistory.clear();
-        for (Event event: eventList) {
-            manager.setEvent(event);
-            // user is in one of the event lists
-            // current data is after the event ends
-            if(currentDate.isAfter(convertDate(event.getEventDateEnd()))
-                    && manager.inWaitlist(user)
-                    && manager.inInvite(user)
-                    && manager.inRegistered(user)) {
+            // after end of the event
+            // eventList only has events where the user is included
+            if(currentDate.isAfter(eventEnd)) {
                 userHistory.add(event);
             }
+
         }
-    }
-
-
-
-
-
-
-
-
-    public void buttonClicked(Button clicked, Button notClicked1, Button notClicked2){
-        clicked.setBackgroundColor(getContext().getColor(R.color.yellow));
-        clicked.setTextColor(getContext().getColor(R.color.dark_brown));
-
-        buttonNotClicked(notClicked1);
-        buttonNotClicked(notClicked2);
-    }
-
-    public void buttonNotClicked(Button button){
-        button.setBackgroundColor(getContext().getColor(R.color.dark_brown));
-        button.setTextColor(getContext().getColor(R.color.yellow));
     }
 
 }

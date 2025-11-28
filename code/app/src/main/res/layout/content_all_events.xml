@@ -47,7 +47,7 @@
             android:layout_height="match_parent">
 
         <FrameLayout
-            android:id="@+id/myEventFrame"
+            android:id="@+id/eventFrame"
             android:layout_width="135dp"
             android:layout_height="135dp"
             android:background="@drawable/event_image_rounding"
@@ -72,8 +72,8 @@
                 android:id="@+id/EventsTitle"
                 android:layout_width="180dp"
                 android:layout_height="70dp"
-                app:layout_constraintStart_toEndOf="@+id/myEventFrame"
-                app:layout_constraintTop_toTopOf="@+id/myEventFrame"
+                app:layout_constraintStart_toEndOf="@+id/eventFrame"
+                app:layout_constraintTop_toTopOf="@+id/eventFrame"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="30dp"

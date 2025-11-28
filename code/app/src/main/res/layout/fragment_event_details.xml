@@ -35,21 +35,26 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="@font/work_sans_bold"
         android:text="@string/placeholder"
         android:textColor="@color/dark_brown"
-        android:fontFamily="@font/work_sans_bold"
         android:textSize="40sp"
         app:layout_constraintEnd_toStartOf="@+id/button_QR"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/event_image" />
 
-    <ImageButton
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_QR"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="7dp"
         android:layout_marginEnd="20dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/qr_code"
+        android:backgroundTint="@color/dark_brown"
+        android:drawableStart="@drawable/qr_code_icon"
+        android:paddingStart="11dp"
+        android:paddingEnd="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/event_image" />
 
@@ -212,13 +217,16 @@
     <FrameLayout
         android:id="@+id/button_layout"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/current_waitlist">
 
     </FrameLayout>
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

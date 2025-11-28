@@ -5,14 +5,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.beethere.R;
 import com.example.beethere.User;
 import com.example.beethere.eventclasses.Event;
+import com.example.beethere.eventclasses.UserListManager;
 import com.google.android.material.snackbar.Snackbar;
 
 public class WaitlistButtons extends Fragment {
@@ -37,7 +42,10 @@ public class WaitlistButtons extends Fragment {
         View view = inflater.inflate(R.layout.fragment_event_details_waitlist_buttons, container, false);
 
         Button waitlistButton = view.findViewById(R.id.button_waitlist);
-        if (userCreated && Boolean.TRUE/*event.getEntrantList().inWaitlist(user)*/) {
+        joinButton(waitlistButton);
+
+        UserListManager manager = new UserListManager(event);
+        if (userCreated && manager.inWaitlist(user)) {
             leaveButton(waitlistButton);
         }
 
@@ -46,21 +54,18 @@ public class WaitlistButtons extends Fragment {
             public void onClick(View v) {
 
                 if (!userCreated){
-                    //TODO
-                    // create profile dialog popup
+                    NavController nav = Navigation.findNavController(view);
+                    nav.navigate(R.id.eventDetailsToProfileCreation);
+
                 }
-                else if (/*event.getEntrantList().inWaitlist(user)*/Boolean.TRUE) {
-                    //event.getEntrantList().removeWaitlist(user);
-                    Snackbar
-                            .make(view, "You have left the waitlist!", Snackbar.LENGTH_SHORT)
-                            .show();
+                else if (manager.inWaitlist(user)) {
+                    manager.removeWaitlist(user);
+                    showSnackbar(view, "You have left the waitlist!");
                     joinButton(waitlistButton);
                 }
                 else {
-                    //event.getEntrantList().addWaitlist(user);
-                    Snackbar
-                            .make(view, "You have joined the waitlist!", com.google.android.material.snackbar.Snackbar.LENGTH_SHORT)
-                            .show();
+                    manager.addWaitlist(user);
+                    showSnackbar(view, "You have joined the waitlist!");
                     leaveButton(waitlistButton);
                 }
             }
@@ -71,11 +76,25 @@ public class WaitlistButtons extends Fragment {
 
     public void leaveButton(Button waitlistButton) {
         waitlistButton.setText(getContext().getString(R.string.leave));
-        waitlistButton.setBackgroundColor(getContext().getColor(R.color.red));
+        waitlistButton.setSelected(false);
     }
 
     public void joinButton(Button waitlistButton){
         waitlistButton.setText(getContext().getString(R.string.join_waitlist));
-        waitlistButton.setBackgroundColor(getContext().getColor(R.color.yellow));
+        waitlistButton.setSelected(true);
+    }
+
+    public void showSnackbar(View view, String text){
+        Snackbar snackbar = Snackbar.make(view,text, Snackbar.LENGTH_SHORT)
+                .setAnchorView(R.id.geoLocReq)
+                .setBackgroundTint(getContext().getColor(R.color.dark_brown))
+                .setTextColor(getContext().getColor(R.color.yellow));
+        View snackbarView = snackbar.getView();
+        TextView snackbarText = (TextView) snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+
+        snackbarText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        snackbarText.setTextSize(20);
+        snackbarText.setTypeface(ResourcesCompat.getFont(getContext(), R.font.work_sans_semibold));
+        snackbar.show();
     }
 }

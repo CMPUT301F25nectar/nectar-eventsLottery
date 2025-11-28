@@ -2,7 +2,10 @@ package com.example.beethere.eventclasses.eventDetails;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -26,6 +30,7 @@ import com.example.beethere.eventclasses.EventDataViewModel;
 
 import com.example.beethere.device.DeviceIDViewModel;
 import com.example.beethere.eventclasses.UserListManager;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -79,11 +84,12 @@ public class EventDetailsFragment extends Fragment {
             }
         });
 
-        ImageButton qrButton = view.findViewById(R.id.button_QR);
+        Button qrButton = view.findViewById(R.id.button_QR);
         qrButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 QRCodeFragment qrFragment = QRCodeFragment.newInstance(event.getEventID());
+
                 if (getContext() instanceof AppCompatActivity) {
                     AppCompatActivity activity = (AppCompatActivity) getContext();
                     qrFragment.show(activity.getSupportFragmentManager(), "qrCodeDialog");
@@ -161,7 +167,7 @@ public class EventDetailsFragment extends Fragment {
             } else if (currentDate.isBefore(convertDate(event.getRegStart(), dateFormatter))){
                 // waitlist period has not started display
                 displayWaitlistStatus("Waitlist has not opened yet");
-            } else if (eventListManager.waitlistFull()) {
+            } else if (/*eventListManager.waitlistFull()*/Boolean.FALSE) {
                 // waitlist full display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_full));
             }  else {
@@ -247,6 +253,8 @@ public class EventDetailsFragment extends Fragment {
                         userCreated = Boolean.FALSE
                 );
     }
+
+
 
 
 }
