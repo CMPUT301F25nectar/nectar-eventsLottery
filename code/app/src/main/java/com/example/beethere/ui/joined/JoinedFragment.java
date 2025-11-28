@@ -1,5 +1,8 @@
 package com.example.beethere.ui.joined;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,9 +11,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -41,12 +46,16 @@ public class JoinedFragment extends Fragment {
     private Boolean userCreated;
 
     private ArrayList<Event> eventList;
-    private ArrayList<Event> displayList;
-    private EventsAdapter eventsAdapter;
+    /*private ArrayList<Event> displayList;
+    private EventsAdapter eventsAdapter;*/
+    ListView events;
 
     ArrayList<Event> userWaitlist;
     ArrayList<Event> userEnrollList;
     ArrayList<Event> userHistory;
+
+
+    TextView message;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -68,74 +77,40 @@ public class JoinedFragment extends Fragment {
         user = new User();
         checkUserDB();
 
-        // AllEvents
+        // loading all events that user has joined to eventList
+        // eventList stays empty if !userCreated
         eventList = new ArrayList<>();
         loadEvents();
+
+        // needs to be before userCreated check
+        // so view is set here
+        message = view.findViewById(R.id.joined_fragment_message);
 
         // each user list (stored, so not calced everytime)
         userWaitlist = new ArrayList<>();
         userEnrollList = new ArrayList<>();
         userHistory = new ArrayList<>();
+        EventsAdapter waitlistAdapter = new EventsAdapter(getContext(), userWaitlist);
+        EventsAdapter enrolledAdapter = new EventsAdapter(getContext(), userEnrollList);
+        EventsAdapter historyAdapter = new EventsAdapter(getContext(), userHistory);
 
-        displayList = new ArrayList<>();
         if (userCreated){
             loadLists();
-            displayList.addAll(userWaitlist);
+            message.setVisibility(GONE);
         }
-        eventsAdapter = new EventsAdapter(getContext(), displayList);
 
-
+        // setting views
         Button waitlisted = view.findViewById(R.id.button_waitlisted);
-        waitlisted.setSelected(true);
         Button enrolled = view.findViewById(R.id.button_enrolled);
         Button history = view.findViewById(R.id.button_history);
+        events = view.findViewById(R.id.event_display);
 
 
-        waitlisted.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /*buttonClicked(waitlisted, enrolled, history);*/
+        // start with waitlisted selected
+        buttonSelected(waitlisted, enrolled, history);
+        switchDisplay(userWaitlist, waitlistAdapter);
 
-                if(!userCreated){
-                    // display message of no events in list
-                } else {
-                    displayList.clear();
-                    displayList.addAll(userWaitlist);
-                    eventsAdapter.notifyDataSetChanged();
-                }
-            }
-        });
-
-        enrolled.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if(!userCreated){
-                    // display message of no events in list
-                } else {
-                    displayList.clear();
-                    displayList.addAll(userEnrollList);
-                    eventsAdapter.notifyDataSetChanged();
-                }
-            }
-        });
-
-        history.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if(!userCreated){
-                    // display message of no events in list
-                } else {
-                    displayList.clear();
-                    displayList.addAll(userHistory);
-                    eventsAdapter.notifyDataSetChanged();
-                }
-            }
-        });
-
-        ListView events = view.findViewById(R.id.event_display);
-        events.setAdapter(eventsAdapter);
+        // switch to event details when event is clicked on
         events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -147,6 +122,40 @@ public class JoinedFragment extends Fragment {
                 event.setEvent((Event) parent.getItemAtPosition(position));
             }
         });
+
+
+        waitlisted.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                buttonSelected(waitlisted, enrolled, history);
+                if (userCreated){
+                    switchDisplay(userWaitlist, waitlistAdapter);
+                }
+            }
+        });
+
+        enrolled.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                buttonSelected(enrolled, waitlisted, history);
+                if (userCreated){
+                    switchDisplay(userEnrollList, enrolledAdapter);
+                }
+
+            }
+        });
+
+        history.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                buttonSelected(history,waitlisted, enrolled);
+                if (userCreated) {
+                    switchDisplay(userHistory, historyAdapter);
+                }
+            }
+        });
+
+
 
         super.onViewCreated(view, savedInstanceState);
     }
@@ -246,6 +255,28 @@ public class JoinedFragment extends Fragment {
             }
 
         }
+    }
+
+    public void buttonSelected(Button selected, Button notSelected1, Button notSelected2){
+        selected.setSelected(true);
+        notSelected1.setSelected(false);
+        notSelected2.setSelected(false);
+    }
+
+    public void switchDisplay(ArrayList<Event> display, EventsAdapter eventsAdapter){
+        if (!userCreated) {
+            displayMessage("Make an account to join an event!");
+        } else if (display.isEmpty()) {
+            displayMessage("No events joined...");
+        } else {
+            message.setVisibility(GONE);
+            events.setAdapter(eventsAdapter);
+        }
+    }
+
+    public void displayMessage(String text){
+        message.setText(text);
+        message.setVisibility(VISIBLE);
     }
 
 }

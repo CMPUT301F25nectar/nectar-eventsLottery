@@ -15,9 +15,9 @@
         app:layout_constraintEnd_toStartOf="@id/createEventButton"
         app:layout_constraintBottom_toTopOf="@id/myEventsSearch"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="65dp"
         android:fontFamily="@font/space_mono_bold"
-        android:text="My Events"
+        android:text="@string/title_myEvents"
         android:textSize="35sp"
         android:textColor="@color/dark_brown"/>
 
