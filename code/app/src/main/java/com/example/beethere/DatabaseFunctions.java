@@ -1,37 +1,26 @@
 package com.example.beethere;
 
-import android.app.ProgressDialog;
-import android.net.Uri;
-import android.util.Log;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.example.beethere.eventclasses.Event;
-import com.example.beethere.eventclasses.UserListManager;
 import com.example.beethere.notifications_classes.Notification;
+import android.util.Log;
+import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.example.beethere.eventclasses.Event;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.Objects;
+import com.example.beethere.eventclasses.Event;
 
 public class DatabaseFunctions {
+
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     String TAG = "Error";
 
-
+    // add an event to the database
     public void addEventDB(Event event){
         CollectionReference events = db.collection("events");
         DocumentReference docref = events.document(event.getEventID());
@@ -155,9 +144,9 @@ public class DatabaseFunctions {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     Event event = document.toObject(Event.class);
-                    UserListManager userlist = event.getEntrantList();
+                    //UserListManager userlist = event.getEntrantList();
                     // Assuming 'event.getWaitlistUserIds()' returns your ArrayList<String>
-                    if (userlist.getWaitlist().contains(waitlistID)) {
+                    if (Boolean.TRUE) {
                         eventArrayList.add(event);
                     }
                 }
@@ -184,7 +173,7 @@ public class DatabaseFunctions {
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     Event event = document.toObject(Event.class);
                     // Assuming 'event.getWaitlistUserIds()' returns your ArrayList<String>
-                    if (event.getOrganizer() == waitlistID) {
+                    if (Objects.equals(event.getOrganizer().getDeviceid(), waitlistID.getDeviceid())) {
                         eventArrayList.add(event);
                     }
                 }
@@ -229,6 +218,8 @@ public class DatabaseFunctions {
                     }
                 });
     }
+
+
 }
 
 

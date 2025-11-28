@@ -10,10 +10,9 @@
         android:name="com.example.beethere.ui.allEvents.AllEventsFragment"
         android:label="@string/title_events"
         tools:layout="@layout/fragment_all_events">
-
         <action
             android:id="@+id/allEventToEventDetails"
-            app:destination="@+id/event_details" />
+            app:destination="@+id/navigation_event_details" />
     </fragment>
 
     <fragment
@@ -45,9 +44,8 @@
         tools:layout="@layout/fragment_notifications">
         <action
             android:id="@+id/notificationsToEventDetails"
-            app:destination="@id/event_details" />
+            app:destination="@id/navigation_event_details" />
     </fragment>
-
 
     <fragment
         android:id="@+id/navigation_profile"
@@ -59,7 +57,11 @@
         android:id="@+id/navigation_createEvents"
         android:name="com.example.beethere.ui.myEvents.CreateEventFragment1"
         android:label="Create"
-        tools:layout="@layout/fragment_create_event_pg1"/>
+        tools:layout="@layout/fragment_create_event_pg1">
+    <action
+        android:id="@+id/createEventstoMyEvents"
+        app:destination="@id/navigation_myEvents" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_profileCreation"
@@ -79,6 +81,9 @@
         android:name="com.example.beethere.ui.myEvents.ViewEntrantsFragment"
         android:label="View Entrants"
         tools:layout="@layout/fragment_my_events_entrants">
+        <action
+            android:id="@+id/ViewEntrantsToMyEvents"
+            app:destination="@id/navigation_myEvents" />
     </fragment>
     <fragment
         android:id="@+id/personalSettingsFragment"

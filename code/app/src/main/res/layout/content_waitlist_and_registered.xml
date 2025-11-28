@@ -6,24 +6,11 @@
     android:layout_height="match_parent">
 
 
-    <ImageView
-        android:id="@+id/profilePicture"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@drawable/profile_picture_shape"
-        android:scaleType="centerCrop"
-        android:clipToOutline="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_margin="10dp"
-        tools:srcCompat="@tools:sample/avatars"/>
-
-
     <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/profilePicture"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_margin="20dp"
         android:textSize="15dp"

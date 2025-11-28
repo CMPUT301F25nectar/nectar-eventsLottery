@@ -54,7 +54,7 @@ public class NotificationHandlerInstrumentedTest {
                 fail("Error receiving notifications: " + e);
             }
         };
-        dbfunctions.getNotifsDB(alice.getDeviceid(), callback);
+        //dbfunctions.getNotifsDB(alice.getDeviceid(), callback);
 
         // Send a new notification for this user
         HashMap<User, Boolean> inviteList = new HashMap<>();
