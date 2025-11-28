@@ -4,12 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".ui.allEvents.AllEventsFragment">
 
     <TextView
         android:id="@+id/allEventsTitle"
-        android:layout_width="225dp"
-        android:layout_height="55dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="65dp"
         android:fontFamily="@font/space_mono_bold"
@@ -26,13 +27,13 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
         android:background="@drawable/search_bar"
-        android:closeIcon="@null"
-        android:focusable="true"
-        android:iconifiedByDefault="false"
-        android:queryBackground="@null"
         android:queryHint="Search"
+        android:closeIcon="@null"
         android:searchIcon="@null"
         android:submitBackground="@null"
+        android:queryBackground="@null"
+        android:focusable="true"
+        android:iconifiedByDefault="false"
         android:textColor="@color/dark_brown"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/allEventsTitle" />
