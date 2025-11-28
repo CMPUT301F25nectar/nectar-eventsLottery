@@ -9,10 +9,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import com.example.beethere.eventclasses.Event;
 
@@ -196,6 +199,56 @@ public class DatabaseFunctions {
         CollectionReference notifications = db.collection("notifications");
         notifications.add(notif).addOnSuccessListener(unused -> Log.d("AddNotif", "Notif created successfully"))
                 .addOnFailureListener(fail -> Log.d(TAG, "Error creating notif"));
+    }
+
+    public void getUserDB(String userid, DatabaseCallback<User>callback){
+        CollectionReference users = db.collection("users");
+        DocumentReference docref = users.document(userid);
+        docref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        callback.onCallback(document.toObject(User.class));
+                    } else {
+                        callback.onError(task.getException());
+                    }
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                    callback.onError(task.getException());
+                }
+            }
+        });
+    }
+
+    // possible fields: waitList, registered
+    public void addUserToEventDB(Event event, User user, String field){
+        CollectionReference events = db.collection("events");
+        DocumentReference docref = events.document(event.getEventID());
+        docref.update(field, FieldValue.arrayUnion(user)).addOnSuccessListener(unused -> Log.d("AddUser", "User added to event successfully"))
+                .addOnFailureListener(fail -> Log.d(TAG, "Error adding user to event"));
+    }
+
+    public void removeUserFromEventDB(Event event, User user, String field){
+        CollectionReference events = db.collection("events");
+        DocumentReference docref = events.document(event.getEventID());
+        docref.update(field, FieldValue.arrayRemove(user)).addOnSuccessListener(unused -> Log.d("AddUser", "User removed from event successfully"))
+                .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from event"));
+    }
+
+    //Map<String, Boolean>
+    public void addInviteDB(Event event, String userID){
+        CollectionReference events = db.collection("events");
+        DocumentReference docref = events.document(event.getEventID());
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("invited." + userID, Boolean.FALSE); // NOTE not sure if it should be set to false or true on default
+        docref.update(updates).addOnSuccessListener(unused -> Log.d("AddUser", "User added to event invited successfully"))
+                .addOnFailureListener(fail -> Log.d(TAG, "Error adding user to event invited"));
+    }
+
+    public void removeInviteDB(Event event, User user){
+
     }
 
     public void getNotifsDB(String deviceId, DatabaseCallback<List<Notification>> callback){
