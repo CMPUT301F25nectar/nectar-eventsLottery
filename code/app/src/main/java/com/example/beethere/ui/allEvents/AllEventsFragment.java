@@ -101,7 +101,7 @@ public class AllEventsFragment extends Fragment {
                 Log.d("AllEvents", "All events fragment error getting events from database");
             }
         };
-        functions.getEventsDB(Boolean.FALSE, callback);
+        functions.getEventsDB(callback);
         LocalDate currentDate = LocalDate.now();
         eventList.removeIf(event -> currentDate.isAfter(event.convertRegEnd()));
 

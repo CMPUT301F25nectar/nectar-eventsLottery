@@ -190,7 +190,7 @@ public class JoinedFragment extends Fragment {
                 Log.d("Joined", "Joined fragment error getting events from database");
             }
         };
-        functions.getEventsDB(Boolean.FALSE, callback);
+        functions.getEventsDB(callback);
     }
 
     public void loadWaitlist(){
