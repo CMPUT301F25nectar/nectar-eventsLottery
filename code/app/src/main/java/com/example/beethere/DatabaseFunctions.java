@@ -71,11 +71,76 @@ public class DatabaseFunctions {
 
     }
 
-    public void deleteUserDB(String user){
+    public void deleteUserDB(String userID){
         CollectionReference users = db.collection("users");
-        DocumentReference docref = users.document(user);
+        DocumentReference docref = users.document(userID);
+
+        ArrayList<Event> eventList = new ArrayList<>();
+
+        // delete user notifs, notifcallback needs to be made before the time it is used
+        DatabaseCallback<List<Notification>> notifCallback = new DatabaseCallback<List<Notification>>() {
+            @Override
+            public void onCallback(List<Notification> result) {
+                deleteUserNotifs(result, userID);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.d("DatabaseFunction", "DatabaseFunctions error getting notifs from database");
+            }
+        };
+
+        // delete user from event lists, and delete their events
+        // userCallback needs to be made before it is used
+        // user notifCallback
+        DatabaseCallback<User> userCallback = new DatabaseCallback<User>() {
+            @Override
+            public void onCallback(User result) {
+                checkDeleteUserDB(eventList, result);
+                getNotifsDB(userID, notifCallback);
+            }
+            @Override
+            public void onError(Exception e) {
+                Log.d("DatabaseFunction", "DatabaseFunctions error getting user from database");
+            }
+        };
+
+        // callback for getting eventlist
+        // use userCallback
+        DatabaseCallback<ArrayList<Event>> eventCallback = new DatabaseCallback<>() {
+            @Override
+            public void onCallback(ArrayList<Event> result) {
+                eventList.addAll(result);
+                getUserDB(userID, userCallback);
+            }
+            @Override
+            public void onError(Exception e) {
+                Log.d("DatabaseFunction", "DatabaseFunctions error getting events from database");
+            }
+        };
+
+        getEventsDB(eventCallback);
+
         docref.delete().addOnSuccessListener(unused -> Log.d("DeleteUser", "User deleted successfully"))
                 .addOnFailureListener(fail -> Log.d(TAG, "Error deleting account"));
+    }
+
+    private void checkDeleteUserDB(ArrayList<Event> eventList, User user){
+        UserListManager manager = new UserListManager();
+        for (Event event: eventList){
+            manager.setEvent(event);
+            if (manager.inWaitlist(user)) {
+                manager.removeWaitlist(user);
+            } else if (manager.inInvite(user)){
+                manager.removeInvite(user);
+            } else if (manager.inRegistered(user)){
+                manager.removeRegistered(user);
+            }
+
+            if (event.getOrganizer().getDeviceid() == user.getDeviceid()) {
+                deleteEventDB(event.getEventID());
+            }
+        }
     }
 
     // future javadoc comments
@@ -91,10 +156,9 @@ public class DatabaseFunctions {
      * This methods returns all the events created
      * This can either be all events or events filtered by the user
      * This is intended to only be used for the "All Events" page
-     * @param filter True if any filter is made, False if viewing all events
      * @param callback Database Callback to return the database
      */
-    public void getEventsDB(Boolean filter, DatabaseCallback<ArrayList<Event>> callback) {
+    public void getEventsDB(DatabaseCallback<ArrayList<Event>> callback) {
         CollectionReference events = db.collection("events");
         ArrayList<Event> eventArrayList = new ArrayList<>();
 
@@ -105,63 +169,10 @@ public class DatabaseFunctions {
             }
             for(QueryDocumentSnapshot document : task.getResult()) {
                 Event event = document.toObject(Event.class);
-                if(filter == Boolean.TRUE){
-                    /*if(regStart != null && event.getRegStart() != regStart){
-                        continue;
-                    }
-                    if(regEnd != null && event.getRegStart() != regEnd){
-                        continue;
-                    }
-                    if(eventDateStart != null && event.getEventDateStart() != eventDateStart){
-                        continue;
-                    }
-                    if(eventDateEnd != null && event.getEventDateEnd() != eventDateEnd){
-                        continue;
-                    }
-                    if(eventTimeStart != null && event.getEventTimeStart() != eventTimeStart){
-                        continue;
-                    }
-                    if(eventTimeEnd != null && event.getEventTimeEnd() != eventTimeEnd){
-                        continue;
-                    }
-                    if (!userlist.getWaitlist().contains(waitlistID)) {
-                        continue;
-                    }
-                    */
-                }
                 eventArrayList.add(event);
             }
             callback.onCallback(eventArrayList);
         });
-    }
-
-    /**
-     * This methods returns the events a user has waitlisted
-     * @param waitlistID User class of user if they don't want events that they've already added to waitlist
-     * @param callback Database Callback to return the database
-     */
-    public void getWaitlistEventsDB(User waitlistID, DatabaseCallback<ArrayList<Event>> callback){
-        CollectionReference events = db.collection("events");
-        ArrayList<Event> eventArrayList = new ArrayList<>();
-
-        events.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    Event event = document.toObject(Event.class);
-                    UserListManager userlist = new UserListManager(event);
-                    // Assuming 'event.getWaitlistUserIds()' returns your ArrayList<String>
-
-                    if (userlist.inWaitlist(waitlistID)) {
-                        eventArrayList.add(event);
-                    }
-                }
-                callback.onCallback(eventArrayList);
-            } else {
-                Log.d(TAG, "Error getting documents: ", task.getException());
-                callback.onError(task.getException());
-            }
-        });
-
     }
 
     /**
@@ -238,17 +249,21 @@ public class DatabaseFunctions {
     }
 
     //Map<String, Boolean>
-    public void addInviteDB(Event event, String userID){
+    public void addInviteDB(Event event, String userID, Boolean interact){
         CollectionReference events = db.collection("events");
         DocumentReference docref = events.document(event.getEventID());
         Map<String, Object> updates = new HashMap<>();
-        updates.put("invited." + userID, Boolean.FALSE); // NOTE not sure if it should be set to false or true on default
+        updates.put("invited." + userID, interact); // NOTE not sure if it should be set to false or true on default
         docref.update(updates).addOnSuccessListener(unused -> Log.d("AddUser", "User added to event invited successfully"))
                 .addOnFailureListener(fail -> Log.d(TAG, "Error adding user to event invited"));
     }
 
     public void removeInviteDB(Event event, User user){
 
+        CollectionReference events = db.collection("events");
+        DocumentReference docref = events.document(event.getEventID());
+        String id = "invited." + user.getDeviceid();
+        docref.update(id, FieldValue.delete());
     }
 
     public void getNotifsDB(String deviceId, DatabaseCallback<List<Notification>> callback){
@@ -273,10 +288,6 @@ public class DatabaseFunctions {
                     }
                 });
     }
-
-
-
-
 
 }
 
