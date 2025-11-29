@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.bumptech.glide.Glide;
 import com.example.beethere.R;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.eventclasses.eventDetails.QRCodeFragment;
@@ -51,8 +52,15 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
 
         title.setText(event.getTitle());
         if (event.getPosterPath() != null) {
-            poster.setImageURI(Uri.parse(event.getPosterPath()));
+            Glide.with(getContext())
+                    .load(event.getPosterPath()) // This is the download URL
+                    //.placeholder(R.drawable.placeholder) // optional
+                    //.error(R.drawable.error) // optional
+                    .into(poster);
         }
+
+
+
         enrollStart.setText(event.getRegStart());
         enrollEnd.setText(event.getRegEnd());
 
@@ -122,11 +130,3 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
         }
     }
 }
-
-
-
-
-
-
-
-
