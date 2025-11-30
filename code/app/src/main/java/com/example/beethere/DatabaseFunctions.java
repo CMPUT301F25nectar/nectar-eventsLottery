@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import com.example.beethere.eventclasses.Event;
+import com.google.firebase.firestore.SetOptions;
 
 public class DatabaseFunctions {
 
@@ -314,6 +315,22 @@ public class DatabaseFunctions {
                 });
     }
 
+    public void updateNotificationPreference(String deviceId, String fieldName, boolean value){
+        DocumentReference userRef = db.collection("users").document(deviceId);
+        userRef.update(fieldName, value)
+                .addOnSuccessListener(aVoid -> Log.d("UpdatePref", fieldName + "updated to" + value))
+                .addOnFailureListener(e -> Log.d(TAG, "Error updating" + fieldName, e));
+    }
+
+    public void saveFCMToken(String deviceId, String fcmToken) {
+        DocumentReference userRef = db.collection("users").document(deviceId);
+        Map<String, Object> tokenData = new HashMap<>();
+        tokenData.put("fcmToken", fcmToken);
+
+        userRef.set(tokenData, SetOptions.merge())
+                .addOnSuccessListener(aVoid -> Log.d("fcm", "FCM token saved!"))
+                .addOnFailureListener(e -> Log.e("fcm", "Error saving fcm token", e));
+    }
     /**
      * This methods deletes an event from the database
      * @param eventID String EventID of the event that needs to be deleted

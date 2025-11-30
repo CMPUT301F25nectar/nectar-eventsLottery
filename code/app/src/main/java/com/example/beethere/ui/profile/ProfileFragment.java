@@ -19,6 +19,7 @@ import com.example.beethere.R;
 import com.example.beethere.User;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.beethere.ui.profile.NotificationSettingsFragment;
 
 /**
  * In app profile screen to view/edit/delete the current device's profile
@@ -51,13 +52,11 @@ public class ProfileFragment extends Fragment {
                         .navigate(R.id.personalSettingsFragment)
         );
         //notification settingss TO DO
-        //notificationsSettings.setOnClickListener(v ->
-        // NavHostFragment.findNavController(ProfileFragment.this)
-        //     .navigate(R.id.notificationsfragmentname)
-        //);
-        //how to use
-        howtouse.setOnClickListener(v->
-                NavHostFragment.findNavController(ProfileFragment.this).navigate(R.id.howToUseFragment));
+        notificationsSettings.setOnClickListener(v ->
+                NavHostFragment.findNavController(ProfileFragment.this)
+                        .navigate(R.id.notificationSettingsFragment)
+        );
+
         return view;
     }
     //gets profile information for a device
