@@ -119,7 +119,7 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
                     }
                     return true;
                 } else if (id == R.id.qrcode) {
-                    QRCodeFragment qrFragment = QRCodeFragment.newInstance(event.getEventID(), Boolean.TRUE);
+                    QRCodeFragment qrFragment = QRCodeFragment.newInstance(event.getEventID(), Boolean.FALSE);
                     if (getContext() instanceof AppCompatActivity) {
                         AppCompatActivity activity = (AppCompatActivity) getContext();
                         qrFragment.show(activity.getSupportFragmentManager(), "qrCodeDialog");

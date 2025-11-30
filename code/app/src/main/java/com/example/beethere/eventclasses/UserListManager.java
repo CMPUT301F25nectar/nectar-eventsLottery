@@ -324,7 +324,7 @@ public class UserListManager {
      *          if fails to write with writer
      *          if fails to close writer
      */
-    public void exportCSV() throws IOException {
+    public void exportCSV() throws IOException { //TODO this doesnt work, crashes after with read only exception
         File file = new File("Registered.csv");
         file.createNewFile();
         FileWriter writer = new FileWriter(file);
