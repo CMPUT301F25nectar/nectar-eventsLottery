@@ -27,6 +27,13 @@ public class AdminDashboardFragment extends Fragment {
         LinearLayout viewProfiles = view.findViewById(R.id.btn_view_profiles);
         LinearLayout viewEvents = view.findViewById(R.id.btn_view_events);
 
+        buttonBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO
+            }
+        });
+
         viewNotification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
