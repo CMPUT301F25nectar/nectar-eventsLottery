@@ -144,7 +144,7 @@ public class DatabaseFunctions {
                 manager.removeRegistered(user);
             }
 
-            if (event.getOrganizer().getDeviceid() == user.getDeviceid()) {
+            if (Objects.equals(event.getOrganizer().getDeviceid(), user.getDeviceid())) {
                 deleteEventDB(event.getEventID());
             }
         }

@@ -255,6 +255,7 @@ public class JoinedFragment extends Fragment {
     public void switchDisplay(ArrayList<Event> display, EventsAdapter eventsAdapter){
         if (user == null) {
             displayMessage("Make an account to join an event!");
+            events.setVisibility(GONE);
         } else if (display.isEmpty()) {
             displayMessage("No events joined...");
             events.setVisibility(GONE);
