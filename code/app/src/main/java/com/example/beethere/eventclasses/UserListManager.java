@@ -98,7 +98,7 @@ public class UserListManager {
      * @param user the user to be removed
      */
 
-    private void removeInvite(User user){
+    public void removeInvite(User user){
         // check if user has been invited/in invite list
         if(inInvite(user)){
             event.getInvited().remove(user.getDeviceid());
