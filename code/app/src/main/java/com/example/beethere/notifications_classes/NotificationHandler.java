@@ -6,6 +6,7 @@ import com.example.beethere.DatabaseCallback;
 import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.User;
 import com.example.beethere.eventclasses.Event;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -20,7 +21,7 @@ import java.util.Map;
  */
 public class NotificationHandler {
     /** Firebase Firestore instance for database operations*/
-
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     // Notification types
     /**Notification type constant for lottery winner*/
     public String TYPE_LOTTERY_WON = "lotteryWon";
@@ -67,18 +68,23 @@ public class NotificationHandler {
      * @param organizerDeviceId The device id of the organizer
      */
     private void sendLotteryWonNotification(String deviceID, String eventId, String eventName, String organizerDeviceId) {
+        DocumentReference newNotifRef = db.collection("notifications").document();
+        String notifId = newNotifRef.getId();
         String message = "Congratulations! You've been selected for " + eventName + ". Accept your invitation now!";
 
         List<String> deviceIds = new ArrayList<>();
+        List<String> interactedIds = new ArrayList<>();
         deviceIds.add(deviceID);
 
         Notification notification = new Notification(
+                notifId,
                 eventId,
                 eventName,
                 message,
                 System.currentTimeMillis(),
                 TYPE_LOTTERY_WON,
                 deviceIds,
+                interactedIds,
                 organizerDeviceId
         );
 
@@ -94,18 +100,23 @@ public class NotificationHandler {
      * @param organizerDeviceId The device id of the organizer
      */
     private void sendLotteryLostNotification(User user, String eventId, String eventName, String organizerDeviceId){
+        DocumentReference newNotifRef = db.collection("notifications").document();
+        String notifId = newNotifRef.getId();
         String message = "Sorry! You weren't selected for " + eventName + " this time. You'll remain on the waitlist.";
 
         List<String> deviceIds = new ArrayList<>();
+        List<String> interactedIds = new ArrayList<>();
         deviceIds.add(user.getDeviceid());
 
         Notification notification = new Notification(
+                notifId,
                 eventId,
                 eventName,
                 message,
                 System.currentTimeMillis(),
                 TYPE_LOTTERY_LOST,
                 deviceIds,
+                interactedIds,
                 organizerDeviceId
         );
 
@@ -118,18 +129,23 @@ public class NotificationHandler {
                                      String customMessage,
                                      String organizerDeviceId){
         List<String> deviceIds = new ArrayList<>();
+        List<String> interactedIds = new ArrayList<>();
+        DocumentReference newNotifRef = db.collection("notifications").document();
+        String notifId = newNotifRef.getId();
         for (User user : waitlist) {
             deviceIds.add(user.getDeviceid());
         }
 
         if (!deviceIds.isEmpty()) {
             Notification notification = new Notification(
+                    notifId,
                     eventId,
                     eventName,
                     customMessage,
                     System.currentTimeMillis(),
                     TYPE_ORGANIZER_MESSAGE,
                     deviceIds,
+                    interactedIds,
                     organizerDeviceId
             );
 

@@ -41,11 +41,16 @@ public class WaitlistButtons extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event_details_waitlist_buttons, container, false);
 
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Button waitlistButton = view.findViewById(R.id.button_waitlist);
         joinButton(waitlistButton);
 
         UserListManager manager = new UserListManager(event);
-        if (userCreated && manager.inWaitlist(user)) {
+        if (user != null && manager.inWaitlist(user)) {
             leaveButton(waitlistButton);
         }
 
@@ -53,7 +58,7 @@ public class WaitlistButtons extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if (!userCreated){
+                if (user == null){
                     NavController nav = Navigation.findNavController(view);
                     nav.navigate(R.id.eventDetailsToProfileCreation);
 
@@ -71,7 +76,7 @@ public class WaitlistButtons extends Fragment {
             }
         });
 
-        return view;
+        super.onViewCreated(view, savedInstanceState);
     }
 
     public void leaveButton(Button waitlistButton) {

@@ -41,12 +41,14 @@ public class QRCodeFragment extends DialogFragment {
     private AppCompatButton exit,  scan;
     private Event event;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private Boolean eventDetails;
 
 
-    public static QRCodeFragment newInstance(String eventID) {
+    public static QRCodeFragment newInstance(String eventID, Boolean eventDetails) {
         QRCodeFragment fragment = new QRCodeFragment();
         Bundle args = new Bundle();
         args.putString("eventID", eventID);
+        args.putBoolean("eventDetails", eventDetails);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,6 +70,7 @@ public class QRCodeFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             eventID = getArguments().getString("eventID");
+            eventDetails = getArguments().getBoolean("eventDetails");
         }
     }
 
@@ -79,6 +82,9 @@ public class QRCodeFragment extends DialogFragment {
         qrCode = view.findViewById(R.id.qrCode);
         exit = view.findViewById(R.id.qrExit);
         scan = view.findViewById(R.id.scanButton);
+        if(eventDetails){
+            scan.setVisibility(View.INVISIBLE);
+        }
 
         EventDataViewModel eventDataViewModel =
                 new ViewModelProvider(requireActivity()).get(EventDataViewModel.class);

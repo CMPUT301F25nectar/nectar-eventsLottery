@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -42,20 +41,18 @@ public class JoinedFragment extends Fragment {
     private DeviceIDViewModel deviceID;
     private DateTimeFormatter dateFormatter;
 
+    private ListView events;
+    private TextView message;
+
     private User user;
-    private Boolean userCreated;
 
     private ArrayList<Event> eventList;
-    /*private ArrayList<Event> displayList;
-    private EventsAdapter eventsAdapter;*/
-    ListView events;
+    private ArrayList<Event> userWaitlist;
+    private ArrayList<Event> userEnrollList;
+    private ArrayList<Event> userHistory;
 
-    ArrayList<Event> userWaitlist;
-    ArrayList<Event> userEnrollList;
-    ArrayList<Event> userHistory;
+    EventsAdapter waitlistAdapter;
 
-
-    TextView message;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -67,37 +64,30 @@ public class JoinedFragment extends Fragment {
         // initialize formatter
         dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+        message = view.findViewById(R.id.joined_fragment_message);
+        displayMessage("Loading...");
+
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         // checking if user exists for deviceID
-        userCreated = Boolean.FALSE;
-        user = new User();
+        user = null;
         checkUserDB();
 
         // loading all events that user has joined to eventList
         // eventList stays empty if !userCreated
         eventList = new ArrayList<>();
-        loadEvents();
 
-        // needs to be before userCreated check
-        // so view is set here
-        message = view.findViewById(R.id.joined_fragment_message);
 
         // each user list (stored, so not calced everytime)
         userWaitlist = new ArrayList<>();
         userEnrollList = new ArrayList<>();
         userHistory = new ArrayList<>();
-        EventsAdapter waitlistAdapter = new EventsAdapter(getContext(), userWaitlist);
+        waitlistAdapter = new EventsAdapter(getContext(), userWaitlist);
         EventsAdapter enrolledAdapter = new EventsAdapter(getContext(), userEnrollList);
         EventsAdapter historyAdapter = new EventsAdapter(getContext(), userHistory);
-
-        if (userCreated){
-            loadLists();
-            message.setVisibility(GONE);
-        }
 
         // setting views
         Button waitlisted = view.findViewById(R.id.button_waitlisted);
@@ -108,7 +98,7 @@ public class JoinedFragment extends Fragment {
 
         // start with waitlisted selected
         buttonSelected(waitlisted, enrolled, history);
-        switchDisplay(userWaitlist, waitlistAdapter);
+        //switchDisplay(userWaitlist, waitlistAdapter);
 
         // switch to event details when event is clicked on
         events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -128,9 +118,7 @@ public class JoinedFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 buttonSelected(waitlisted, enrolled, history);
-                if (userCreated){
-                    switchDisplay(userWaitlist, waitlistAdapter);
-                }
+                switchDisplay(userWaitlist, waitlistAdapter);
             }
         });
 
@@ -138,10 +126,7 @@ public class JoinedFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 buttonSelected(enrolled, waitlisted, history);
-                if (userCreated){
-                    switchDisplay(userEnrollList, enrolledAdapter);
-                }
-
+                switchDisplay(userEnrollList, enrolledAdapter);
             }
         });
 
@@ -149,9 +134,7 @@ public class JoinedFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 buttonSelected(history,waitlisted, enrolled);
-                if (userCreated) {
-                    switchDisplay(userHistory, historyAdapter);
-                }
+                switchDisplay(userHistory, historyAdapter);
             }
         });
 
@@ -172,14 +155,16 @@ public class JoinedFragment extends Fragment {
                 .addOnSuccessListener((DocumentSnapshot snapshot) -> {
                     // User does not exists related to deviceID
                     if (!snapshot.exists()){
-                        userCreated = Boolean.FALSE;
+                        user = null;
                     }
                     // User does exist related to deviceID
                     user = snapshot.toObject(User.class);
                 })
                 .addOnFailureListener(fail ->
-                        userCreated = Boolean.FALSE
+                        user = null
                 );
+
+        loadEvents();
     }
 
     public void loadEvents(){
@@ -189,7 +174,7 @@ public class JoinedFragment extends Fragment {
             @Override
             public void onCallback(ArrayList<Event> result) {
                 // if there is a user account attached to deviceID
-                if (userCreated) {
+                if (user != null) {
                     // get event manager
                     UserListManager manager = new UserListManager();
                     // go through each event
@@ -204,7 +189,9 @@ public class JoinedFragment extends Fragment {
                             eventList.add(event);
                         }
                     }
+                    loadLists();
                 }
+                switchDisplay(userWaitlist, waitlistAdapter);
                 // if not user created handled elsewhere, no events added
             }
             @Override
@@ -214,7 +201,8 @@ public class JoinedFragment extends Fragment {
         };
         // no filtering for actually getting the events
         // getting the events function call
-        functions.getEventsDB(Boolean.FALSE, callback);
+        functions.getEventsDB(callback);
+
     }
 
 
@@ -255,6 +243,8 @@ public class JoinedFragment extends Fragment {
             }
 
         }
+
+        switchDisplay(userWaitlist, waitlistAdapter);
     }
 
     public void buttonSelected(Button selected, Button notSelected1, Button notSelected2){
@@ -264,7 +254,7 @@ public class JoinedFragment extends Fragment {
     }
 
     public void switchDisplay(ArrayList<Event> display, EventsAdapter eventsAdapter){
-        if (!userCreated) {
+        if (user == null) {
             displayMessage("Make an account to join an event!");
         } else if (display.isEmpty()) {
             displayMessage("No events joined...");

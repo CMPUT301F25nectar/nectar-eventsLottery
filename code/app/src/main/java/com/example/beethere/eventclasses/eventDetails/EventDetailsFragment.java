@@ -88,7 +88,7 @@ public class EventDetailsFragment extends Fragment {
         qrButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                QRCodeFragment qrFragment = QRCodeFragment.newInstance(event.getEventID());
+                QRCodeFragment qrFragment = QRCodeFragment.newInstance(event.getEventID(), Boolean.TRUE);
 
                 if (getContext() instanceof AppCompatActivity) {
                     AppCompatActivity activity = (AppCompatActivity) getContext();
@@ -104,6 +104,7 @@ public class EventDetailsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        UserListManager eventListManager = new UserListManager(event);
 
         // Event Image
         ImageView imageView = view.findViewById(R.id.event_image);
@@ -144,8 +145,8 @@ public class EventDetailsFragment extends Fragment {
         time.setText(String
                 .format(
                         getContext().getString(R.string.event_time),
-                        event.getEventTimeStart().toString(),
-                        event.getEventTimeEnd().toString())
+                        event.getEventTimeStart(),
+                        event.getEventTimeEnd())
         );
 
         // Max Registered display
@@ -154,25 +155,25 @@ public class EventDetailsFragment extends Fragment {
 
         // Number of people in waitlist
         TextView waitlist = view.findViewById(R.id.text_waitlist);
-        waitlist.setText(event.getMaxWaitlist().toString());
+        waitlist.setText(eventListManager.waitlistSize().toString());
 
 
-        UserListManager eventListManager = new UserListManager(event);
+
         // bottom display choices
         LocalDate currentDate = LocalDate.now();
-        if(!userCreated){ // no profile connected to deviceID
+        if(user == null){ // no profile connected to deviceID
             if (currentDate.isAfter(convertDate(event.getRegEnd(), dateFormatter))){
                 // waitlist period ended display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
             } else if (currentDate.isBefore(convertDate(event.getRegStart(), dateFormatter))){
                 // waitlist period has not started display
-                displayWaitlistStatus("Waitlist has not opened yet");
-            } else if (/*eventListManager.waitlistFull()*/Boolean.FALSE) {
+                displayWaitlistStatus("Waitlist opens" + event.getRegStart());
+            } else if (eventListManager.waitlistFull()) {
                 // waitlist full display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_full));
             }  else {
                 // waitlist button display that prompts create profile dialog
-                displayWaitlistButton(user, userCreated);
+                displayWaitlistButton();
             }
         } else {
             // profile is connected to deviceID
@@ -195,7 +196,7 @@ public class EventDetailsFragment extends Fragment {
 
             } else if (currentDate.isBefore(convertDate(event.getRegStart(), dateFormatter))){
                 // waitlist period has not started display
-                displayWaitlistStatus("Waitlist is not open yet");
+                displayWaitlistStatus("Waitlist opens" + event.getRegStart());
             } else if (currentDate.isAfter(convertDate(event.getRegEnd(), dateFormatter))){
                 // waitlist period ended display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
@@ -204,18 +205,18 @@ public class EventDetailsFragment extends Fragment {
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_full));
             } else {
                 // join waitlist buttons added
-                displayWaitlistButton(user, userCreated);
+                displayWaitlistButton();
             }
         }
 
         super.onViewCreated(view, savedInstanceState);
     }
 
-    public void displayWaitlistButton(User user, Boolean created){
+    public void displayWaitlistButton(){
         WaitlistButtons button = new WaitlistButtons();
 
         button.setUser(user);
-        button.setUserCreated(created);
+        button.setUserCreated(userCreated);
         button.setEvent(event);
 
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
@@ -241,20 +242,19 @@ public class EventDetailsFragment extends Fragment {
                 .collection("users")
                 .document(deviceID.getDeviceID())
                 .get()
-                .addOnSuccessListener((DocumentSnapshot snapshot) -> {
+                .addOnSuccessListener(snapshot -> {
                     // User does not exists related to deviceID
-                    if (!snapshot.exists()){
+                    if (snapshot.exists()){
+                        userCreated = Boolean.TRUE;
+                        user = snapshot.toObject(User.class);
+                    } else { // User does exist related to deviceID
+                        //user = null;
                         userCreated = Boolean.FALSE;
                     }
-                    // User does exist related to deviceID
-                    user = snapshot.toObject(User.class);
                 })
                 .addOnFailureListener(fail ->
                         userCreated = Boolean.FALSE
                 );
     }
-
-
-
 
 }

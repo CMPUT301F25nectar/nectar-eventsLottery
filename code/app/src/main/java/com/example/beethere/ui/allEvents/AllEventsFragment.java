@@ -54,7 +54,7 @@ public class AllEventsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        SearchView search = view.findViewById(R.id.searchView);
+        SearchView search = view.findViewById(R.id.all_events_search_view);
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -128,7 +128,7 @@ public class AllEventsFragment extends Fragment {
                 Log.d("AllEvents", "All events fragment error getting events from database");
             }
         };
-        functions.getEventsDB(Boolean.FALSE, callback);
+        functions.getEventsDB(callback);
     }
 
     private void searchEvents(String query) {
