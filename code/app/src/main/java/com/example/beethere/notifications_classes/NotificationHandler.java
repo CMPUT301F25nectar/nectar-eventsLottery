@@ -6,6 +6,7 @@ import com.example.beethere.DatabaseCallback;
 import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.User;
 import com.example.beethere.eventclasses.Event;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -20,7 +21,7 @@ import java.util.Map;
  */
 public class NotificationHandler {
     /** Firebase Firestore instance for database operations*/
-
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     // Notification types
     /**Notification type constant for lottery winner*/
     public String TYPE_LOTTERY_WON = "lotteryWon";
@@ -28,7 +29,6 @@ public class NotificationHandler {
     public String TYPE_LOTTERY_LOST = "lotteryLost";
     /**Notification type constant for organizer messages*/
     public String TYPE_ORGANIZER_MESSAGE = "organizerMessage";
-    public String TYPE_ADMIN_MESSAGE = "adminMessage";
 
     private DatabaseFunctions dbfunctions;
 
@@ -38,20 +38,6 @@ public class NotificationHandler {
     public NotificationHandler(){
         dbfunctions = new DatabaseFunctions();
     }
-
-
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
-    // THIS FUCKING LINE
 
     /**
      * Sends lottery result notifications to winners and losers
@@ -74,7 +60,6 @@ public class NotificationHandler {
         }
     }
 
-
     /**
      * Sends "you won the lottery!" notification to a selected user
      * @param deviceID The deviceID of the user who won/selected
@@ -83,35 +68,27 @@ public class NotificationHandler {
      * @param organizerDeviceId The device id of the organizer
      */
     private void sendLotteryWonNotification(String deviceID, String eventId, String eventName, String organizerDeviceId) {
-        dbfunctions.getUserDB(deviceID, new DatabaseCallback<User>() {
-            @Override
-            public void onCallback(User user) {
-                if (user != null && user.getReceiveWinningNotifs()) {
-                    String message = "Congratulations! You've been selected for " + eventName + ". Accept your invitation now!";
+        DocumentReference newNotifRef = db.collection("notifications").document();
+        String notifId = newNotifRef.getId();
+        String message = "Congratulations! You've been selected for " + eventName + ". Accept your invitation now!";
 
-                    List<String> deviceIds = new ArrayList<>();
-                    deviceIds.add(deviceID);
+        List<String> deviceIds = new ArrayList<>();
+        List<String> interactedIds = new ArrayList<>();
+        deviceIds.add(deviceID);
 
-                    Notification notification = new Notification(
-                            eventId,
-                            eventName,
-                            message,
-                            System.currentTimeMillis(),
-                            TYPE_LOTTERY_WON,
-                            deviceIds,
-                            organizerDeviceId
-                    );
+        Notification notification = new Notification(
+                notifId,
+                eventId,
+                eventName,
+                message,
+                System.currentTimeMillis(),
+                TYPE_LOTTERY_WON,
+                deviceIds,
+                interactedIds,
+                organizerDeviceId
+        );
 
-                    dbfunctions.addNotifsDB(notification);
-                }else {
-                    Log.d("NotificationHandler", "User opted out of winning notifications");
-                }
-            }
-            @Override
-            public void onError(Exception e) {
-                Log.e("NotificationHandler", "Error checking user preferences", e);
-            }
-        });
+        dbfunctions.addNotifsDB(notification);
     }
 
 
@@ -123,38 +100,27 @@ public class NotificationHandler {
      * @param organizerDeviceId The device id of the organizer
      */
     private void sendLotteryLostNotification(User user, String eventId, String eventName, String organizerDeviceId){
-        dbfunctions.getUserDB(user.getDeviceid(), new DatabaseCallback<User>() {
-            @Override
-            public void onCallback(User result) {
-                if(user != null && user.getReceiveLosingNotifs()){
-                    String message = "Sorry! You weren't selected for " + eventName + " this time. You'll remain on the waitlist.";
+        DocumentReference newNotifRef = db.collection("notifications").document();
+        String notifId = newNotifRef.getId();
+        String message = "Sorry! You weren't selected for " + eventName + " this time. You'll remain on the waitlist.";
 
-                    List<String> deviceIds = new ArrayList<>();
-                    deviceIds.add(user.getDeviceid());
+        List<String> deviceIds = new ArrayList<>();
+        List<String> interactedIds = new ArrayList<>();
+        deviceIds.add(user.getDeviceid());
 
-                    Notification notification = new Notification(
-                            eventId,
-                            eventName,
-                            message,
-                            System.currentTimeMillis(),
-                            TYPE_LOTTERY_LOST,
-                            deviceIds,
-                            organizerDeviceId
-                    );
+        Notification notification = new Notification(
+                notifId,
+                eventId,
+                eventName,
+                message,
+                System.currentTimeMillis(),
+                TYPE_LOTTERY_LOST,
+                deviceIds,
+                interactedIds,
+                organizerDeviceId
+        );
 
-                    dbfunctions.addNotifsDB(notification);
-                }
-                else {
-                    Log.d("NotificationHandler", "User opted out of losing notifications!!");
-                }
-            }
-
-            @Override
-            public void onError(Exception e) {
-                Log.d("NotificationHandler", "Error checking user's preferences.", e);
-            }
-        });
-
+        dbfunctions.addNotifsDB(notification);
     }
 
 
@@ -163,62 +129,27 @@ public class NotificationHandler {
                                      String customMessage,
                                      String organizerDeviceId){
         List<String> deviceIds = new ArrayList<>();
+        List<String> interactedIds = new ArrayList<>();
+        DocumentReference newNotifRef = db.collection("notifications").document();
+        String notifId = newNotifRef.getId();
         for (User user : waitlist) {
-            if (user.getReceiveOrganizerNotifs()) {
-                deviceIds.add(user.getDeviceid());
-            }
+            deviceIds.add(user.getDeviceid());
         }
 
         if (!deviceIds.isEmpty()) {
             Notification notification = new Notification(
+                    notifId,
                     eventId,
                     eventName,
                     customMessage,
                     System.currentTimeMillis(),
                     TYPE_ORGANIZER_MESSAGE,
                     deviceIds,
+                    interactedIds,
                     organizerDeviceId
             );
 
             dbfunctions.addNotifsDB(notification);
-        }else {
-            Log.d("NotificationHandler", "No users opted in to receive organizer messages");
-        }
-    }
-
-    /**
-     * Sends admin message to a list of users
-     * Only sends to users who have opted in to receive admin messages
-     * @param userList List of users to send message to
-     * @param customMessage The message from admin
-     * @param adminDeviceId The admin's device ID
-     */
-    public void sendAdminMessage(ArrayList<User> userList,
-                                 String customMessage,
-                                 String adminDeviceId){
-        List<String> deviceIds = new ArrayList<>();
-
-        // Only add users who have opted in to receive admin messages
-        for (User user : userList) {
-            if (user.getReceiveAdminNotifs()) {
-                deviceIds.add(user.getDeviceid());
-            }
-        }
-
-        if (!deviceIds.isEmpty()) {
-            Notification notification = new Notification(
-                    null,  // No specific event
-                    "Admin Message",
-                    customMessage,
-                    System.currentTimeMillis(),
-                    TYPE_ADMIN_MESSAGE,
-                    deviceIds,
-                    adminDeviceId
-            );
-
-            dbfunctions.addNotifsDB(notification);
-        } else {
-            Log.d("NotificationHandler", "No users opted in to receive admin messages");
         }
     }
 }
