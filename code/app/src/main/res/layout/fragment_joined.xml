@@ -74,12 +74,13 @@
     <ListView
         android:id="@+id/joined_event_display"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="8dp"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_enrolled" />
+        app:layout_constraintTop_toBottomOf="@+id/button_enrolled"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 
     <TextView
@@ -97,7 +98,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_enrolled" />
-
 
     <FrameLayout
         android:id="@+id/event_details_layout"
