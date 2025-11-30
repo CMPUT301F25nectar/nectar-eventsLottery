@@ -27,10 +27,30 @@ public class InvitedAdapter extends ArrayAdapter<String> {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private ImageButton deleteInvited;
 
+    /**
+     *
+     * @param context context of the adapter
+     * @param invitedList list of entrants who have been selected from the wait-list
+     */
+
     public InvitedAdapter(Context context, Map<String, Boolean> invitedList) {
         super(context, 0, new ArrayList<>(invitedList.keySet()));
         this.invitedList = invitedList;
     }
+
+    /**
+     *
+     * @param position The position of the item within the adapter's data set of the item whose view
+     *        we want.
+     * @param convertView The old view to reuse, if possible. Note: You should check that this view
+     *        is non-null and of an appropriate type before using. If it is not possible to convert
+     *        this view to display the correct data, this method can create a new view.
+     *        Heterogeneous lists can specify their number of view types, so that this View is
+     *        always of the right type (see {@link #getViewTypeCount()} and
+     *        {@link #getItemViewType(int)}).
+     * @param parent The parent that this view will eventually be attached to
+     * @return view
+     */
 
     @NonNull
     @Override
@@ -84,7 +104,10 @@ public class InvitedAdapter extends ArrayAdapter<String> {
         return view;
     }
 
-
+    /**
+     *
+     * @param newList update the invited list after any changes made
+     */
     public void update(Map<String, Boolean> newList) {
         invitedList.clear();
         invitedList.putAll(newList);
@@ -93,4 +116,5 @@ public class InvitedAdapter extends ArrayAdapter<String> {
         addAll(new ArrayList<>(newList.keySet()));
         notifyDataSetChanged();
     }
+
 }
