@@ -83,11 +83,10 @@ public class UserListManager {
      * @param user: the user to be added
      */
     public void addWaitlist(User user) {
-
         if (waitlistSize() < event.getMaxWaitlist() && !inWaitlist(user)) {
             event.getWaitList().add(user);
+            dbFunctions.addUserToEventDB(event, user, "waitList");
         }
-        dbFunctions.addUserToEventDB(event, user, "waitList");
     }
 
     /**
@@ -120,12 +119,11 @@ public class UserListManager {
      *      Boolean, true/false if they are in or not
      */
     public Boolean inWaitlist(User user) {
-        User waitlistUser;
         Boolean result = Boolean.FALSE;
-        for (int i = 0; i < this.waitlistSize(); i++){
-            waitlistUser = event.getWaitList().get(i);
-            if (Objects.equals(waitlistUser.getDeviceid(), user.getDeviceid())){
+        for (User waitlistUser : event.getWaitList()) {
+            if (waitlistUser.getDeviceid() == user.getDeviceid()){
                 result = Boolean.TRUE;
+                break;
             }
         }
 

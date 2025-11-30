@@ -41,7 +41,6 @@ public class JoinedFragment extends Fragment {
     private DeviceIDViewModel deviceID;
     private DateTimeFormatter dateFormatter;
 
-    private ListView events;
     private TextView message;
 
     private User user;
@@ -52,6 +51,8 @@ public class JoinedFragment extends Fragment {
     private ArrayList<Event> userHistory;
 
     EventsAdapter waitlistAdapter;
+    EventsAdapter enrolledAdapter;
+    EventsAdapter historyAdapter;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -72,35 +73,35 @@ public class JoinedFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         // checking if user exists for deviceID
         user = null;
-        checkUserDB();
-
-        // loading all events that user has joined to eventList
-        // eventList stays empty if !userCreated
         eventList = new ArrayList<>();
-
 
         // each user list (stored, so not calced everytime)
         userWaitlist = new ArrayList<>();
         userEnrollList = new ArrayList<>();
         userHistory = new ArrayList<>();
-        waitlistAdapter = new EventsAdapter(getContext(), userWaitlist);
-        EventsAdapter enrolledAdapter = new EventsAdapter(getContext(), userEnrollList);
-        EventsAdapter historyAdapter = new EventsAdapter(getContext(), userHistory);
 
-        // setting views
+        waitlistAdapter = new EventsAdapter(getContext(), userWaitlist);
+        enrolledAdapter = new EventsAdapter(getContext(), userEnrollList);
+        historyAdapter = new EventsAdapter(getContext(), userHistory);
+
+
+
+
+
+        // setting buttons
         Button waitlisted = view.findViewById(R.id.button_waitlisted);
         Button enrolled = view.findViewById(R.id.button_enrolled);
         Button history = view.findViewById(R.id.button_history);
-        events = view.findViewById(R.id.event_display);
-
 
         // start with waitlisted selected
         buttonSelected(waitlisted, enrolled, history);
-        //switchDisplay(userWaitlist, waitlistAdapter);
 
         // switch to event details when event is clicked on
+        ListView events = view.findViewById(R.id.joined_event_display);
+        events.setAdapter(waitlistAdapter);
         events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -113,11 +114,11 @@ public class JoinedFragment extends Fragment {
             }
         });
 
-
         waitlisted.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 buttonSelected(waitlisted, enrolled, history);
+                waitlistAdapter.notifyDataSetChanged();
                 switchDisplay(userWaitlist, waitlistAdapter);
             }
         });
@@ -126,6 +127,7 @@ public class JoinedFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 buttonSelected(enrolled, waitlisted, history);
+                enrolledAdapter.notifyDataSetChanged();
                 switchDisplay(userEnrollList, enrolledAdapter);
             }
         });
@@ -134,13 +136,12 @@ public class JoinedFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 buttonSelected(history,waitlisted, enrolled);
+                historyAdapter.notifyDataSetChanged();
                 switchDisplay(userHistory, historyAdapter);
             }
         });
 
-
-
-        super.onViewCreated(view, savedInstanceState);
+        checkUserDB();
     }
 
     public LocalDate convertDate(String stringDate) {
@@ -159,11 +160,12 @@ public class JoinedFragment extends Fragment {
                     }
                     // User does exist related to deviceID
                     user = snapshot.toObject(User.class);
+                    loadEvents();
                 })
                 .addOnFailureListener(fail ->
                         user = null
-                );
 
+                );
         loadEvents();
     }
 
@@ -174,23 +176,14 @@ public class JoinedFragment extends Fragment {
             @Override
             public void onCallback(ArrayList<Event> result) {
                 // if there is a user account attached to deviceID
+                eventList.clear();
+                userWaitlist.clear();
                 if (user != null) {
-                    // get event manager
-                    UserListManager manager = new UserListManager();
-                    // go through each event
-                    for (Event event : result) {
-                        // set manager for event
-                        manager.setEvent(event);
-                        // if user in event waitlist/invite/registered
-                        // add event to list
-                        if(manager.inWaitlist(user)
-                                || manager.inInvite(user)
-                                || manager.inRegistered(user)) {
-                            eventList.add(event);
-                        }
-                    }
+                    eventList.addAll(result);
                     loadLists();
                 }
+                userWaitlist.addAll(result);
+                waitlistAdapter.notifyDataSetChanged();
                 switchDisplay(userWaitlist, waitlistAdapter);
                 // if not user created handled elsewhere, no events added
             }
@@ -199,10 +192,7 @@ public class JoinedFragment extends Fragment {
                 Log.d("Joined", "Joined fragment error getting events from database");
             }
         };
-        // no filtering for actually getting the events
-        // getting the events function call
         functions.getEventsDB(callback);
-
     }
 
 
@@ -214,10 +204,6 @@ public class JoinedFragment extends Fragment {
         LocalDate currentDate = LocalDate.now();
         LocalDate eventEnd, eventStart;
 
-        userWaitlist.clear();
-        userEnrollList.clear();
-        userHistory.clear();
-
         for (Event event : eventList){
             // set event manager, and conver event dates
             manager.setEvent(event);
@@ -228,23 +214,27 @@ public class JoinedFragment extends Fragment {
             // so waitlist has opened
             // waitlist may have closed
             // user is in waitlist or user has been invited to register
-            if(currentDate.isBefore(eventStart) && !manager.inRegistered(user)){
+            if(currentDate.isBefore(eventStart) && manager.inWaitlist(user) && manager.inInvite(user)){
                 userWaitlist.add(event);
+                waitlistAdapter.notifyDataSetChanged();
             }
             // before the end of the event
             // user has registered for the event
             if(currentDate.isBefore(eventEnd) && manager.inRegistered(user)) {
                 userEnrollList.add(event);
+                enrolledAdapter.notifyDataSetChanged();
             }
             // after end of the event
             // eventList only has events where the user is included
             if(currentDate.isAfter(eventEnd)) {
                 userHistory.add(event);
+                historyAdapter.notifyDataSetChanged();
             }
 
         }
-
+        waitlistAdapter.notifyDataSetChanged();
         switchDisplay(userWaitlist, waitlistAdapter);
+
     }
 
     public void buttonSelected(Button selected, Button notSelected1, Button notSelected2){
@@ -258,9 +248,11 @@ public class JoinedFragment extends Fragment {
             displayMessage("Make an account to join an event!");
         } else if (display.isEmpty()) {
             displayMessage("No events joined...");
+            //events.setVisibility(GONE);
         } else {
             message.setVisibility(GONE);
-            events.setAdapter(eventsAdapter);
+            //events.setVisibility(VISIBLE);
+            //events.setAdapter(eventsAdapter);
         }
     }
 
