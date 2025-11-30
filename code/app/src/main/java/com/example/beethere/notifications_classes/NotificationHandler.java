@@ -28,6 +28,7 @@ public class NotificationHandler {
     public String TYPE_LOTTERY_LOST = "lotteryLost";
     /**Notification type constant for organizer messages*/
     public String TYPE_ORGANIZER_MESSAGE = "organizerMessage";
+    public String TYPE_ADMIN_MESSAGE = "adminMessage";
 
     private DatabaseFunctions dbfunctions;
 
@@ -82,22 +83,35 @@ public class NotificationHandler {
      * @param organizerDeviceId The device id of the organizer
      */
     private void sendLotteryWonNotification(String deviceID, String eventId, String eventName, String organizerDeviceId) {
-        String message = "Congratulations! You've been selected for " + eventName + ". Accept your invitation now!";
+        dbfunctions.getUserDB(deviceID, new DatabaseCallback<User>() {
+            @Override
+            public void onCallback(User user) {
+                if (user != null && user.getReceiveWinningNotifs()) {
+                    String message = "Congratulations! You've been selected for " + eventName + ". Accept your invitation now!";
 
-        List<String> deviceIds = new ArrayList<>();
-        deviceIds.add(deviceID);
+                    List<String> deviceIds = new ArrayList<>();
+                    deviceIds.add(deviceID);
 
-        Notification notification = new Notification(
-                eventId,
-                eventName,
-                message,
-                System.currentTimeMillis(),
-                TYPE_LOTTERY_WON,
-                deviceIds,
-                organizerDeviceId
-        );
+                    Notification notification = new Notification(
+                            eventId,
+                            eventName,
+                            message,
+                            System.currentTimeMillis(),
+                            TYPE_LOTTERY_WON,
+                            deviceIds,
+                            organizerDeviceId
+                    );
 
-        dbfunctions.addNotifsDB(notification);
+                    dbfunctions.addNotifsDB(notification);
+                }else {
+                    Log.d("NotificationHandler", "User opted out of winning notifications");
+                }
+            }
+            @Override
+            public void onError(Exception e) {
+                Log.e("NotificationHandler", "Error checking user preferences", e);
+            }
+        });
     }
 
 
@@ -109,22 +123,38 @@ public class NotificationHandler {
      * @param organizerDeviceId The device id of the organizer
      */
     private void sendLotteryLostNotification(User user, String eventId, String eventName, String organizerDeviceId){
-        String message = "Sorry! You weren't selected for " + eventName + " this time. You'll remain on the waitlist.";
+        dbfunctions.getUserDB(deviceID, new DatabaseCallback<User>() {
+            @Override
+            public void onCallback(User result) {
+                if(user != null && user.getReceiveLosingNotifs()){
+                    String message = "Sorry! You weren't selected for " + eventName + " this time. You'll remain on the waitlist.";
 
-        List<String> deviceIds = new ArrayList<>();
-        deviceIds.add(user.getDeviceid());
+                    List<String> deviceIds = new ArrayList<>();
+                    deviceIds.add(user.getDeviceid());
 
-        Notification notification = new Notification(
-                eventId,
-                eventName,
-                message,
-                System.currentTimeMillis(),
-                TYPE_LOTTERY_LOST,
-                deviceIds,
-                organizerDeviceId
-        );
+                    Notification notification = new Notification(
+                            eventId,
+                            eventName,
+                            message,
+                            System.currentTimeMillis(),
+                            TYPE_LOTTERY_LOST,
+                            deviceIds,
+                            organizerDeviceId
+                    );
 
-        dbfunctions.addNotifsDB(notification);
+                    dbfunctions.addNotifsDB(notification);
+                }
+                else {
+                    Log.d("NotificationHandler", "User opted out of losing notifications!!");
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.d("NotificationHandler", "Error checking user's preferences.", e);
+            }
+        });
+
     }
 
 
@@ -134,7 +164,9 @@ public class NotificationHandler {
                                      String organizerDeviceId){
         List<String> deviceIds = new ArrayList<>();
         for (User user : waitlist) {
-            deviceIds.add(user.getDeviceid());
+            if (user.getReceiveOrganizerNotifs()) {
+                deviceIds.add(user.getDeviceid());
+            }
         }
 
         if (!deviceIds.isEmpty()) {
@@ -149,6 +181,44 @@ public class NotificationHandler {
             );
 
             dbfunctions.addNotifsDB(notification);
+        }else {
+            Log.d("NotificationHandler", "No users opted in to receive organizer messages");
+        }
+    }
+
+    /**
+     * Sends admin message to a list of users
+     * Only sends to users who have opted in to receive admin messages
+     * @param userList List of users to send message to
+     * @param customMessage The message from admin
+     * @param adminDeviceId The admin's device ID
+     */
+    public void sendAdminMessage(ArrayList<User> userList,
+                                 String customMessage,
+                                 String adminDeviceId){
+        List<String> deviceIds = new ArrayList<>();
+
+        // Only add users who have opted in to receive admin messages
+        for (User user : userList) {
+            if (user.getReceiveAdminNotifs()) {
+                deviceIds.add(user.getDeviceid());
+            }
+        }
+
+        if (!deviceIds.isEmpty()) {
+            Notification notification = new Notification(
+                    null,  // No specific event
+                    "Admin Message",
+                    customMessage,
+                    System.currentTimeMillis(),
+                    TYPE_ADMIN_MESSAGE,
+                    deviceIds,
+                    adminDeviceId
+            );
+
+            dbfunctions.addNotifsDB(notification);
+        } else {
+            Log.d("NotificationHandler", "No users opted in to receive admin messages");
         }
     }
 }

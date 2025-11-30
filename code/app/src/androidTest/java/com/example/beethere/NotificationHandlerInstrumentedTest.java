@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RunWith(AndroidJUnit4.class)
 public class NotificationHandlerInstrumentedTest {
@@ -57,8 +58,8 @@ public class NotificationHandlerInstrumentedTest {
         //dbfunctions.getNotifsDB(alice.getDeviceid(), callback);
 
         // Send a new notification for this user
-        HashMap<User, Boolean> inviteList = new HashMap<>();
-        inviteList.put(alice, true);
+        Map<String, Boolean> inviteList = new HashMap<>();
+        inviteList.put(alice.getDeviceid(), true);
         ArrayList<User> waitlist = new ArrayList<>();
         waitlist.add(new User("Bob", "bob@test.com"));  // Example waitlist
         notificationHandler.sendLotteryNotifications(
