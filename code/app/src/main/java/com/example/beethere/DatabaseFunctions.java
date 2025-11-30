@@ -1,5 +1,6 @@
 package com.example.beethere;
 
+import com.example.beethere.eventclasses.UserListManager;
 import com.example.beethere.notifications_classes.Notification;
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -73,13 +74,80 @@ public class DatabaseFunctions {
 
     /**
      * This methods deletes users from the database
-     * @param userID String UserID of the user that needs to be deleted
+     * @param user  User object of the user that needs to be deleted
      */
-    public void deleteUserDB(String userID){
+    public void deleteUserDB(User user){
         CollectionReference users = db.collection("users");
-        DocumentReference docref = users.document(userID);
-        docref.delete().addOnSuccessListener(unused -> Log.d("DeleteUser", "User deleted successfully"))
-                .addOnFailureListener(fail -> Log.d(TAG, "Error deleting account"));
+        DocumentReference docref = users.document(user.getDeviceid());
+        ArrayList<Event> eventList = new ArrayList<>();
+
+        // Get interacted notifs happens last
+        DatabaseCallback<List<Notification>> interactedCallback = new DatabaseCallback<List<Notification>>() {
+            @Override
+            public void onCallback(List<Notification> result) {
+                deleteUserFromNotifDB(user.getDeviceid(), result, "respondedDeviceIds");
+                docref.delete().addOnSuccessListener(unused -> Log.d("DeleteUser", "User deleted successfully"))
+                        .addOnFailureListener(fail -> Log.d(TAG, "Error deleting account"));
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.d("DatabaseFunction", "DatabaseFunctions error getting notifs from database");
+            }
+        };
+
+        // Get Non-interacted notifs happens second
+        DatabaseCallback<List<Notification>> notifCallback = new DatabaseCallback<List<Notification>>() {
+            @Override
+            public void onCallback(List<Notification> result) {
+                deleteUserFromNotifDB(user.getDeviceid(), result, "deviceIds");
+                getInteractedNotifsDB(user.getDeviceid(), interactedCallback);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.d("DatabaseFunction", "DatabaseFunctions error getting notifs from database");
+            }
+        };
+
+        // Get Event Callback, gets called first
+        DatabaseCallback<ArrayList<Event>> eventCallback = new DatabaseCallback<>() {
+            @Override
+            public void onCallback(ArrayList<Event> result) {
+                eventList.addAll(result);
+                checkDeleteUserDB(eventList, user);
+                getNotifsDB(user.getDeviceid(), notifCallback);
+            }
+            @Override
+            public void onError(Exception e) {
+                Log.d("DatabaseFunction", "DatabaseFunctions error getting events from database");
+            }
+        };
+        getEventsDB(eventCallback);
+    }
+
+    /**
+     * This method deletes a user from all the events they've interacted with
+     * and deletes events the user has created
+     * @param eventList All events to sift through
+     * @param user User to compare with
+     */
+    private void checkDeleteUserDB(ArrayList<Event> eventList, User user){
+        UserListManager manager = new UserListManager();
+        for (Event event: eventList){
+            manager.setEvent(event);
+            if (manager.inWaitlist(user)) {
+                manager.removeWaitlist(user);
+            } else if (manager.inInvite(user)){
+                manager.removeInvite(user);
+            } else if (manager.inRegistered(user)){
+                manager.removeRegistered(user);
+            }
+
+            if (event.getOrganizer().getDeviceid() == user.getDeviceid()) {
+                deleteEventDB(event.getEventID());
+            }
+        }
     }
 
     /**
@@ -251,10 +319,32 @@ public class DatabaseFunctions {
      * @param eventID String EventID of the event that needs to be deleted
      */
     public void deleteEventDB(String eventID){
+        deleteEventNotif(eventID);
         CollectionReference events = db.collection("events");
         DocumentReference docref = events.document(eventID);
         docref.delete().addOnSuccessListener(unused -> Log.d("DeleteEvent", "Event deleted successfully"))
                 .addOnFailureListener(fail -> Log.d(TAG, "Error deleting event"));
+    }
+
+    public void deleteEventNotif(String eventID){
+        CollectionReference notifcol = db.collection("notifications");
+        notifcol.whereEqualTo("eventId", eventID)
+                .addSnapshotListener((queryDocumentSnapshots, error) -> {
+                    if (error != null) {
+                        Log.d(TAG, "Error getting documents");
+                        return;
+                    }
+
+                    if (queryDocumentSnapshots != null) {
+                        for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
+                            DocumentSnapshot notif = queryDocumentSnapshots.getDocuments().get(i);
+                            DocumentReference notifref = notif.getReference();
+                            notifref.delete().addOnSuccessListener(unused -> Log.d("DeleteEventNotif", "Event notif deleted successfully"))
+                                    .addOnFailureListener(fail -> Log.d(TAG, "Error deleting event notif"));
+                        }
+                        Log.d(TAG, "Error getting documents");
+                    }
+                });
     }
 
     /**
