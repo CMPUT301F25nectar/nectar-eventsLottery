@@ -186,7 +186,7 @@ public class DatabaseFunctions {
     public void removeUserFromEventDB(Event event, User user, String field){
         CollectionReference events = db.collection("events");
         DocumentReference docref = events.document(event.getEventID());
-        docref.update(field, FieldValue.arrayRemove(user)).addOnSuccessListener(unused -> Log.d("AddUser", "User removed from event successfully"))
+        docref.update(field, FieldValue.arrayRemove(user)).addOnSuccessListener(unused -> Log.d("RemoveUser", "User removed from event successfully"))
                 .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from event"));
     }
 
@@ -219,7 +219,7 @@ public class DatabaseFunctions {
     }
 
     /**
-     * This method returns a user's notifications via callback
+     * This method returns a user's notifications they haven't interacted with via callback
      * @param deviceId User's ID string to fetch the notifications for
      * @param callback Database Callback to return the database
      */
@@ -246,7 +246,72 @@ public class DatabaseFunctions {
                 });
     }
 
+    /**
+     * This methods deletes an event from the database
+     * @param eventID String EventID of the event that needs to be deleted
+     */
+    public void deleteEventDB(String eventID){
+        CollectionReference events = db.collection("events");
+        DocumentReference docref = events.document(eventID);
+        docref.delete().addOnSuccessListener(unused -> Log.d("DeleteEvent", "Event deleted successfully"))
+                .addOnFailureListener(fail -> Log.d(TAG, "Error deleting event"));
+    }
 
+    /**
+     * This method returns a user's notifications they did interact with via callback
+     * @param deviceId User's ID string to fetch the notifications for
+     * @param callback Database Callback to return the database
+     */
+    public void getInteractedNotifsDB(String deviceId, DatabaseCallback<List<Notification>> callback){
+        CollectionReference notifcol = db.collection("notifications");
+        notifcol.whereArrayContains("respondedDeviceIds", deviceId)
+                //.orderBy("timestamp", Query.Direction.DESCENDING)
+                .addSnapshotListener((queryDocumentSnapshots, error) -> {
+                    if (error != null) {
+                        callback.onError(error);
+                        return;
+                    }
+
+                    if (queryDocumentSnapshots != null) {
+                        List<Notification> notifications = new ArrayList<>();
+                        for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
+                            Notification notif = queryDocumentSnapshots.getDocuments().get(i).toObject(Notification.class);
+                            if (notif != null) {
+                                notifications.add(notif);
+                            }
+                        }
+                        callback.onCallback(notifications);
+                    }
+                });
+    }
+
+    /**
+     * This methods removes user from an notification set
+     * @param userID User's ID string to be removed from the notification
+     * @param notifs List of Notification the user wants to interact with
+     * @param field Can be either deviceIds or respondedDeviceIds*/
+    public void deleteUserFromNotifDB(String userID, List<Notification> notifs, String field){
+        CollectionReference notifcol = db.collection("notifications");
+        for(Notification not : notifs){
+            DocumentReference docref = notifcol.document(not.getNotifId());
+            docref.update(field, FieldValue.arrayRemove(userID)).addOnSuccessListener(unused -> Log.d("DeleteUserNotif", "User removed from notif successfully"))
+                    .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from notification"));
+        }
+    }
+
+    /**
+     * This method lets the database know a user responded to a notification
+     * @param notifID String ID of the notification to update
+     * @param userID String ID of the user to change in the notification
+     * */
+    public void userRespondedDB(String notifID, String userID){
+        CollectionReference notifcol = db.collection("notifications");
+        DocumentReference docref = notifcol.document(notifID);
+        docref.update("deviceIds", FieldValue.arrayRemove(userID)).addOnSuccessListener(unused -> Log.d("userResponded", "User removed from notif successfully"))
+                .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from notification"));
+        docref.update("respondedDeviceIds", FieldValue.arrayUnion(userID)).addOnSuccessListener(unused -> Log.d("userResponded", "User added to notif successfully"))
+                .addOnFailureListener(fail -> Log.d(TAG, "Error adding user to notif"));
+    }
 }
 
 
