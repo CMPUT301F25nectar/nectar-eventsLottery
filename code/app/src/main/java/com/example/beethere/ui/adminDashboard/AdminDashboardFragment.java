@@ -34,7 +34,6 @@ public class AdminDashboardFragment extends Fragment {
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO
                 FragmentManager fragmentManager = getParentFragmentManager();
                 fragmentManager.popBackStack();
             }
@@ -43,24 +42,21 @@ public class AdminDashboardFragment extends Fragment {
         viewNotification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO
-                nav.navigate(R.id.allEventToEventDetails);
+                nav.navigate(R.id.admin_to_adminNotifs);
             }
         });
 
         viewImages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO
-                nav.navigate(R.id.allEventToEventDetails);
+                nav.navigate(R.id.admin_to_adminImages);
             }
         });
 
         viewProfiles.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO
-                nav.navigate(R.id.allEventToEventDetails);
+                nav.navigate(R.id.admin_to_adminProfiles);
             }
         });
 
@@ -68,7 +64,7 @@ public class AdminDashboardFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // TODO
-                nav.navigate(R.id.allEventToEventDetails);
+                nav.navigate(R.id.admin_to_adminEvents);
             }
         });
 
