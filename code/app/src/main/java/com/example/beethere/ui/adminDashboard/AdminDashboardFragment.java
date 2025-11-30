@@ -42,29 +42,28 @@ public class AdminDashboardFragment extends Fragment {
         viewNotification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nav.navigate(R.id.admin_to_adminNotifs);
+                //nav.navigate(R.id.admin_to_adminNotifs);
             }
         });
 
         viewImages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nav.navigate(R.id.admin_to_adminImages);
+                //nav.navigate(R.id.admin_to_adminImages);
             }
         });
 
         viewProfiles.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nav.navigate(R.id.admin_to_adminProfiles);
+                //nav.navigate(R.id.admin_to_adminProfiles);
             }
         });
 
         viewEvents.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO
-                nav.navigate(R.id.admin_to_adminEvents);
+                //nav.navigate(R.id.admin_to_adminEvents);
             }
         });
 

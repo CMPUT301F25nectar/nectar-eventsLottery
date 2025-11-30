@@ -56,6 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:divider="@android:color/transparent"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
         app:layout_constraintTop_toBottomOf="@+id/all_events_search_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>

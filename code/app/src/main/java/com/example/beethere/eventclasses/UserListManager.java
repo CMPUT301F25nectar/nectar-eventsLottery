@@ -155,7 +155,7 @@ public class UserListManager {
         // check if user has been invited/in invite list
         if(inInvite(user)){
             event.getInvited().remove(user.getDeviceid());
-            dbFunctions.removeInviteDB(event, user);
+            dbFunctions.removeInviteDB(event, user.getDeviceid());
         }
     }
 
