@@ -30,6 +30,7 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
     </application>
+
     <!--<service
         android:name = ".NotificationFirebaseMessagingService"
         android:exported="false">

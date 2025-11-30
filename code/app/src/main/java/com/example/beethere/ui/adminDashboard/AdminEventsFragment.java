@@ -6,12 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -44,6 +46,17 @@ public class AdminEventsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
+        NavController nav = Navigation.findNavController(view);
+
+        Button backButton = view.findViewById(R.id.admin_event_back_button);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getParentFragmentManager();
+                fragmentManager.popBackStack();
+            }
+        });
+
         SearchView search = view.findViewById(R.id.admin_events_search);
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -69,7 +82,8 @@ public class AdminEventsFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 EventDataViewModel event = new ViewModelProvider(getActivity()).get(EventDataViewModel.class);
                 event.setEvent((Event) parent.getItemAtPosition(position));
-                NavController nav = Navigation.findNavController(view);
+
+                // TODO
                 nav.navigate(R.id.admin_to_event_details);
             }
         });

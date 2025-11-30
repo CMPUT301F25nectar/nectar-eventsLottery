@@ -1,4 +1,6 @@
 package com.example.beethere.ui.adminDashboard;
 
-public class AdminNotificationsFragment {
+import androidx.fragment.app.Fragment;
+
+public class AdminNotificationsFragment extends Fragment {
 }

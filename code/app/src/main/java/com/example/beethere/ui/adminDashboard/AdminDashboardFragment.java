@@ -10,6 +10,9 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.beethere.R;
 
@@ -27,10 +30,13 @@ public class AdminDashboardFragment extends Fragment {
         LinearLayout viewProfiles = view.findViewById(R.id.btn_view_profiles);
         LinearLayout viewEvents = view.findViewById(R.id.btn_view_events);
 
+        NavController nav = Navigation.findNavController(view);
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // TODO
+                FragmentManager fragmentManager = getParentFragmentManager();
+                fragmentManager.popBackStack();
             }
         });
 
@@ -38,6 +44,7 @@ public class AdminDashboardFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // TODO
+                nav.navigate(R.id.allEventToEventDetails);
             }
         });
 
@@ -45,6 +52,7 @@ public class AdminDashboardFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // TODO
+                nav.navigate(R.id.allEventToEventDetails);
             }
         });
 
@@ -52,6 +60,7 @@ public class AdminDashboardFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // TODO
+                nav.navigate(R.id.allEventToEventDetails);
             }
         });
 
@@ -59,6 +68,7 @@ public class AdminDashboardFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // TODO
+                nav.navigate(R.id.allEventToEventDetails);
             }
         });
 
