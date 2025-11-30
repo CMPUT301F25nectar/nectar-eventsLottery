@@ -48,34 +48,40 @@ public class NotificationAdapterUITest {
 
         // Create test notification 1 - Winner
         Notification notif1 = new Notification(
+                "skjdfhkh",
                 "event_pool_party",
                 "Pool Party",
                 "Congratulations! You've been selected for Pool Party!",
                 System.currentTimeMillis() - 3600000, // 1 hour ago
                 "lotteryWon",
                 Arrays.asList("device_123"),
+                Arrays.asList(""),
                 "organizer_001"
         );
 
         // Create test notification 2 - Loser
         Notification notif2 = new Notification(
+                "asksfj",
                 "event_concert",
                 "Rock Concert",
                 "Sorry! You weren't selected for Rock Concert this time.",
                 System.currentTimeMillis() - 7200000, // 2 hours ago
                 "lotteryLost",
                 Arrays.asList("device_123"),
+                Arrays.asList(""),
                 "organizer_002"
         );
 
         // Create test notification 3 - Organizer message
         Notification notif3 = new Notification(
+                "gdjhkdgjk",
                 "event_bbq",
                 "BBQ Event",
                 "Don't forget to bring your own drinks!",
                 System.currentTimeMillis() - 86400000, // 1 day ago
                 "organizerMessage",
                 Arrays.asList("device_123"),
+                Arrays.asList(""),
                 "organizer_003"
         );
 

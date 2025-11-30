@@ -3,12 +3,13 @@ package com.example.beethere.ui.myEvents;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -26,15 +27,20 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import com.example.beethere.device.DeviceId;
+import com.example.beethere.adapters.MyEventsAdapter;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.R;
 import com.example.beethere.User;
 import com.example.beethere.device.DeviceIDViewModel;
+import com.google.firebase.Firebase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.example.beethere.DatabaseFunctions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageKt;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -45,6 +51,7 @@ import java.util.Map;
 import android.app.DatePickerDialog;
 import android.widget.Toast;
 import java.util.Calendar;
+import java.util.UUID;
 
 
 public class CreateEventFragment1 extends Fragment {
@@ -55,8 +62,12 @@ public class CreateEventFragment1 extends Fragment {
     private DeviceIDViewModel deviceIDViewModel;
     private User organizer;
 
-    DatabaseFunctions dbFunctions = new DatabaseFunctions();
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseStorage storage = FirebaseStorage.getInstance("gs://beethere-images");
+    private StorageReference storageReference;
+
+    private DatabaseFunctions dbFunctions = new DatabaseFunctions();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
 
     private boolean wantMaxWaitList, wantRandomSelect, wantGeoLocation = false;
 
@@ -71,34 +82,36 @@ public class CreateEventFragment1 extends Fragment {
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US);
 
     // Launcher for selecting image
-    private ActivityResultLauncher<Intent> pickImageLauncher;
+    private ActivityResultLauncher<String> pickImageLauncher;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_event_pg1, container, false);
 
+        storageReference = storage.getReference();
+
         pickImageLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        Uri uri = result.getData().getData();
-
-                        try {
-                            requireContext().getContentResolver().takePersistableUriPermission(
-                                    uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
-                            );
-                        } catch (SecurityException e) {
-                            e.printStackTrace();
-                        }
-
+                new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null) {
                         imageURL = uri;
-                        eventPoster.setImageURI(imageURL);
-
-                        eventPoster.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        try {
+                            InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
+                            if (inputStream != null) {
+                                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                eventPoster.setImageBitmap(bitmap);
+                                eventPoster.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                            } else {
+                                errorMessage.setText("Unable to open selected image.");
+                                errorMessage.setVisibility(View.VISIBLE);
+                            }
+                        } catch (Exception e) {
+                            errorMessage.setText("Error uploading image: " + e.getMessage());
+                            errorMessage.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
-        );
-
+            );
 
 
         events = new ArrayList<>();
@@ -128,7 +141,7 @@ public class CreateEventFragment1 extends Fragment {
         geoLocationSwitch = view.findViewById(R.id.geoLocSwitch);
         maxWaitList = view.findViewById(R.id.maxWaitFill);
 
-        eventPoster.setOnClickListener(v -> choosePoster());
+        eventPoster.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
 
         View.OnClickListener dateClickListener = v -> showDatePicker((EditText) v);
         regStart.setOnClickListener(dateClickListener);
@@ -156,7 +169,7 @@ public class CreateEventFragment1 extends Fragment {
         geoLocationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> wantGeoLocation = isChecked);
         randomSelectSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> wantRandomSelect = isChecked);
 
-        Button completeButton = view.findViewById(R.id.completeButton);
+        AppCompatButton completeButton = view.findViewById(R.id.completeButton);
         completeButton.setOnClickListener(v -> complete());
 
         AppCompatImageButton backButton = view.findViewById(R.id.backButton);
@@ -190,13 +203,6 @@ public class CreateEventFragment1 extends Fragment {
         dialog.show(getParentFragmentManager(), "GoBackDialog");
     }
 
-    private void choosePoster() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.setType("image/*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        pickImageLauncher.launch(intent);
-    }
 
     @SuppressLint("SetTextI18n")
     public void complete() {
@@ -245,25 +251,45 @@ public class CreateEventFragment1 extends Fragment {
             int maxAttendeesInt = Integer.parseInt(maxAttendInput);
             int maxWaitListInt = wantMaxWaitList && !maxWaitListInput.isEmpty() ? Integer.parseInt(maxWaitListInput) : 0;
 
-            if (regStartDate.isAfter(regEndDate) || eventStartDate.isAfter(eventEndDate) || startTime.isAfter(endTime)) {
-                errorMessage.setText("Ensure start date/time is after end date/time.");
+            if (regStartDate.isAfter(regEndDate) || eventStartDate.isAfter(eventEndDate)) {
+                errorMessage.setText("Ensure start date is before end date.");
                 errorMessage.setVisibility(View.VISIBLE);
                 return;
             }
 
-            addToDatabase(titleInput, regStartInput, regEndInput, eventStartInput, eventEndInput,
-                    timeStartInput, timeEndInput, maxAttendeesInt, descInput, imageURL.toString(),
-                    wantMaxWaitList, wantGeoLocation, wantRandomSelect, maxWaitListInt);
+            if (startTime.isAfter(endTime)) {
+                errorMessage.setText("Ensure start time is before end time.");
+                errorMessage.setVisibility(View.VISIBLE);
+                return;
+            }
 
-            FragmentManager fragmentManager = getParentFragmentManager();
-            fragmentManager.popBackStack();
-            Toast.makeText(getActivity(), "Event created successfully!", Toast.LENGTH_SHORT).show();
+
+            StorageReference ref = storageReference.child("images/" + UUID.randomUUID() + ".jpg");
+
+            ref.putFile(imageURL)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        ref.getDownloadUrl().addOnSuccessListener(uri -> {
+                            String downloadUrl = uri.toString();
+                            addToDatabase(titleInput, regStartInput, regEndInput, eventStartInput, eventEndInput,
+                                    timeStartInput, timeEndInput, maxAttendeesInt, descInput, downloadUrl,
+                                    wantMaxWaitList, wantGeoLocation, wantRandomSelect, maxWaitListInt);
+
+                            FragmentManager fragmentManager = getParentFragmentManager();
+                            fragmentManager.popBackStack();
+                            Toast.makeText(getActivity(), "Event created successfully!", Toast.LENGTH_SHORT).show();
+                            organizer.setOrganizer(true);
+                        });
+                        }).addOnFailureListener(e -> {
+                            errorMessage.setText("Upload Error: " + e);
+                            errorMessage.setVisibility(View.VISIBLE);
+                        });
 
         } catch (Exception e) {
             Log.e("CreateEventFragment", "Parsing error: " + e.getMessage());
             errorMessage.setText("Ensure input formats are correct.");
             errorMessage.setVisibility(View.VISIBLE);
         }
+
     }
 
     private void addToDatabase(String title, String regStart, String regEnd, String eventStart,
@@ -283,12 +309,12 @@ public class CreateEventFragment1 extends Fragment {
             event = new Event(organizer, eventID, title, description, posterPath,
                     status, regStart, regEnd, eventStart, eventEnd, timeStart, timeEnd,
                     maxAttendees, wantGeoLocation, waitList, invited,
-                    registered, wantRandomSelect);
+                    registered, wantRandomSelect, maxWaitListInt);
         } else {
             event = new Event(organizer, eventID, title, description, posterPath,
                     status, regStart, regEnd, eventStart, eventEnd, timeStart, timeEnd,
                     maxAttendees, wantGeoLocation, waitList, invited,
-                    registered, wantRandomSelect, maxWaitListInt);
+                    registered, wantRandomSelect);
         }
 
         dbFunctions.addEventDB(event);
@@ -296,14 +322,3 @@ public class CreateEventFragment1 extends Fragment {
         myEventsAdapter.notifyDataSetChanged();
     }
 }
-
-
-
-
-
-
-
-
-
-
-

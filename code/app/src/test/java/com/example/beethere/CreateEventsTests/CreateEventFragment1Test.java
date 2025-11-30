@@ -1,7 +1,6 @@
 package com.example.beethere.CreateEventsTests;
 
 import org.junit.Test;
-import static org.mockito.Mockito.*;
 
 import com.example.beethere.ui.myEvents.CreateEventFragment1;
 
@@ -11,15 +10,7 @@ import android.net.Uri;
 import android.view.View;
 import android.widget.EditText;
 
-import org.junit.Test;
-
 import java.lang.reflect.Field;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-import java.lang.reflect.Field;
-import static org.junit.Assert.*;
 
 public class CreateEventFragment1Test {
 
@@ -62,7 +53,7 @@ public class CreateEventFragment1Test {
         setPrivateField(fragment, "eventDesc", "This is a test event.");
         setPrivateField(fragment, "maxWaitList", "50");
 
-        fragment.imageURL = Uri.parse("file://someimage.jpg");
+        //fragment.imageURI = Uri.parse("file://someimage.jpg");
 
         fragment.complete();
 

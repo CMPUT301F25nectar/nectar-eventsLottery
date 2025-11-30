@@ -11,13 +11,13 @@
         android:id="@+id/account_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Account"
-        android:textSize="30sp"
-        android:textColor="@color/dark_brown"
+        android:layout_marginTop="45dp"
         android:fontFamily="@font/space_mono_bold"
+        android:text="@string/title_profile"
+        android:textColor="@color/dark_brown"
+        android:textSize="35sp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="30dp"/>
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <LinearLayout
         android:id="@+id/name"
@@ -40,7 +40,7 @@
             android:inputType="textPersonName"
             android:fontFamily="@font/work_sans"
             android:textColor="@color/dark_brown"
-            android:textColorHint="@color/gray"/>
+            android:textColorHint="@color/grey"/>
 
         <Space
             android:layout_width="12dp"
@@ -57,7 +57,7 @@
             android:inputType="textPersonName"
             android:fontFamily="@font/work_sans"
             android:textColor="@color/dark_brown"
-            android:textColorHint="@color/gray"/>
+            android:textColorHint="@color/grey"/>
     </LinearLayout>
 
     <TextView
@@ -110,7 +110,7 @@
                 android:inputType="phone"
                 android:fontFamily="@font/work_sans"
                 android:textColor="@color/dark_brown"
-                android:textColorHint="@color/gray"/>
+                android:textColorHint="@color/grey"/>
         </LinearLayout>
 
         <View
@@ -146,7 +146,7 @@
                 android:inputType="textEmailAddress"
                 android:fontFamily="@font/work_sans"
                 android:textColor="@color/dark_brown"
-                android:textColorHint="@color/gray"/>
+                android:textColorHint="@color/grey"/>
         </LinearLayout>
 
     </LinearLayout>

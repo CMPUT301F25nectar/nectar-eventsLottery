@@ -13,5 +13,14 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorOnPrimary</item>
         <!-- Customize your theme here. -->
+
     </style>
+
+    <style name="CustomPopupMenu" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:textColor">@color/dark_brown</item>
+        <item name="android:fontFamily">@font/work_sans_semibold</item>
+        <item name="popupMenuBackground">@drawable/menu_background</item>
+    </style>
+
+
 </resources>
