@@ -50,11 +50,10 @@ public class ProfileFragment extends Fragment {
                 NavHostFragment.findNavController(ProfileFragment.this)
                         .navigate(R.id.personalSettingsFragment)
         );
-        //notification settingss TO DO
-        //notificationsSettings.setOnClickListener(v ->
-        // NavHostFragment.findNavController(ProfileFragment.this)
-        //     .navigate(R.id.notificationsfragmentname)
-        //);
+        notificationsSettings.setOnClickListener(v ->
+                NavHostFragment.findNavController(ProfileFragment.this)
+                        .navigate(R.id.notificationSettingsFragment)
+        );
         //how to use
         howtouse.setOnClickListener(v->
                 NavHostFragment.findNavController(ProfileFragment.this).navigate(R.id.howToUseFragment));
