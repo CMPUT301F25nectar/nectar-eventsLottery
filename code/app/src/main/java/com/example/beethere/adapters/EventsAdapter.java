@@ -45,7 +45,7 @@ public class EventsAdapter extends ArrayAdapter<Event> {
         this.events = events;
         this.admin = Boolean.FALSE;
     }
-    public EventsAdapter(Context context, ArrayList<Event> events, Boolean admin){ // context needed, as fragment isnt a context(activity)
+    public EventsAdapter(Context context, ArrayList<Event> events, Boolean admin){
         super(context, 0, events);
         this.events = events;
         this.admin = admin;

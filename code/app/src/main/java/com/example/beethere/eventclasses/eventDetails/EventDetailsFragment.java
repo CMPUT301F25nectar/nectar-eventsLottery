@@ -23,6 +23,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
 import com.example.beethere.R;
 import com.example.beethere.User;
 import com.example.beethere.eventclasses.Event;
@@ -107,9 +108,14 @@ public class EventDetailsFragment extends Fragment {
         UserListManager eventListManager = new UserListManager(event);
 
         // Event Image
-        ImageView imageView = view.findViewById(R.id.event_image);
-        Bitmap bitmap = BitmapFactory.decodeFile(event.getPosterPath());
-        imageView.setImageBitmap(bitmap);
+        ImageView imagePoster = view.findViewById(R.id.event_image);
+        if (event.getPosterPath() != null) {
+            Glide.with(getContext())
+                    .load(event.getPosterPath()) // This is the download URL
+                    //.placeholder(R.drawable.placeholder) // optional
+                    //.error(R.drawable.error) // optional
+                    .into(imagePoster);
+        }
 
         // Event Name display
         TextView name = view.findViewById(R.id.text_event_name);
@@ -167,7 +173,7 @@ public class EventDetailsFragment extends Fragment {
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
             } else if (currentDate.isBefore(convertDate(event.getRegStart(), dateFormatter))){
                 // waitlist period has not started display
-                displayWaitlistStatus("Waitlist opens" + event.getRegStart());
+                displayWaitlistStatus("Waitlist opens " + event.getRegStart());
             } else if (eventListManager.waitlistFull()) {
                 // waitlist full display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_full));
@@ -196,7 +202,7 @@ public class EventDetailsFragment extends Fragment {
 
             } else if (currentDate.isBefore(convertDate(event.getRegStart(), dateFormatter))){
                 // waitlist period has not started display
-                displayWaitlistStatus("Waitlist opens" + event.getRegStart());
+                displayWaitlistStatus("Waitlist opens " + event.getRegStart());
             } else if (currentDate.isAfter(convertDate(event.getRegEnd(), dateFormatter))){
                 // waitlist period ended display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
