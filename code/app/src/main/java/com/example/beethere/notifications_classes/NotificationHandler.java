@@ -123,7 +123,7 @@ public class NotificationHandler {
      * @param organizerDeviceId The device id of the organizer
      */
     private void sendLotteryLostNotification(User user, String eventId, String eventName, String organizerDeviceId){
-        dbfunctions.getUserDB(deviceID, new DatabaseCallback<User>() {
+        dbfunctions.getUserDB(user.getDeviceid(), new DatabaseCallback<User>() {
             @Override
             public void onCallback(User result) {
                 if(user != null && user.getReceiveLosingNotifs()){
