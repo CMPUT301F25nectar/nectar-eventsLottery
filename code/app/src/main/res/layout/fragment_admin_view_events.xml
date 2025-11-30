@@ -4,11 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".ui.allEvents.AllEventsFragment">
+    android:background="@color/white">
 
     <TextView
-        android:id="@+id/allEventsTitle"
+        android:id="@+id/admin_title_view_events"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -18,10 +17,10 @@
         android:textColor="@color/dark_brown"
         android:textSize="35sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <SearchView
-        android:id="@+id/all_events_search_view"
+        android:id="@+id/admin_events_search"
         android:layout_width="325dp"
         android:layout_height="37dp"
         android:layout_marginStart="16dp"
@@ -36,38 +35,17 @@
         android:iconifiedByDefault="false"
         android:textColor="@color/dark_brown"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/allEventsTitle" />
-
-    <ImageButton
-        android:id="@+id/button_filter"
-        android:layout_width="40dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginBottom="13dp"
-        android:background="@android:color/transparent"
-        android:contentDescription="Filter icon that opens filter selection for events"
-        android:src="@drawable/filter"
-        app:layout_constraintBottom_toTopOf="@+id/event_display"
-        app:layout_constraintStart_toEndOf="@+id/all_events_search_view" />
+        app:layout_constraintTop_toBottomOf="@+id/admin_title_view_events"/>
 
     <ListView
-        android:id="@+id/event_display"
+        android:id="@+id/admin_event_display"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:divider="@android:color/transparent"
-        app:layout_constraintTop_toBottomOf="@+id/all_events_search_view"
+        app:layout_constraintTop_toBottomOf="@+id/admin_events_search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <FrameLayout
-        android:id="@+id/event_details_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -88,7 +88,7 @@ public class EventDetailsFragment extends Fragment {
         qrButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                QRCodeFragment qrFragment = QRCodeFragment.newInstance(event.getEventID());
+                QRCodeFragment qrFragment = QRCodeFragment.newInstance(event.getEventID(), Boolean.TRUE);
 
                 if (getContext() instanceof AppCompatActivity) {
                     AppCompatActivity activity = (AppCompatActivity) getContext();
@@ -104,6 +104,7 @@ public class EventDetailsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        UserListManager eventListManager = new UserListManager(event);
 
         // Event Image
         ImageView imageView = view.findViewById(R.id.event_image);
@@ -144,8 +145,8 @@ public class EventDetailsFragment extends Fragment {
         time.setText(String
                 .format(
                         getContext().getString(R.string.event_time),
-                        event.getEventTimeStart().toString(),
-                        event.getEventTimeEnd().toString())
+                        event.getEventTimeStart(),
+                        event.getEventTimeEnd())
         );
 
         // Max Registered display
@@ -154,10 +155,10 @@ public class EventDetailsFragment extends Fragment {
 
         // Number of people in waitlist
         TextView waitlist = view.findViewById(R.id.text_waitlist);
-        waitlist.setText(event.getMaxWaitlist().toString());
+        waitlist.setText(eventListManager.waitlistSize().toString());
 
 
-        UserListManager eventListManager = new UserListManager(event);
+
         // bottom display choices
         LocalDate currentDate = LocalDate.now();
         if(user == null){ // no profile connected to deviceID
@@ -166,8 +167,8 @@ public class EventDetailsFragment extends Fragment {
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
             } else if (currentDate.isBefore(convertDate(event.getRegStart(), dateFormatter))){
                 // waitlist period has not started display
-                displayWaitlistStatus("Waitlist has not opened yet");
-            } else if (/*eventListManager.waitlistFull()*/Boolean.FALSE) {
+                displayWaitlistStatus("Waitlist opens" + event.getRegStart());
+            } else if (eventListManager.waitlistFull()) {
                 // waitlist full display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_full));
             }  else {
@@ -195,11 +196,11 @@ public class EventDetailsFragment extends Fragment {
 
             } else if (currentDate.isBefore(convertDate(event.getRegStart(), dateFormatter))){
                 // waitlist period has not started display
-                displayWaitlistStatus("Waitlist is not open yet");
+                displayWaitlistStatus("Waitlist opens" + event.getRegStart());
             } else if (currentDate.isAfter(convertDate(event.getRegEnd(), dateFormatter))){
                 // waitlist period ended display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
-            } else if (/*eventListManager.waitlistFull()*/Boolean.FALSE) {
+            } else if (eventListManager.waitlistFull()) {
                 // waitlist full display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_full));
             } else {
@@ -246,19 +247,14 @@ public class EventDetailsFragment extends Fragment {
                     if (snapshot.exists()){
                         userCreated = Boolean.TRUE;
                         user = snapshot.toObject(User.class);
-                    } else {
+                    } else { // User does exist related to deviceID
                         //user = null;
                         userCreated = Boolean.FALSE;
                     }
-                    // User does exist related to deviceID
-
                 })
                 .addOnFailureListener(fail ->
                         userCreated = Boolean.FALSE
                 );
     }
-
-
-
 
 }

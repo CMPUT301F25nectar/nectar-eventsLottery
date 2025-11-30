@@ -71,7 +71,7 @@ public class DatabaseFunctions {
 
     }
 
-    public void deleteUserDB(String userID){
+    /*public void deleteUserDB(String userID){
         CollectionReference users = db.collection("users");
         DocumentReference docref = users.document(userID);
 
@@ -141,7 +141,7 @@ public class DatabaseFunctions {
                 deleteEventDB(event.getEventID());
             }
         }
-    }
+    }*/
 
     // future javadoc comments
     //* @param regStart UNUSED CURRENTLY The day registration to waitlist opens

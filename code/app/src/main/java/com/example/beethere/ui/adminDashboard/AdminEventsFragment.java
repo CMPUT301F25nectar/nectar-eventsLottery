@@ -1,4 +1,119 @@
 package com.example.beethere.ui.adminDashboard;
 
-public class adminEventsFragment {
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.SearchView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
+import com.example.beethere.DatabaseCallback;
+import com.example.beethere.DatabaseFunctions;
+import com.example.beethere.R;
+import com.example.beethere.adapters.EventsAdapter;
+import com.example.beethere.eventclasses.Event;
+import com.example.beethere.eventclasses.EventDataViewModel;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+
+public class AdminEventsFragment extends Fragment {
+
+    private ArrayList<Event> eventList;
+    private ArrayList<Event> displayedList;
+    private EventsAdapter eventsAdapter;
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // inflate view
+        View view = inflater.inflate(R.layout.fragment_admin_view_events, container, false);
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
+        SearchView search = view.findViewById(R.id.admin_events_search);
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchEvents(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                searchEvents(newText);
+                return true;
+            }
+        });
+
+        eventList = new ArrayList<Event>();
+        displayedList = new ArrayList<>();
+        eventsAdapter = new EventsAdapter(getContext(), displayedList, Boolean.TRUE);
+        ListView events = view.findViewById(R.id.event_display);
+        events.setAdapter(eventsAdapter);
+        events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                EventDataViewModel event = new ViewModelProvider(getActivity()).get(EventDataViewModel.class);
+                event.setEvent((Event) parent.getItemAtPosition(position));
+                NavController nav = Navigation.findNavController(view);
+                nav.navigate(R.id.admin_to_event_details);
+            }
+        });
+        loadEvents();
+
+
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    public void loadEvents(){
+        LocalDate currentDate = LocalDate.now();
+        DatabaseFunctions functions = new DatabaseFunctions();
+        DatabaseCallback<ArrayList<Event>> callback = new DatabaseCallback<>() {
+            @Override
+            public void onCallback(ArrayList<Event> result) {
+                eventList.clear();
+                eventList.addAll(result);
+                displayedList.clear();
+                displayedList.addAll(eventList);
+                eventsAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onError(Exception e) {
+                Log.d("AllEvents", "All events fragment error getting events from database");
+            }
+        };
+        functions.getEventsDB(callback);
+    }
+
+    private void searchEvents(String query) {
+        String lowerQuery = query.toLowerCase().trim();
+
+        displayedList.clear();
+        if (lowerQuery.isEmpty()) {
+            displayedList.addAll(eventList);
+        } else {
+            for (Event event : eventList) {
+                String title = event.getTitle().toLowerCase();
+                String description = event.getDescription().toLowerCase();
+                if (title.contains(lowerQuery) || description.contains(lowerQuery)) {
+                    displayedList.add(event);
+                }
+            }
+        }
+        eventsAdapter.notifyDataSetChanged();
+    }
 }

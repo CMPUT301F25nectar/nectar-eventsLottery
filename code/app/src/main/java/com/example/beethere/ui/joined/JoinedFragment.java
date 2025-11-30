@@ -214,7 +214,7 @@ public class JoinedFragment extends Fragment {
         };
         // no filtering for actually getting the events
         // getting the events function call
-        functions.getEventsDB(Boolean.FALSE, callback);
+        functions.getEventsDB(callback);
     }
 
 

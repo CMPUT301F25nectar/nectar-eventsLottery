@@ -1,4 +1,4 @@
 package com.example.beethere.ui.adminDashboard;
 
-public class adminNotificationsFragment {
+public class AdminNotificationsFragment {
 }

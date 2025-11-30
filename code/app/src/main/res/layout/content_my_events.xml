@@ -83,7 +83,7 @@
                 android:lineSpacingExtra="-6dp"
                 android:fontFamily="@font/space_mono_bold"
                 android:textColor="@color/dark_brown"
-                android:text="GGGGGGGGGGGGGGGGGGGGGG" />
+                android:text="@string/placeholder" />
 
             <TextView
                 android:id="@+id/enrollPeriod"

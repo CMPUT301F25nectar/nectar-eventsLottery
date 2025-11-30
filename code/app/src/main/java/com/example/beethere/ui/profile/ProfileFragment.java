@@ -151,10 +151,7 @@ public class ProfileFragment extends Fragment {
                 .addOnFailureListener(fail -> Toast.makeText(requireContext(), "Failed updating profile"+ fail.getMessage(), Toast.LENGTH_SHORT).show());
     }
     //deleting the device's profile and clearing the fields
-    private void deleteprofile() {
-        String deviceID = DeviceId.get(requireContext());
-        dbFunctions.deleteUserDB(deviceID);
-    }
+
 
     private void clear() {
         firstname.setText("");
