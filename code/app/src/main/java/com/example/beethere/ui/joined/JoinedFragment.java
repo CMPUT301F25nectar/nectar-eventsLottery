@@ -67,8 +67,8 @@ public class JoinedFragment extends Fragment {
         // initialize formatter
         dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        message = view.findViewById(R.id.joined_fragment_message);
-        displayMessage("Loading...");
+        /*message = view.findViewById(R.id.joined_fragment_message);
+        displayMessage("Loading...");*/
 
         return view;
     }
@@ -82,13 +82,13 @@ public class JoinedFragment extends Fragment {
         eventsAdapter = new EventsAdapter(getContext(), eventList);
 
         // each user list (stored, so not calced everytime)
-        userWaitlist = new ArrayList<Event>();
+        /*userWaitlist = new ArrayList<Event>();
         userEnrollList = new ArrayList<Event>();
         userHistory = new ArrayList<Event>();
 
         waitlistAdapter = new EventsAdapter(getContext(), userWaitlist);
         enrolledAdapter = new EventsAdapter(getContext(), userEnrollList);
-        historyAdapter = new EventsAdapter(getContext(), userHistory);
+        historyAdapter = new EventsAdapter(getContext(), userHistory);*/
 
         // setting buttons
         Button waitlisted = view.findViewById(R.id.button_waitlisted);
@@ -112,8 +112,8 @@ public class JoinedFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 buttonSelected(enrolled, waitlisted, history);
-                enrolledAdapter.notifyDataSetChanged();
-                switchDisplay(userEnrollList, enrolledAdapter);
+                /*enrolledAdapter.notifyDataSetChanged();*/
+                /*switchDisplay(userEnrollList, enrolledAdapter);*/
             }
         });
 
@@ -121,13 +121,16 @@ public class JoinedFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 buttonSelected(history,waitlisted, enrolled);
-                historyAdapter.notifyDataSetChanged();
-                switchDisplay(userHistory, historyAdapter);
+                /*historyAdapter.notifyDataSetChanged();*/
+                /*switchDisplay(userHistory, historyAdapter);*/
             }
         });
 
+        ListView eventDisplay = view.findViewById(R.id.joined_event_display_2_try);
+        eventDisplay.setAdapter(eventsAdapter);
+
         // switch to event details when event is clicked on
-        events = view.findViewById(R.id.joined_event_display);
+        /*events = view.findViewById(R.id.joined_event_display);
         events.setAdapter(eventsAdapter);
         events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -139,7 +142,7 @@ public class JoinedFragment extends Fragment {
                 EventDataViewModel event = new ViewModelProvider(getActivity()).get(EventDataViewModel.class);
                 event.setEvent((Event) parent.getItemAtPosition(position));
             }
-        });
+        });*/
 
         checkUserDB();
     }
@@ -206,7 +209,7 @@ public class JoinedFragment extends Fragment {
     // user must exist
     // events are filtered already
     // for user existing & being in waitlist/invited/registered of event
-    public void loadLists(){
+    /*public void loadLists(){
         UserListManager manager = new UserListManager();
         LocalDate currentDate = LocalDate.now();
         LocalDate eventEnd, eventStart;
@@ -239,12 +242,12 @@ public class JoinedFragment extends Fragment {
             }
 
         }
-       /* waitlistAdapter.notifyDataSetChanged();*/
-        /*switchDisplay(userWaitlist, waitlistAdapter);*/
-        eventsAdapter.notifyDataSetChanged();
+       *//* waitlistAdapter.notifyDataSetChanged();*//*
+        *//*switchDisplay(userWaitlist, waitlistAdapter);*//*
+        *//*eventsAdapter.notifyDataSetChanged();*//*
         switchDisplay(eventList, eventsAdapter);
 
-    }
+    }*/
 
     public void buttonSelected(Button selected, Button notSelected1, Button notSelected2){
         selected.setSelected(true);
@@ -254,21 +257,21 @@ public class JoinedFragment extends Fragment {
 
     public void switchDisplay(ArrayList<Event> display, EventsAdapter eventsAdapter){
         if (user == null) {
-            displayMessage("Make an account to join an event!");
-            events.setVisibility(GONE);
+            /*displayMessage("Make an account to join an event!");*/
+            /*events.setVisibility(GONE);*/
         } else if (display.isEmpty()) {
-            displayMessage("No events joined...");
-            events.setVisibility(GONE);
+            /*displayMessage("No events joined...");*/
+            /*events.setVisibility(GONE);*/
         } else {
-            message.setVisibility(GONE);
-            events.setVisibility(VISIBLE);
-            events.setAdapter(eventsAdapter);
+            /*message.setVisibility(GONE);*/
+            /*events.setVisibility(VISIBLE);
+            events.setAdapter(eventsAdapter);*/
         }
     }
 
-    public void displayMessage(String text){
+    /*public void displayMessage(String text){
         message.setText(text);
         message.setVisibility(VISIBLE);
-    }
+    }*/
 
 }
