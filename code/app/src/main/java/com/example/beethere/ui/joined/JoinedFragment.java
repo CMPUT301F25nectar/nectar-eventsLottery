@@ -42,6 +42,7 @@ public class JoinedFragment extends Fragment {
     private DateTimeFormatter dateFormatter;
 
     private TextView message;
+    private ListView events;
 
     private User user;
 
@@ -100,7 +101,7 @@ public class JoinedFragment extends Fragment {
         buttonSelected(waitlisted, enrolled, history);
 
         // switch to event details when event is clicked on
-        ListView events = view.findViewById(R.id.joined_event_display);
+        events = view.findViewById(R.id.joined_event_display);
         events.setAdapter(waitlistAdapter);
         events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -248,10 +249,10 @@ public class JoinedFragment extends Fragment {
             displayMessage("Make an account to join an event!");
         } else if (display.isEmpty()) {
             displayMessage("No events joined...");
-            //events.setVisibility(GONE);
+            events.setVisibility(GONE);
         } else {
             message.setVisibility(GONE);
-            //events.setVisibility(VISIBLE);
+            events.setVisibility(VISIBLE);
             //events.setAdapter(eventsAdapter);
         }
     }
