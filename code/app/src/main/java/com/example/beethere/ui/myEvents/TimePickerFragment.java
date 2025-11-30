@@ -18,10 +18,21 @@ public class TimePickerFragment extends DialogFragment
 
     private EditText targetEditText;
 
+    /**
+     *
+     * @param targetEditText selected editText target where the time will fill
+     */
     public TimePickerFragment(EditText targetEditText) {
         this.targetEditText = targetEditText;
     }
 
+    /**
+     *
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return generated time picker
+     */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Calendar c = Calendar.getInstance();
@@ -37,6 +48,12 @@ public class TimePickerFragment extends DialogFragment
         );
     }
 
+    /**
+     *
+     * @param view the view associated with this listener
+     * @param hourOfDay the hour that was set
+     * @param minute the minute that was set
+     */
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         Calendar calendar = Calendar.getInstance();

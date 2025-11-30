@@ -24,6 +24,7 @@ import com.example.beethere.adapters.MyEventsAdapter;
 import com.example.beethere.device.DeviceIDViewModel;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.R;
+import com.example.beethere.ui.profile.ProfileDialogFragment;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -71,9 +72,13 @@ public class MyEventsFragment extends Fragment {
 
                     if (snap.exists()) {
                         currentUser = snap.toObject(User.class);
+                        noEventsMessage1.setVisibility(View.GONE);
+                        noEventsMessage2.setVisibility(View.GONE);
                         loadCreatedEvents();
                     } else {
                         currentUser = null;
+                        noEventsMessage1.setVisibility(View.VISIBLE);
+                        noEventsMessage2.setVisibility(View.VISIBLE);
                     }
                 });
 
@@ -81,14 +86,29 @@ public class MyEventsFragment extends Fragment {
         createEventButton.setOnClickListener(v -> {
             NavController nav = Navigation.findNavController(view);
 
-            if (currentUser == null) {
-                nav.navigate(R.id.myEventsToProfileCreation);
-            } else if (Boolean.TRUE.equals(currentUser.getViolation())) {
-                Toast.makeText(getContext(), "Unable to create events with past organizer violations committed", Toast.LENGTH_SHORT).show();
-            } else {
-                nav.navigate(R.id.myEventsToCreateEvents);
-            }
-        });
+            // you have to recheck for every click to consider the profile dialog popup behaviour
+            FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(deviceID)
+                    .get()
+                    .addOnSuccessListener(snap -> {
+
+                        if (snap.exists()) {
+                            currentUser = snap.toObject(User.class);
+                            if (Boolean.TRUE.equals(currentUser.getViolation())) {
+                                Toast.makeText(getContext(), "Unable to create events with " +
+                                        "past organizer violations committed", Toast.LENGTH_SHORT).show();
+                            } else {
+                                currentUser = snap.toObject(User.class);
+                                nav.navigate(R.id.myEventsToCreateEvents);
+                            }
+
+                        } else {
+                            ProfileDialogFragment profileDialogFragment = new ProfileDialogFragment();
+                            profileDialogFragment.show(getParentFragmentManager(), "ProfileCreation");
+                        }
+                    });
+                });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -130,6 +150,13 @@ public class MyEventsFragment extends Fragment {
                 Toast.makeText(getContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Rfrefresh the lsit every time
+        loadCreatedEvents();
     }
 
     private void filterEvents(String query) {

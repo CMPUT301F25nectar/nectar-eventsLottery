@@ -425,15 +425,17 @@
 
                 <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/geoLocSwitch"
-                    android:layout_width="42dp"
-                    android:layout_height="18dp"
-                    android:layout_marginTop="35dp"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
                     android:layout_marginStart="45dp"
+                    android:layout_marginTop="35dp"
                     android:layout_marginBottom="10dp"
                     app:layout_constraintStart_toEndOf="@id/geoLocation"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/description"
-                    android:text="" />
+                    app:track="@drawable/switch_track"
+                    android:thumb="@drawable/switch_thumb"
+                     />
 
                 <TextView
                     android:id="@+id/geoLocWarn"
@@ -460,13 +462,15 @@
 
                 <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/randomSelectSwitch"
-                    android:layout_width="42dp"
-                    android:layout_height="18dp"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
                     android:layout_margin="10dp"
                     app:layout_constraintStart_toEndOf="@id/randomSelect"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/geoLocWarn"
-                    android:text="" />
+                    android:text=""
+                    app:track="@drawable/switch_track"
+                    android:thumb="@drawable/switch_thumb"/>
 
                 <TextView
                     android:id="@+id/waitListMax"
@@ -481,15 +485,17 @@
 
                 <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/maxWaitSwitch"
-                    android:layout_width="42dp"
-                    android:layout_height="18dp"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
                     android:layout_marginTop="30dp"
                     android:layout_marginBottom="10dp"
                     android:layout_marginStart="70dp"
                     app:layout_constraintStart_toEndOf="@id/waitListMax"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/randomSelectSwitch"
-                    android:text="" />
+                    android:text=""
+                    app:track="@drawable/switch_track"
+                    android:thumb="@drawable/switch_thumb"/>
 
                 <EditText
                     android:layout_width="130dp"
@@ -521,7 +527,7 @@
                     android:text="Complete" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="260dp"
                     android:layout_height="wrap_content"
                     android:textColor="@color/red"
                     android:id="@+id/errorMessage"

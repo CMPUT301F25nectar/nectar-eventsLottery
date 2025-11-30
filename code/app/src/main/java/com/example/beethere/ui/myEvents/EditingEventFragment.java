@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,29 +26,40 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.bumptech.glide.Glide;
 import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.R;
 import com.example.beethere.adapters.MyEventsAdapter;
 import com.example.beethere.eventclasses.Event;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.UUID;
 
 public class EditingEventFragment extends Fragment {
 
     private ImageView eventPoster;
     public Uri imageURL;
+
+    private FirebaseStorage storage = FirebaseStorage.getInstance("gs://beethere-images");
+    private StorageReference storageReference;
 
     private DatabaseFunctions dbFunctions = new DatabaseFunctions();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -56,7 +69,6 @@ public class EditingEventFragment extends Fragment {
     private AppCompatButton deleteEventButton;
     private TextView errorMessage;
 
-    private Uri posterUri;
     private ArrayList<Event> events;
     private static final String ARG_EVENT_ID = "eventID";
 
@@ -67,8 +79,13 @@ public class EditingEventFragment extends Fragment {
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US);
 
-    private ActivityResultLauncher<Intent> pickImageLauncher;
+    private ActivityResultLauncher<String> pickImageLauncher;
 
+    /**
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +94,18 @@ public class EditingEventFragment extends Fragment {
         }
     }
 
+    /**
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return view
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -97,26 +126,30 @@ public class EditingEventFragment extends Fragment {
 
         loadEventData();
 
+        storageReference = storage.getReference();
+
         pickImageLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        Uri uri = result.getData().getData();
-                        try {
-                            requireContext().getContentResolver().takePersistableUriPermission(
-                                    uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
-                            );
-                        } catch (SecurityException e) {
-                            e.printStackTrace();
-                        }
+                new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null) {
                         imageURL = uri;
-                        eventPoster.setImageURI(imageURL);
-                        eventPoster.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        try {
+                            InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
+                            if (inputStream != null) {
+                                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                eventPoster.setImageBitmap(bitmap);
+                                eventPoster.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                            } else {
+                                showErrorMessage("Unable to open selected image.");
+                            }
+                        } catch (Exception e) {
+                            showErrorMessage("Error uploading image: " + e.getMessage());
+                        }
                     }
                 }
         );
 
-        eventPoster.setOnClickListener(v -> choosePoster());
+        eventPoster.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
 
         timeStart.setOnClickListener(v -> {
             TimePickerFragment dialog = new TimePickerFragment(timeStart);
@@ -139,6 +172,12 @@ public class EditingEventFragment extends Fragment {
         return view;
     }
 
+    /**
+     *
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -168,6 +207,7 @@ public class EditingEventFragment extends Fragment {
         });
     }
 
+
     private void loadEventData() {
         db.collection("events")
                 .document(eventID)
@@ -186,39 +226,59 @@ public class EditingEventFragment extends Fragment {
                     timeEnd.setText(event.getEventTimeEnd());
 
                     if (event.getPosterPath() != null) {
-                        posterUri = Uri.parse(event.getPosterPath());
-                        eventPoster.setImageURI(posterUri);
-                        eventPoster.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                            Glide.with(requireContext())
+                                    .load(event.getPosterPath())
+                                    .placeholder(R.drawable.placeholder_event_poster)
+                                    .error(R.drawable.placeholder_event_poster)
+                                    .into(eventPoster);
                     }
-
                     setupDatePickers();
                 });
-    }
+            }
+
 
     private void setupDatePickers() {
-        if (!regStart.getText().toString().isEmpty() && !regEnd.getText().toString().isEmpty()) {
-            LocalDate regStartDate = LocalDate.parse(regStart.getText().toString(), dateFormatter);
-            LocalDate regEndDate = LocalDate.parse(regEnd.getText().toString(), dateFormatter);
+        LocalDate regStartDate = LocalDate.parse(event.getRegStart(), dateFormatter);
+        LocalDate regEndDate = LocalDate.parse(event.getRegEnd(), dateFormatter);
+        LocalDate eventStartDate = LocalDate.parse(event.getEventDateStart(), dateFormatter);
 
-            if (!currentDate.isBefore(regStartDate)) {
-                regStart.setEnabled(false);
-                regStart.setBackgroundColor(Color.LTGRAY);
-            } else {
-                regStart.setOnClickListener(v -> showDatePicker(regStart));
-            }
-
-            if (!currentDate.isBefore(regEndDate)) {
-                regEnd.setEnabled(false);
-                regEnd.setBackgroundColor(Color.LTGRAY);
-            } else {
-                regEnd.setOnClickListener(v -> showDatePicker(regEnd));
-            }
+        if (!currentDate.isBefore(regStartDate)) {
+            regStart.setEnabled(false);
+            regStart.setBackgroundResource(R.drawable.test_input_gray_background);
+        } else {
+            regStart.setOnClickListener(v -> showDatePicker(regStart));
         }
 
-        eventStart.setOnClickListener(v -> showDatePicker(eventStart));
-        eventEnd.setOnClickListener(v -> showDatePicker(eventEnd));
+        if (!currentDate.isBefore(regEndDate)) {
+            regEnd.setEnabled(false);
+            regEnd.setBackgroundResource(R.drawable.test_input_gray_background);
+        } else {
+            regEnd.setOnClickListener(v -> showDatePicker(regEnd));
+        }
+
+        if (currentDate.isAfter(eventStartDate)) {
+            regStart.setEnabled(false);
+            regEnd.setEnabled(false);
+            eventStart.setEnabled(false);
+            eventEnd.setEnabled(false); // unsure of this, i could just mkae it so that if the current date is after then event end then tahts a seperate condition
+
+            regStart.setBackgroundResource(R.drawable.test_input_gray_background);
+            regEnd.setBackgroundResource(R.drawable.test_input_gray_background);
+            eventStart.setBackgroundResource(R.drawable.test_input_gray_background);
+            eventEnd.setBackgroundResource(R.drawable.test_input_gray_background);
+        } else {
+            regEnd.setOnClickListener(v -> showDatePicker(regEnd));
+            regStart.setOnClickListener(v -> showDatePicker(regStart));
+            eventStart.setOnClickListener(v -> showDatePicker(eventStart));
+            eventEnd.setOnClickListener(v -> showDatePicker(eventEnd));
+        }
+
     }
 
+    /**
+     *
+     * @param itemId takes in itemID if user switches through bottom navigation
+     */
     private void navigateTo(final int itemId) {
         NavController nav = NavHostFragment.findNavController(this); // safer
         if (itemId == R.id.navigation_events) {
@@ -234,13 +294,10 @@ public class EditingEventFragment extends Fragment {
         }
     }
 
-    private void choosePoster() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.setType("image/*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        pickImageLauncher.launch(intent);
-    }
+    /**
+     *
+     * @param targetEditText shows datePicker selector based on editText target clicked
+     */
 
     private void showDatePicker(EditText targetEditText) {
         Calendar c = Calendar.getInstance();
@@ -256,11 +313,20 @@ public class EditingEventFragment extends Fragment {
         dialog.show();
     }
 
+
+    /**
+     *
+     * @param view takes in view for navigation from current view
+     */
     private void backMain(View view) {
         NavController nav = Navigation.findNavController(view);
         nav.navigate(R.id.EditEventsToMyEvents);
     }
 
+    /**
+     *
+     * @param view takes in view to move back to after option selected
+     */
     private void showGoBackDialog(View view) {
         GoBackDialogFragment dialog = new GoBackDialogFragment();
         dialog.setGoBackListener(() -> backMain(view));
@@ -280,22 +346,18 @@ public class EditingEventFragment extends Fragment {
 
         if (newTitle.isEmpty() || newRegStart.isEmpty() || newRegEnd.isEmpty() ||
                 newStartDate.isEmpty() || newEndDate.isEmpty() ||
-                newTimeStart.isEmpty() || newTimeEnd.isEmpty()
-                || newDesc.isEmpty() || (imageURL == null && posterUri == null)) {
-            errorMessage.setText("Please fill all required fields.");
-            errorMessage.setVisibility(View.VISIBLE);
+                newTimeStart.isEmpty() || newTimeEnd.isEmpty() || newDesc.isEmpty()) {
+            showErrorMessage("Please fill all required fields.");
             return;
         }
 
         if (newDesc.length() > 500) {
-            errorMessage.setText("Description cannot be longer than 500 characters.");
-            errorMessage.setVisibility(View.VISIBLE);
+            showErrorMessage("Description cannot be longer than 500 characters.");
             return;
         }
 
         if (newTitle.length() > 24) {
-            errorMessage.setText("Title cannot be longer than 24 characters.");
-            errorMessage.setVisibility(View.VISIBLE);
+            showErrorMessage("Title cannot be longer than 24 characters.");
             return;
         }
 
@@ -309,31 +371,91 @@ public class EditingEventFragment extends Fragment {
             LocalTime endTime = LocalTime.parse(newTimeEnd.trim(), timeFormatter);
 
             if (regStartDate.isAfter(regEndDate) || eventStartDate.isAfter(eventEndDate)) {
-                errorMessage.setText("Ensure start date is before end date.");
-                errorMessage.setVisibility(View.VISIBLE);
+                showErrorMessage("Ensure start date is before end date.");
                 return;
             }
 
             if (startTime.isAfter(endTime)) {
-                errorMessage.setText("Ensure start time is before end time.");
-                errorMessage.setVisibility(View.VISIBLE);
+                showErrorMessage("Ensure start time is before end time.");
                 return;
             }
 
-            updateEvent(newTitle, newRegStart, newRegEnd, newStartDate, newEndDate,
-                    newTimeStart, newTimeEnd, newDesc,
-                    imageURL != null ? imageURL.toString() : posterUri.toString());
+            if (!regEndDate.isBefore(eventStartDate)) {
+                showErrorMessage("Registration must close before event starts.");
+                return;
+            }
 
-            backMain(view);
-            Toast.makeText(getActivity(), "Event updated successfully!", Toast.LENGTH_SHORT).show();
+            if (imageURL != null) {
+
+                StorageReference newPosterRef =
+                        storageReference.child("images/" + UUID.randomUUID() + ".jpg");
+
+                newPosterRef.putFile(imageURL)
+                        .addOnSuccessListener(taskSnapshot ->
+                                newPosterRef.getDownloadUrl().addOnSuccessListener(uri -> {
+
+                                    String newDownloadUrl = uri.toString();
+                                    String oldPosterUrl = event.getPosterPath();
+
+                                    updateEvent(newTitle, newRegStart, newRegEnd,
+                                            newStartDate, newEndDate,
+                                            newTimeStart, newTimeEnd, newDesc,
+                                            newDownloadUrl);
+
+                                    StorageReference oldPosterRef =
+                                            storage.getReferenceFromUrl(oldPosterUrl);
+
+                                    oldPosterRef.delete()
+                                            .addOnSuccessListener(v -> {
+                                                Log.d("FirebaseStorage", "Old image deleted.");
+
+                                                backMain(view);
+                                                Toast.makeText(getActivity(),
+                                                        "Event updated successfully!",
+                                                        Toast.LENGTH_SHORT).show();
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Log.e("FirebaseStorage",
+                                                        "Failed to delete old image: " + e.getMessage());
+
+                                                backMain(view);
+                                                Toast.makeText(getActivity(),
+                                                        "Event updated (old image not deleted)",
+                                                        Toast.LENGTH_SHORT).show();
+                                            });
+
+                                }))
+                        .addOnFailureListener(e ->
+                                showErrorMessage("Upload Error: " + e.getMessage())
+                        );
+
+            } else {
+                updateEvent(newTitle, newRegStart, newRegEnd,
+                        newStartDate, newEndDate, newTimeStart, newTimeEnd,
+                        newDesc, event.getPosterPath());
+
+                backMain(view);
+                Toast.makeText(getActivity(),
+                        "Event updated successfully!", Toast.LENGTH_SHORT).show();
+            }
 
         } catch (Exception e) {
-            Log.e("EditingEventFragment", "Parsing error: " + e.getMessage());
-            errorMessage.setText("Ensure input formats are correct.");
-            errorMessage.setVisibility(View.VISIBLE);
+            showErrorMessage("Ensure input formats are correct.");
         }
     }
 
+    /**
+     *
+     * @param titleInput entered title
+     * @param regStartInput entered registration begin date
+     * @param regEndInput entered registration end date
+     * @param eventStartInput entered event start date
+     * @param eventEndInput entered event end date
+     * @param timeStartInput entered event time start date
+     * @param timeEndInput entered event time end date
+     * @param descInput entered description
+     * @param imageInput entered image
+     */
     private void updateEvent(String titleInput, String regStartInput, String regEndInput,
                              String eventStartInput, String eventEndInput, String timeStartInput,
                              String timeEndInput, String descInput, String imageInput) {
@@ -350,11 +472,13 @@ public class EditingEventFragment extends Fragment {
         updateDB();
     }
 
+
     private void updateDB() {
         db.collection("events")
                 .document(eventID)
                 .set(event)
-                .addOnSuccessListener(aVoid -> Log.d("EditingEvent", "Event updated successfully."))
+                .addOnSuccessListener(aVoid ->
+                        Log.d("EditingEvent", "Event updated successfully.")) //TODO thsi should be toast
                 .addOnFailureListener(e -> {
                     Log.e("EditingEvent", "Failed to update: " + e.getMessage());
                     Toast.makeText(getContext(), "Failed to update event.", Toast.LENGTH_SHORT).show();
@@ -371,5 +495,13 @@ public class EditingEventFragment extends Fragment {
             }
         });
         dialog.show(getParentFragmentManager(), "ConfirmDelete");
+    }
+    /**
+     *
+     * @param message message to display at the bottom of view
+     */
+    private void showErrorMessage(String message) {
+        errorMessage.setText(message);
+        errorMessage.setVisibility(View.VISIBLE);
     }
 }

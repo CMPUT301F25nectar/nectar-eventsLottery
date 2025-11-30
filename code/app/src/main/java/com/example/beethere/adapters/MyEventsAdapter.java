@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,14 +26,38 @@ import com.example.beethere.eventclasses.Event;
 import com.example.beethere.eventclasses.eventDetails.QRCodeFragment;
 import com.example.beethere.ui.myEvents.ConfirmDeleteFragment;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+
 
 public class MyEventsAdapter extends ArrayAdapter<Event> {
 
+    LocalDate currentDate = LocalDate.now();
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    /**
+     *
+     * @param context context of adapter
+     * @param events events associated with organizer
+     */
     public MyEventsAdapter(Context context, ArrayList<Event> events) {
         super(context, 0, events);
     }
 
+    /**
+     *
+     * @param position The position of the item within the adapter's data set of the item whose view
+     *        we want.
+     * @param convertView The old view to reuse, if possible. Note: You should check that this view
+     *        is non-null and of an appropriate type before using. If it is not possible to convert
+     *        this view to display the correct data, this method can create a new view.
+     *        Heterogeneous lists can specify their number of view types, so that this View is
+     *        always of the right type (see {@link #getViewTypeCount()} and
+     *        {@link #getItemViewType(int)}).
+     * @param parent The parent that this view will eventually be attached to
+     * @return view
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -49,17 +74,16 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
         TextView enrollStart = view.findViewById(R.id.enrollStart);
         TextView enrollEnd = view.findViewById(R.id.enrollEnd);
         ImageButton optionsMenuButton = view.findViewById(R.id.optionsMenuButton);
+        LocalDate eventEnd  = LocalDate.parse(event.getEventDateEnd(), dateFormatter);
 
         title.setText(event.getTitle());
         if (event.getPosterPath() != null) {
             Glide.with(getContext())
-                    .load(event.getPosterPath()) // This is the download URL
-                    //.placeholder(R.drawable.placeholder) // optional
-                    //.error(R.drawable.error) // optional
+                    .load(event.getPosterPath())
+                    .placeholder(R.drawable.placeholder_event_poster)
+                    .error(R.drawable.placeholder_event_poster)
                     .into(poster);
         }
-
-
 
         enrollStart.setText(event.getRegStart());
         enrollEnd.setText(event.getRegEnd());
@@ -72,14 +96,18 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
             popupMenu.setOnMenuItemClickListener(menuItem -> {
                 int id = menuItem.getItemId();
                 if (id == R.id.edit) {
-                    if (getContext() instanceof AppCompatActivity) {
-                        AppCompatActivity activity = (AppCompatActivity) getContext();
-                        NavController nav = Navigation.findNavController(
-                                activity.findViewById(R.id.nav_host_fragment)
-                        );
-                        Bundle bundle = new Bundle();
-                        bundle.putString("eventID", event.getEventID());
-                        nav.navigate(R.id.myEventsToEditEvents, bundle);
+                    if (currentDate.isAfter(eventEnd)) {
+                        Toast.makeText(getContext(), "Unable to edit event: Event period ended.", Toast.LENGTH_LONG).show();
+                    } else {
+                        if (getContext() instanceof AppCompatActivity) {
+                            AppCompatActivity activity = (AppCompatActivity) getContext();
+                            NavController nav = Navigation.findNavController(
+                                    activity.findViewById(R.id.nav_host_fragment)
+                            );
+                            Bundle bundle = new Bundle();
+                            bundle.putString("eventID", event.getEventID());
+                            nav.navigate(R.id.myEventsToEditEvents, bundle);
+                        }
                     }
                     return true;
                 } else if (id == R.id.delete) {
@@ -119,6 +147,10 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
         return view;
     }
 
+    /**
+     *
+     * @param eventID takes eventID to update items in the adapter
+     */
     public void removeEventById(String eventID) {
         for (int i = 0; i < getCount(); i++) {
             Event event = getItem(i);
