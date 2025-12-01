@@ -110,15 +110,23 @@ public class User {
      * sets the admin flag
      * @param admin true for admin, false otherwise (default)
      */
-    public void setAdmin(boolean admin){
-        this.admin = admin;
+    public void setAdmin(Boolean admin){
+        if( admin == null){
+            this.admin=false;
+        }else {
+            this.admin = admin;
+        }
     }
+
 
     /**
      * returns the admin flag
      * @return true if is admin, false otherwise
      */
     public Boolean getAdmin(){
+        if(admin==null){
+            return false;
+        }
         return admin;
     }
 
@@ -127,6 +135,9 @@ public class User {
      * @return true if organizer, false otherwise
      */
     public Boolean getOrganizer(){
+        if (organizer==null){
+            return false;
+        }
         return organizer;
     }
 
@@ -134,8 +145,11 @@ public class User {
      * sets the organizer flag
      * @param organizer true for organizer(default), false otherwise
      */
-    public void setOrganizer(boolean organizer){
-        this.organizer=organizer;
+    public void setOrganizer(Boolean organizer){
+        if (organizer==null){
+            this.organizer=false;
+        }else{
+        this.organizer=organizer;}
     }
 
     /**
