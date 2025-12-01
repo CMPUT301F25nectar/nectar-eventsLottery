@@ -2,6 +2,7 @@ package com.example.beethere.ui.profile;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.beethere.DatabaseCallback;
+import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.R;
+import com.example.beethere.User;
 import com.example.beethere.device.DeviceId;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -56,17 +60,28 @@ public class PersonalSettingsFragment extends Fragment {
     }
 
     private void deleteAccountFromFirestore() {
-        db.collection("users")
-                .document(deviceId)
-                .delete()
-                .addOnSuccessListener(unused -> {
+        DatabaseFunctions dbFunctions = new DatabaseFunctions();
+        DatabaseCallback<User> userCallback = new DatabaseCallback<User>() {
+            @Override
+            public void onCallback(User result) {
+                if (result != null){
+                    dbFunctions.deleteUserDB(result);
                     deleteddialog();
-                })
-                .addOnFailureListener(e -> {
+                } else {
                     Toast.makeText(requireContext(),
-                            "Failed to delete account: " + e.getMessage(),
+                            "Failed to delete account: ",
                             Toast.LENGTH_LONG).show();
-                });
+                }
+            }
+            @Override
+            public void onError(Exception e) {
+                Log.d("personalSettings", "error in callback");
+                Toast.makeText(requireContext(),
+                        "Failed to delete account: " + e.getMessage(),
+                        Toast.LENGTH_LONG).show();
+            }
+        };
+        dbFunctions.getUserDB(deviceId, userCallback);
     }
 
     private void deleteddialog() {

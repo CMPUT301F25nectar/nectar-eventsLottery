@@ -1,5 +1,6 @@
 package com.example.beethere;
 
+import com.example.beethere.eventclasses.UserListManager;
 import com.example.beethere.notifications_classes.Notification;
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -10,13 +11,16 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import com.example.beethere.eventclasses.Event;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 public class DatabaseFunctions {
@@ -33,9 +37,8 @@ public class DatabaseFunctions {
     }
 
     /**
-     * This methods either adds new users to the database
-     * or edits existing ones if the userID is the same
-     * @param user User object of the user that needs to be added or edited
+     * This methods can be used to add new users or edit existing ones
+     * @param user User class of the user that needs to be added or edited
      */
     public void addUserDB(User user){
         CollectionReference users = db.collection("users");
@@ -74,13 +77,80 @@ public class DatabaseFunctions {
 
     /**
      * This methods deletes users from the database
-     * @param userID String UserID of the user that needs to be deleted
+     * @param user  User object of the user that needs to be deleted
      */
-    public void deleteUserDB(String userID){
+    public void deleteUserDB(User user){
         CollectionReference users = db.collection("users");
-        DocumentReference docref = users.document(userID);
-        docref.delete().addOnSuccessListener(unused -> Log.d("DeleteUser", "User deleted successfully"))
-                .addOnFailureListener(fail -> Log.d(TAG, "Error deleting account"));
+        DocumentReference docref = users.document(user.getDeviceid());
+        ArrayList<Event> eventList = new ArrayList<>();
+
+        // Get interacted notifs happens last
+        DatabaseCallback<List<Notification>> interactedCallback = new DatabaseCallback<List<Notification>>() {
+            @Override
+            public void onCallback(List<Notification> result) {
+                deleteUserFromNotifDB(user.getDeviceid(), result, "respondedDeviceIds");
+                docref.delete().addOnSuccessListener(unused -> Log.d("DeleteUser", "User deleted successfully"))
+                        .addOnFailureListener(fail -> Log.d(TAG, "Error deleting account"));
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.d("DatabaseFunction", "DatabaseFunctions error getting notifs from database");
+            }
+        };
+
+        // Get Non-interacted notifs happens second
+        DatabaseCallback<List<Notification>> notifCallback = new DatabaseCallback<List<Notification>>() {
+            @Override
+            public void onCallback(List<Notification> result) {
+                deleteUserFromNotifDB(user.getDeviceid(), result, "deviceIds");
+                getInteractedNotifsDB(user.getDeviceid(), interactedCallback);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.d("DatabaseFunction", "DatabaseFunctions error getting notifs from database");
+            }
+        };
+
+        // Get Event Callback, gets called first
+        DatabaseCallback<ArrayList<Event>> eventCallback = new DatabaseCallback<>() {
+            @Override
+            public void onCallback(ArrayList<Event> result) {
+                eventList.addAll(result);
+                checkDeleteUserDB(eventList, user);
+                getNotifsDB(user.getDeviceid(), notifCallback);
+            }
+            @Override
+            public void onError(Exception e) {
+                Log.d("DatabaseFunction", "DatabaseFunctions error getting events from database");
+            }
+        };
+        getEventsDB(eventCallback);
+    }
+
+    /**
+     * This method deletes a user from all the events they've interacted with
+     * and deletes events the user has created
+     * @param eventList All events to sift through
+     * @param user User to compare with
+     */
+    private void checkDeleteUserDB(ArrayList<Event> eventList, User user){
+        UserListManager manager = new UserListManager();
+        for (Event event: eventList){
+            manager.setEvent(event);
+            if (manager.inWaitlist(user)) {
+                manager.removeWaitlist(user);
+            } else if (manager.inInvite(user)){
+                manager.removeInvite(user);
+            } else if (manager.inRegistered(user)){
+                manager.removeRegistered(user);
+            }
+
+            if (Objects.equals(event.getOrganizer().getDeviceid(), user.getDeviceid())) {
+                deleteEventDB(event.getEventID());
+            }
+        }
     }
 
     /**
@@ -101,6 +171,31 @@ public class DatabaseFunctions {
                 eventArrayList.add(event);
             }
             callback.onCallback(eventArrayList);
+        });
+    }
+    /**
+     * Get a single event by its ID
+     * @param eventId The event ID to fetch
+     * @param callback Callback with the Event object
+     */
+    public void getEvent(String eventId, DatabaseCallback<Event> callback) {
+        CollectionReference events = db.collection("events");
+        DocumentReference docref = events.document(eventId);
+
+        docref.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Event event = document.toObject(Event.class);
+                    callback.onCallback(event);
+                } else {
+                    Log.d(TAG, "Event not found: " + eventId);
+                    callback.onCallback(null);
+                }
+            } else {
+                Log.d(TAG, "Error getting event: ", task.getException());
+                callback.onError(task.getException());
+            }
         });
     }
 
@@ -166,6 +261,37 @@ public class DatabaseFunctions {
             }
         });
     }
+    /**
+     * This method returns all users in the database via callback
+     * @param callback Database Callback to return the list of users
+     */
+    public void getUsersDB(DatabaseCallback<List<User>> callback) {
+        CollectionReference users = db.collection("users");
+
+        users.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    List<User> userList = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        User user = document.toObject(User.class);
+                        userList.add(user);
+                    }
+                    callback.onCallback(userList);
+                } else {
+                    Log.d(TAG, "Error getting users: ", task.getException());
+                    callback.onError(task.getException());
+                }
+            }
+        });
+    }
+
+    public void updateNotificationPreference(String deviceId, String fieldName, boolean value){
+        DocumentReference userRef = db.collection("users").document(deviceId);
+        userRef.update(fieldName, value)
+                .addOnSuccessListener(aVoid -> Log.d("UpdatePref", fieldName + "updated to" + value))
+                .addOnFailureListener(e -> Log.d(TAG, "Error updating" + fieldName, e));
+    }
 
     /**
      * This methods adds user to an event's waitlist or registered list
@@ -228,34 +354,83 @@ public class DatabaseFunctions {
         CollectionReference notifcol = db.collection("notifications");
         notifcol.whereArrayContains("deviceIds", deviceId)
                 //.orderBy("timestamp", Query.Direction.DESCENDING)
-                .addSnapshotListener((queryDocumentSnapshots, error) -> {
-                    if (error != null) {
-                        callback.onError(error);
-                        return;
-                    }
-
-                    if (queryDocumentSnapshots != null) {
+                .get()
+                .addOnCompleteListener(( task) -> {
+                    if (task.isSuccessful()) {
                         List<Notification> notifications = new ArrayList<>();
-                        for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
-                            Notification notif = queryDocumentSnapshots.getDocuments().get(i).toObject(Notification.class);
+                        for (QueryDocumentSnapshot document: task.getResult()){
+                            Notification notif = document.toObject(Notification.class);
                             if (notif != null) {
                                 notifications.add(notif);
                             }
                         }
+                        Collections.sort(notifications, (n1, n2) ->
+                                Long.compare(n2.getTimestamp(), n1.getTimestamp()));
                         callback.onCallback(notifications);
+                        return;
+                    } else {
+                        Log.e(TAG, "error getting notifications", task.getException());
+                        callback.onError(task.getException());
                     }
+
+
                 });
     }
 
+    public void saveFCMToken(String deviceId, String fcmToken) {
+        DocumentReference userRef = db.collection("users").document(deviceId);
+        Map<String, Object> tokenData = new HashMap<>();
+        tokenData.put("fcmToken", fcmToken);
+
+        userRef.set(tokenData, SetOptions.merge())
+                .addOnSuccessListener(aVoid -> Log.d("fcm", "FCM token saved!"))
+                .addOnFailureListener(e -> Log.e("fcm", "Error saving fcm token", e));
+    }
+
+    /**
+     * This method lets the database know a user responded to a notification
+     * @param notifID String ID of the notification to update
+     * @param userID String ID of the user to change in the notification
+     * */
+    public void userRespondedDB(String notifID, String userID){
+        CollectionReference notifcol = db.collection("notifications");
+        DocumentReference docref = notifcol.document(notifID);
+        docref.update("deviceIds", FieldValue.arrayRemove(userID)).addOnSuccessListener(unused -> Log.d("userResponded", "User removed from notif successfully"))
+                .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from notification"));
+        docref.update("respondedDeviceIds", FieldValue.arrayUnion(userID)).addOnSuccessListener(unused -> Log.d("userResponded", "User added to notif successfully"))
+                .addOnFailureListener(fail -> Log.d(TAG, "Error adding user to notif"));
+    }
     /**
      * This methods deletes an event from the database
      * @param eventID String EventID of the event that needs to be deleted
      */
     public void deleteEventDB(String eventID){
+        deleteEventNotif(eventID);
         CollectionReference events = db.collection("events");
         DocumentReference docref = events.document(eventID);
         docref.delete().addOnSuccessListener(unused -> Log.d("DeleteEvent", "Event deleted successfully"))
                 .addOnFailureListener(fail -> Log.d(TAG, "Error deleting event"));
+    }
+
+    public void deleteEventNotif(String eventID){
+        CollectionReference notifcol = db.collection("notifications");
+        notifcol.whereEqualTo("eventId", eventID)
+                .addSnapshotListener((queryDocumentSnapshots, error) -> {
+                    if (error != null) {
+                        Log.d(TAG, "Error getting documents");
+                        return;
+                    }
+
+                    if (queryDocumentSnapshots != null) {
+                        for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
+                            DocumentSnapshot notif = queryDocumentSnapshots.getDocuments().get(i);
+                            DocumentReference notifref = notif.getReference();
+                            notifref.delete().addOnSuccessListener(unused -> Log.d("DeleteEventNotif", "Event notif deleted successfully"))
+                                    .addOnFailureListener(fail -> Log.d(TAG, "Error deleting event notif"));
+                        }
+                        Log.d(TAG, "Error getting documents");
+                    }
+                });
     }
 
     /**
@@ -267,22 +442,25 @@ public class DatabaseFunctions {
         CollectionReference notifcol = db.collection("notifications");
         notifcol.whereArrayContains("respondedDeviceIds", deviceId)
                 //.orderBy("timestamp", Query.Direction.DESCENDING)
-                .addSnapshotListener((queryDocumentSnapshots, error) -> {
-                    if (error != null) {
-                        callback.onError(error);
-                        return;
-                    }
-
-                    if (queryDocumentSnapshots != null) {
+                .get()
+                .addOnCompleteListener((task) -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
                         List<Notification> notifications = new ArrayList<>();
-                        for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
-                            Notification notif = queryDocumentSnapshots.getDocuments().get(i).toObject(Notification.class);
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Notification notif = document.toObject(Notification.class);
                             if (notif != null) {
                                 notifications.add(notif);
                             }
                         }
+                        Collections.sort(notifications, (n1, n2) ->
+                                Long.compare(n2.getTimestamp(), n1.getTimestamp()));
                         callback.onCallback(notifications);
+                        return;
+                    } else {
+                        Log.e(TAG, "error getting notifications in interacted one", task.getException());
                     }
+
+
                 });
     }
 
@@ -299,38 +477,43 @@ public class DatabaseFunctions {
                     .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from notification"));
         }
     }
-
     /**
-     * This method lets the database know a user responded to a notification
-     * @param notifID String ID of the notification to update
-     * @param userID String ID of the user to change in the notification
-     * */
-    public void userRespondedDB(String notifID, String userID){
-        CollectionReference notifcol = db.collection("notifications");
-        DocumentReference docref = notifcol.document(notifID);
-        docref.update("deviceIds", FieldValue.arrayRemove(userID)).addOnSuccessListener(unused -> Log.d("userResponded", "User removed from notif successfully"))
-                .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from notification"));
-        docref.update("respondedDeviceIds", FieldValue.arrayUnion(userID)).addOnSuccessListener(unused -> Log.d("userResponded", "User added to notif successfully"))
-                .addOnFailureListener(fail -> Log.d(TAG, "Error adding user to notif"));
-    }
-    public void updateNotificationPreference(String deviceId, String fieldName, boolean value){
-        DocumentReference userRef = db.collection("users").document(deviceId);
-        userRef.update(fieldName, value)
-                .addOnSuccessListener(aVoid -> Log.d("UpdatePref", fieldName + "updated to" + value))
-                .addOnFailureListener(e -> Log.d(TAG, "Error updating" + fieldName, e));
+     * Get all notifications from the notifications collection (for admin review - US 03.08.01)
+     * @param callback Callback with list of all notifications
+     */
+    public void getAllNotifications(DatabaseCallback<List<Notification>> callback) {
+        db.collection("notifications")
+                //.orderBy("timestamp", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        List<Notification> notifications = new ArrayList<>();
+
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Notification notif = document.toObject(Notification.class);
+                            if (notif != null) {
+                                notifications.add(notif);
+                            }
+                        }
+                        Collections.sort(notifications, (n1, n2) ->
+                                Long.compare(n2.getTimestamp(), n1.getTimestamp()));
+
+                        callback.onCallback(notifications);
+                    } else {
+                        Log.e(TAG, "Error getting all notifications", task.getException());
+                        if (task.getException() != null) {
+                            callback.onError(task.getException());
+                        } else {
+                            callback.onError(new Exception("Unknown error"));
+                        }
+                    }
+                });
     }
 
-    public void saveFCMToken(String deviceId, String fcmToken) {
-        DocumentReference userRef = db.collection("users").document(deviceId);
-        Map<String, Object> tokenData = new HashMap<>();
-        tokenData.put("fcmToken", fcmToken);
-
-        userRef.set(tokenData, SetOptions.merge())
-                .addOnSuccessListener(aVoid -> Log.d("fcm", "FCM token saved!"))
-                .addOnFailureListener(e -> Log.e("fcm", "Error saving fcm token", e));
-    }
 
 }
+
+
 
 
 

@@ -3,13 +3,11 @@ package com.example.beethere.eventclasses;
 import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.User;
 import com.example.beethere.notifications_classes.NotificationHandler;
-import com.example.beethere.notifications_classes.Notification;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -102,7 +100,7 @@ public class UserListManager {
         // need to make sure the right object is deleted
         if (this.inWaitlist(user)) {
             for (User waitlistUser : waitlist) {
-                if (waitlistUser.getDeviceid() == user.getDeviceid()) {
+                if (Objects.equals(waitlistUser.getDeviceid(), user.getDeviceid())) {
                     event.getWaitList().remove(waitlistUser);
                     dbFunctions.removeUserFromEventDB(event, waitlistUser, "waitList");
                     break;
@@ -119,14 +117,15 @@ public class UserListManager {
      *      Boolean, true/false if they are in or not
      */
     public Boolean inWaitlist(User user) {
-        Boolean result = Boolean.FALSE;
+        boolean result = Boolean.FALSE;
         for (User waitlistUser : event.getWaitList()) {
-            if (waitlistUser.getDeviceid() == user.getDeviceid()){
+
+            if (waitlistUser.getDeviceid() == null) {
+                continue;
+            } else if (Objects.equals(waitlistUser.getDeviceid(), user.getDeviceid())){
                 result = Boolean.TRUE;
-                break;
             }
         }
-
         return result;
     }
 
@@ -195,7 +194,7 @@ public class UserListManager {
         // need to make sure the right object is deleted
         if (this.inRegistered(user)){
             for (User registeredUser : registered){
-                if (registeredUser.getDeviceid() == user.getDeviceid()){
+                if (Objects.equals(registeredUser.getDeviceid(), user.getDeviceid())){
                     event.getRegistered().remove(registeredUser);
                     dbFunctions.removeUserFromEventDB(event, registeredUser, "registered");
                     break;
@@ -308,7 +307,7 @@ public class UserListManager {
             result = Boolean.FALSE;
         }  else if (event.getMaxWaitlist() > waitlistSize()) {
             result = Boolean.FALSE;
-        } else if (event.getMaxWaitlist() == waitlistSize()){
+        } else if (Objects.equals(event.getMaxWaitlist(), waitlistSize())){
             result = Boolean.TRUE;
         }
         return result;
@@ -323,6 +322,7 @@ public class UserListManager {
      *          if fails to close writer
      */
     public void exportCSV() throws IOException {
+        //TODO this doesn't work, crashes after with read only exception
         File file = new File("Registered.csv");
         file.createNewFile();
         FileWriter writer = new FileWriter(file);

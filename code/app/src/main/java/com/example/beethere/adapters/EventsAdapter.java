@@ -76,9 +76,9 @@ public class EventsAdapter extends ArrayAdapter<Event> {
 
             if (event.getPosterPath() != null) {
                 Glide.with(getContext())
-                        .load(event.getPosterPath()) // This is the download URL
-                        //.placeholder(R.drawable.placeholder) // optional
-                        //.error(R.drawable.error) // optional
+                        .load(event.getPosterPath())
+                        .placeholder(R.drawable.placeholder_event_poster)
+                        .error(R.drawable.placeholder_event_poster)
                         .into(poster);
             }
         }
@@ -115,7 +115,7 @@ public class EventsAdapter extends ArrayAdapter<Event> {
                     }
                     return true;
                 } else if (id == R.id.admin_qrcode) {
-                    QRCodeFragment qrFragment = QRCodeFragment.newInstance(event.getEventID(), Boolean.TRUE);
+                    QRCodeFragment qrFragment = QRCodeFragment.newInstance(event.getEventID(), Boolean.FALSE);
                     if (getContext() instanceof AppCompatActivity) {
                         AppCompatActivity activity = (AppCompatActivity) getContext();
                         qrFragment.show(activity.getSupportFragmentManager(), "qrCodeDialog");

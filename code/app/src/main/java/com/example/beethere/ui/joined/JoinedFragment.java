@@ -42,18 +42,20 @@ public class JoinedFragment extends Fragment {
     private DateTimeFormatter dateFormatter;
 
     private TextView message;
+    private ListView events;
 
     private User user;
 
     private ArrayList<Event> eventList;
+    private EventsAdapter eventsAdapter;
+
     private ArrayList<Event> userWaitlist;
     private ArrayList<Event> userEnrollList;
     private ArrayList<Event> userHistory;
 
-    EventsAdapter waitlistAdapter;
-    EventsAdapter enrolledAdapter;
-    EventsAdapter historyAdapter;
-
+    private EventsAdapter waitlistAdapter;
+    private EventsAdapter enrolledAdapter;
+    private EventsAdapter historyAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -76,20 +78,17 @@ public class JoinedFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         // checking if user exists for deviceID
         user = null;
-        eventList = new ArrayList<>();
+        eventList = new ArrayList<Event>();
+        eventsAdapter = new EventsAdapter(getContext(), eventList);
 
         // each user list (stored, so not calced everytime)
-        userWaitlist = new ArrayList<>();
-        userEnrollList = new ArrayList<>();
-        userHistory = new ArrayList<>();
+        userWaitlist = new ArrayList<Event>();
+        userEnrollList = new ArrayList<Event>();
+        userHistory = new ArrayList<Event>();
 
         waitlistAdapter = new EventsAdapter(getContext(), userWaitlist);
         enrolledAdapter = new EventsAdapter(getContext(), userEnrollList);
         historyAdapter = new EventsAdapter(getContext(), userHistory);
-
-
-
-
 
         // setting buttons
         Button waitlisted = view.findViewById(R.id.button_waitlisted);
@@ -99,27 +98,13 @@ public class JoinedFragment extends Fragment {
         // start with waitlisted selected
         buttonSelected(waitlisted, enrolled, history);
 
-        // switch to event details when event is clicked on
-        ListView events = view.findViewById(R.id.joined_event_display);
-        events.setAdapter(waitlistAdapter);
-        events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                NavController nav = Navigation.findNavController(view);
-                nav.navigate(R.id.joinedToEventDetails);
-
-                EventDataViewModel event = new ViewModelProvider(getActivity()).get(EventDataViewModel.class);
-                event.setEvent((Event) parent.getItemAtPosition(position));
-            }
-        });
-
         waitlisted.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 buttonSelected(waitlisted, enrolled, history);
-                waitlistAdapter.notifyDataSetChanged();
-                switchDisplay(userWaitlist, waitlistAdapter);
+                /*waitlistAdapter.notifyDataSetChanged();
+                switchDisplay(userWaitlist, waitlistAdapter);*/
+                switchDisplay(eventList, eventsAdapter);
             }
         });
 
@@ -138,6 +123,21 @@ public class JoinedFragment extends Fragment {
                 buttonSelected(history,waitlisted, enrolled);
                 historyAdapter.notifyDataSetChanged();
                 switchDisplay(userHistory, historyAdapter);
+            }
+        });
+
+        // switch to event details when event is clicked on
+        events = view.findViewById(R.id.joined_event_display);
+        events.setAdapter(eventsAdapter);
+        events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                NavController nav = Navigation.findNavController(view);
+                nav.navigate(R.id.joinedToEventDetails);
+
+                EventDataViewModel event = new ViewModelProvider(getActivity()).get(EventDataViewModel.class);
+                event.setEvent((Event) parent.getItemAtPosition(position));
             }
         });
 
@@ -176,7 +176,7 @@ public class JoinedFragment extends Fragment {
             @Override
             public void onCallback(ArrayList<Event> result) {
                 // if there is a user account attached to deviceID
-                eventList.clear();
+                /*eventList.clear();
                 userWaitlist.clear();
                 if (user != null) {
                     eventList.addAll(result);
@@ -184,7 +184,14 @@ public class JoinedFragment extends Fragment {
                 }
                 userWaitlist.addAll(result);
                 waitlistAdapter.notifyDataSetChanged();
-                switchDisplay(userWaitlist, waitlistAdapter);
+                switchDisplay(userWaitlist, waitlistAdapter);*/
+
+                eventList.clear();
+                for (Event event : result) {
+                    eventList.add(event);
+                }
+                eventsAdapter.notifyDataSetChanged();
+                switchDisplay(eventList, eventsAdapter);
                 // if not user created handled elsewhere, no events added
             }
             @Override
@@ -232,8 +239,10 @@ public class JoinedFragment extends Fragment {
             }
 
         }
-        waitlistAdapter.notifyDataSetChanged();
-        switchDisplay(userWaitlist, waitlistAdapter);
+       /* waitlistAdapter.notifyDataSetChanged();*/
+        /*switchDisplay(userWaitlist, waitlistAdapter);*/
+        eventsAdapter.notifyDataSetChanged();
+        switchDisplay(eventList, eventsAdapter);
 
     }
 
@@ -246,13 +255,14 @@ public class JoinedFragment extends Fragment {
     public void switchDisplay(ArrayList<Event> display, EventsAdapter eventsAdapter){
         if (user == null) {
             displayMessage("Make an account to join an event!");
+            events.setVisibility(GONE);
         } else if (display.isEmpty()) {
             displayMessage("No events joined...");
-            //events.setVisibility(GONE);
+            events.setVisibility(GONE);
         } else {
             message.setVisibility(GONE);
-            //events.setVisibility(VISIBLE);
-            //events.setAdapter(eventsAdapter);
+            events.setVisibility(VISIBLE);
+            events.setAdapter(eventsAdapter);
         }
     }
 

@@ -24,7 +24,7 @@ public class WaitlistButtons extends Fragment {
 
     private Event event;
     private User user;
-    private Boolean userCreated;
+    private Button waitlistButton;
 
     public void setEvent(Event event) {
         this.event = event;
@@ -32,26 +32,24 @@ public class WaitlistButtons extends Fragment {
     public void setUser(User user) {
         this.user = user;
     }
-    public void setUserCreated(Boolean userCreated) {
-        this.userCreated = userCreated;
-    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event_details_waitlist_buttons, container, false);
+        waitlistButton = view.findViewById(R.id.button_waitlist);
 
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Button waitlistButton = view.findViewById(R.id.button_waitlist);
-        joinButton(waitlistButton);
-
         UserListManager manager = new UserListManager(event);
+
         if (user != null && manager.inWaitlist(user)) {
-            leaveButton(waitlistButton);
+            leaveButton();
+        } else {
+            joinButton();
         }
 
         waitlistButton.setOnClickListener(new View.OnClickListener() {
@@ -61,17 +59,16 @@ public class WaitlistButtons extends Fragment {
                 if (user == null){
                     NavController nav = Navigation.findNavController(view);
                     nav.navigate(R.id.eventDetailsToProfileCreation);
-
                 }
                 else if (manager.inWaitlist(user)) {
                     manager.removeWaitlist(user);
                     showSnackbar(view, "You have left the waitlist!");
-                    joinButton(waitlistButton);
+                    joinButton();
                 }
                 else {
                     manager.addWaitlist(user);
                     showSnackbar(view, "You have joined the waitlist!");
-                    leaveButton(waitlistButton);
+                    leaveButton();
                 }
             }
         });
@@ -79,12 +76,12 @@ public class WaitlistButtons extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
-    public void leaveButton(Button waitlistButton) {
+    public void leaveButton() {
         waitlistButton.setText(getContext().getString(R.string.leave));
         waitlistButton.setSelected(false);
     }
 
-    public void joinButton(Button waitlistButton){
+    public void joinButton(){
         waitlistButton.setText(getContext().getString(R.string.join_waitlist));
         waitlistButton.setSelected(true);
     }
