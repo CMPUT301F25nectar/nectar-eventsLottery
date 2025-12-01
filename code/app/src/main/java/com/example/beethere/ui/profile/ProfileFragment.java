@@ -117,12 +117,13 @@ public class ProfileFragment extends Fragment {
                 .addOnSuccessListener(snap->{
                     Boolean admincurrent = null;
                     Boolean organizercurrent = null;
-                    Boolean violationcurrent = false; //CHANGE MADE HERE
+                    Boolean violationcurrent = null;
                     if(snap.exists()){
                         User exists = snap.toObject(User.class);
                         if (exists!= null) {
                             admincurrent = exists.getAdmin();
                             organizercurrent=exists.getOrganizer();
+                            violationcurrent=exists.getViolation();
                         }
                     }
                     User u = new User();
@@ -132,12 +133,12 @@ public class ProfileFragment extends Fragment {
                     u.setDeviceid(deviceID);
 
                     //set admin and organizer default flags
-
-                    u.setViolation(violationcurrent); //CHANGE MADE HERE
+                    if (violationcurrent!=null) u.setViolation(violationcurrent);
+                    else u.setViolation(Boolean.FALSE);
                     if (admincurrent!=null) u.setAdmin(admincurrent);
-                    else u.setAdmin(false);
+                    else u.setAdmin(Boolean.FALSE);
                     if (organizercurrent!=null) u.setOrganizer(organizercurrent);
-                    else u.setOrganizer(true);
+                    else u.setOrganizer(Boolean.FALSE);
                     FirebaseFirestore.getInstance().collection("users")
                             .document(deviceID)
                             .set(u)

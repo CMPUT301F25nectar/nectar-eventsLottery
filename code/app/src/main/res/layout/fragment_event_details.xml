@@ -11,11 +11,21 @@
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:layout_marginTop="50dp"
+        android:alpha="0.7"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_gallery" />
+
+    <ImageButton
+        android:id="@+id/posterDeleteButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/trash_bin"
+        app:layout_constraintBottom_toBottomOf="@id/event_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="10dp"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/event_detail_back_button"

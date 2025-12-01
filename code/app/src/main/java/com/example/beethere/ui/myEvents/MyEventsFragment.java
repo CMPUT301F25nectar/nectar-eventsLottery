@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -25,6 +26,7 @@ import com.example.beethere.device.DeviceIDViewModel;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.R;
 import com.example.beethere.ui.profile.ProfileDialogFragment;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -96,8 +98,8 @@ public class MyEventsFragment extends Fragment {
                         if (snap.exists()) {
                             currentUser = snap.toObject(User.class);
                             if (Boolean.TRUE.equals(currentUser.getViolation())) {
-                                Toast.makeText(getContext(), "Unable to create events with " +
-                                        "past organizer violations committed", Toast.LENGTH_SHORT).show();
+                                showSnackbar("Unable to create events " +
+                                        "with past organizer violations committed");
                             } else {
                                 currentUser = snap.toObject(User.class);
                                 nav.navigate(R.id.myEventsToCreateEvents);
@@ -147,7 +149,8 @@ public class MyEventsFragment extends Fragment {
 
             @Override
             public void onError(Exception e) {
-                Toast.makeText(getContext(), "Failed to load events", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Failed to load events",
+                        Toast.LENGTH_SHORT).show();//i think this toast can be left
             }
         });
     }
@@ -192,6 +195,23 @@ public class MyEventsFragment extends Fragment {
             noEventsMessage2.setVisibility(View.GONE);
             searchNoEventsMessage.setVisibility(View.GONE);
         }
+    }
+    public void showSnackbar(String text){
+        View rootView = getView();
+        if (rootView == null) return;
+
+        Snackbar snackbar = Snackbar.make(rootView, text, Snackbar.LENGTH_SHORT)
+                .setBackgroundTint(getContext().getColor(R.color.dark_brown))
+                .setTextColor(getContext().getColor(R.color.yellow));
+
+        View snackbarView = snackbar.getView();
+        TextView snackbarText = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+
+        snackbarText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        snackbarText.setTextSize(20);
+        snackbarText.setTypeface(ResourcesCompat.getFont(getContext(), R.font.work_sans_semibold));
+
+        snackbar.show();
     }
 }
 

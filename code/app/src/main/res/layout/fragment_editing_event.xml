@@ -393,7 +393,7 @@
                     android:backgroundTint="@color/yellow"
                     android:textAllCaps="false"
                     android:fontFamily="@font/work_sans_bold"
-                    android:text="Complete" />
+                    android:text="Update" />
 
                 <TextView
                     android:layout_width="wrap_content"

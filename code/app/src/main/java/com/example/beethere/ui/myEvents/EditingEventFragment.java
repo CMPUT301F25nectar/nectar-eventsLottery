@@ -1,23 +1,18 @@
 package com.example.beethere.ui.myEvents;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -25,8 +20,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -34,12 +29,9 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.bumptech.glide.Glide;
 import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.R;
-import com.example.beethere.adapters.MyEventsAdapter;
 import com.example.beethere.eventclasses.Event;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -51,6 +43,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 public class EditingEventFragment extends Fragment {
@@ -68,6 +61,7 @@ public class EditingEventFragment extends Fragment {
             eventEnd, timeStart, timeEnd, eventDesc;
     private AppCompatButton deleteEventButton;
     private TextView errorMessage;
+    private boolean isSubmitting = false;
 
     private ArrayList<Event> events;
     private static final String ARG_EVENT_ID = "eventID";
@@ -335,6 +329,15 @@ public class EditingEventFragment extends Fragment {
 
     @SuppressLint("SetTextI18n")
     public void complete(View view) {
+
+        AppCompatButton completeButton = getView().findViewById(R.id.completeButton);
+
+        if (isSubmitting) return;
+        isSubmitting = true;
+
+        completeButton.setEnabled(false);
+        completeButton.setText("Updating…");
+
         String newTitle = eventTitle.getText().toString().trim();
         String newRegStart = regStart.getText().toString().trim();
         String newRegEnd = regEnd.getText().toString().trim();
@@ -344,20 +347,30 @@ public class EditingEventFragment extends Fragment {
         String newTimeEnd = timeEnd.getText().toString().trim();
         String newDesc = eventDesc.getText().toString().trim();
 
+        Runnable resetButton = () -> {
+            isSubmitting = false;
+            completeButton.setEnabled(true);
+            completeButton.setText("Update");
+        };
+
+
         if (newTitle.isEmpty() || newRegStart.isEmpty() || newRegEnd.isEmpty() ||
                 newStartDate.isEmpty() || newEndDate.isEmpty() ||
                 newTimeStart.isEmpty() || newTimeEnd.isEmpty() || newDesc.isEmpty()) {
             showErrorMessage("Please fill all required fields.");
+            resetButton.run();
             return;
         }
 
         if (newDesc.length() > 500) {
             showErrorMessage("Description cannot be longer than 500 characters.");
+            resetButton.run();
             return;
         }
 
         if (newTitle.length() > 24) {
             showErrorMessage("Title cannot be longer than 24 characters.");
+            resetButton.run();
             return;
         }
 
@@ -372,16 +385,19 @@ public class EditingEventFragment extends Fragment {
 
             if (regStartDate.isAfter(regEndDate) || eventStartDate.isAfter(eventEndDate)) {
                 showErrorMessage("Ensure start date is before end date.");
+                resetButton.run();
                 return;
             }
 
             if (startTime.isAfter(endTime)) {
                 showErrorMessage("Ensure start time is before end time.");
+                resetButton.run();
                 return;
             }
 
             if (!regEndDate.isBefore(eventStartDate)) {
                 showErrorMessage("Registration must close before event starts.");
+                resetButton.run();
                 return;
             }
 
@@ -397,7 +413,7 @@ public class EditingEventFragment extends Fragment {
                                     String newDownloadUrl = uri.toString();
                                     String oldPosterUrl = event.getPosterPath();
 
-                                    updateEvent(newTitle, newRegStart, newRegEnd,
+                                    updateEvent(view, newTitle, newRegStart, newRegEnd,
                                             newStartDate, newEndDate,
                                             newTimeStart, newTimeEnd, newDesc,
                                             newDownloadUrl);
@@ -410,33 +426,28 @@ public class EditingEventFragment extends Fragment {
                                                 Log.d("FirebaseStorage", "Old image deleted.");
 
                                                 backMain(view);
-                                                Toast.makeText(getActivity(),
-                                                        "Event updated successfully!",
-                                                        Toast.LENGTH_SHORT).show();
+                                                showSnackbar("Event updated successfully!");
                                             })
                                             .addOnFailureListener(e -> {
                                                 Log.e("FirebaseStorage",
                                                         "Failed to delete old image: " + e.getMessage());
-
                                                 backMain(view);
-                                                Toast.makeText(getActivity(),
-                                                        "Event updated (old image not deleted)",
-                                                        Toast.LENGTH_SHORT).show();
+                                                showSnackbar("Event updated successfully!");
                                             });
 
                                 }))
-                        .addOnFailureListener(e ->
-                                showErrorMessage("Upload Error: " + e.getMessage())
-                        );
+                        .addOnFailureListener(e -> {
+                            showErrorMessage("Upload Error: " + e.getMessage());
+                            resetButton.run();
+                        });
 
             } else {
-                updateEvent(newTitle, newRegStart, newRegEnd,
+                updateEvent(view, newTitle, newRegStart, newRegEnd,
                         newStartDate, newEndDate, newTimeStart, newTimeEnd,
                         newDesc, event.getPosterPath());
 
                 backMain(view);
-                Toast.makeText(getActivity(),
-                        "Event updated successfully!", Toast.LENGTH_SHORT).show();
+                showSnackbar("Event updated successfully!");
             }
 
         } catch (Exception e) {
@@ -456,7 +467,7 @@ public class EditingEventFragment extends Fragment {
      * @param descInput entered description
      * @param imageInput entered image
      */
-    private void updateEvent(String titleInput, String regStartInput, String regEndInput,
+    private void updateEvent(View view, String titleInput, String regStartInput, String regEndInput,
                              String eventStartInput, String eventEndInput, String timeStartInput,
                              String timeEndInput, String descInput, String imageInput) {
         event.setTitle(titleInput);
@@ -467,8 +478,10 @@ public class EditingEventFragment extends Fragment {
         event.setEventTimeStart(timeStartInput);
         event.setEventTimeEnd(timeEndInput);
         event.setDescription(descInput);
-        event.setPosterPath(imageInput);
 
+        if (!Objects.equals(imageInput, event.getPosterPath())) {
+            event.setPosterPath(imageInput);
+        }
         updateDB();
     }
 
@@ -477,11 +490,14 @@ public class EditingEventFragment extends Fragment {
         db.collection("events")
                 .document(eventID)
                 .set(event)
-                .addOnSuccessListener(aVoid ->
-                        Log.d("EditingEvent", "Event updated successfully.")) //TODO thsi should be toast
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("EditingEvent", "Event updated successfully.");
+                    showSnackbar("Event updated successfully.");
+
+                        })
                 .addOnFailureListener(e -> {
                     Log.e("EditingEvent", "Failed to update: " + e.getMessage());
-                    Toast.makeText(getContext(), "Failed to update event.", Toast.LENGTH_SHORT).show();
+                    showSnackbar("Failed to update event.");
                 });
     }
 
@@ -503,5 +519,23 @@ public class EditingEventFragment extends Fragment {
     private void showErrorMessage(String message) {
         errorMessage.setText(message);
         errorMessage.setVisibility(View.VISIBLE);
+    }
+
+    public void showSnackbar(String text){
+        View rootView = getView();
+        if (rootView == null) return;
+
+        Snackbar snackbar = Snackbar.make(rootView, text, Snackbar.LENGTH_SHORT)
+                .setBackgroundTint(getContext().getColor(R.color.dark_brown))
+                .setTextColor(getContext().getColor(R.color.yellow));
+
+        View snackbarView = snackbar.getView();
+        TextView snackbarText = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+
+        snackbarText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        snackbarText.setTextSize(20);
+        snackbarText.setTypeface(ResourcesCompat.getFont(getContext(), R.font.work_sans_semibold));
+
+        snackbar.show();
     }
 }

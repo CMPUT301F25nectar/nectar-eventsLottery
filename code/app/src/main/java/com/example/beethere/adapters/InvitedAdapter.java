@@ -8,13 +8,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.example.beethere.R;
 import com.example.beethere.User;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -82,13 +83,13 @@ public class InvitedAdapter extends ArrayAdapter<String> {
             db.collection("users").document(userID)
                     .delete()
                     .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(getContext(), user.getName() +
-                                "was removed from invites list", Toast.LENGTH_LONG).show();
+                        showSnackbar(view, user.getName() +
+                                " was removed from invites list");
                         notifyDataSetChanged();
                     })
                     .addOnFailureListener(e -> {
-                        Toast.makeText(getContext(), "Error" + user.getName() +
-                                "could not be removed from invites list", Toast.LENGTH_LONG).show();
+                        showSnackbar(view, "Error: " + user.getName() +
+                                " could not be removed from invites list");
                     });
         });
 
@@ -115,6 +116,19 @@ public class InvitedAdapter extends ArrayAdapter<String> {
         clear();
         addAll(new ArrayList<>(newList.keySet()));
         notifyDataSetChanged();
+    }
+
+    public void showSnackbar(View view, String text){
+        Snackbar snackbar = Snackbar.make(view,text, Snackbar.LENGTH_SHORT)
+                .setBackgroundTint(getContext().getColor(R.color.dark_brown))
+                .setTextColor(getContext().getColor(R.color.yellow));
+        View snackbarView = snackbar.getView();
+        TextView snackbarText = (TextView) snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+
+        snackbarText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        snackbarText.setTextSize(20);
+        snackbarText.setTypeface(ResourcesCompat.getFont(getContext(), R.font.work_sans_semibold));
+        snackbar.show();
     }
 
 }
