@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -73,17 +74,15 @@ public class AllEventsFragment extends Fragment {
         filter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // filter dialog fragment
+                FilterEventsDialog filterEvents = new FilterEventsDialog();
+                filterEvents.show(getParentFragmentManager(), "filter events");
 
-
-
-
-
-                /*displayedList.clear();
-                filterDate(someDate, someDate, "reg");
+                /*displayedList.clear();*/
+                /*filterDate(someDate, someDate, "reg");
                 filterDate(someDate, someDate, "eventDate");
-                filterTime(someTime, someTime);
-                filterTags(someTags);*/
+                filterTime(someTime, someTime);*/
+
+                /*filterTags(someTags);*/
             }
         });
 
@@ -108,6 +107,7 @@ public class AllEventsFragment extends Fragment {
     }
 
     public void loadEvents(){
+        HashMap<String, Event> eventhashmap= new HashMap<>();
         LocalDate currentDate = LocalDate.now();
         DatabaseFunctions functions = new DatabaseFunctions();
         DatabaseCallback<ArrayList<Event>> callback = new DatabaseCallback<>() {

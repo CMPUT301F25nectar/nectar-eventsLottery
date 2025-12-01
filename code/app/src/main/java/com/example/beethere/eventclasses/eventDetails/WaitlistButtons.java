@@ -46,7 +46,7 @@ public class WaitlistButtons extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         UserListManager manager = new UserListManager(event);
 
-        if (user != null && manager.inWaitlist(user)) {
+        if (user != null && user.getDeviceid() != null && manager.inWaitlist(user)) {
             leaveButton();
         } else {
             joinButton();
@@ -56,7 +56,7 @@ public class WaitlistButtons extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if (user == null){
+                if (user.getDeviceid() == null){
                     NavController nav = Navigation.findNavController(view);
                     nav.navigate(R.id.eventDetailsToProfileCreation);
                 }
