@@ -71,6 +71,11 @@ public class ProfileFragment extends Fragment {
                         .navigate(R.id.notificationSettingsFragment)
         );
 
+        howtouse.setOnClickListener(v ->
+                NavHostFragment.findNavController(ProfileFragment.this)
+                        .navigate(R.id.howToUseFragment)
+        );
+
         adminDashboard.setOnClickListener(v ->
             NavHostFragment.findNavController(ProfileFragment.this)
                     .navigate(R.id.navigation_admin_dashboard)
