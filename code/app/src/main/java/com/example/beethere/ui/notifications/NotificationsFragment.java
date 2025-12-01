@@ -82,8 +82,6 @@ public class NotificationsFragment extends Fragment {
     private void loadUserNotifications(){
         String deviceId = DeviceId.get(requireContext());
 
-        Toast.makeText(requireContext(), "Device ID: " + deviceId, Toast.LENGTH_LONG).show();
-
         Log.d("NotifTab", "Loading notifications ");
         Log.d("NotifTab", "Device ID: " + deviceId);
 

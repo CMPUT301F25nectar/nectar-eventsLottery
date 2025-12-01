@@ -11,8 +11,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -170,6 +172,31 @@ public class DatabaseFunctions {
             callback.onCallback(eventArrayList);
         });
     }
+    /**
+     * Get a single event by its ID
+     * @param eventId The event ID to fetch
+     * @param callback Callback with the Event object
+     */
+    public void getEvent(String eventId, DatabaseCallback<Event> callback) {
+        CollectionReference events = db.collection("events");
+        DocumentReference docref = events.document(eventId);
+
+        docref.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Event event = document.toObject(Event.class);
+                    callback.onCallback(event);
+                } else {
+                    Log.d(TAG, "Event not found: " + eventId);
+                    callback.onCallback(null);
+                }
+            } else {
+                Log.d(TAG, "Error getting event: ", task.getException());
+                callback.onError(task.getException());
+            }
+        });
+    }
 
     /**
      * This methods returns the events a user has created
@@ -301,22 +328,26 @@ public class DatabaseFunctions {
         CollectionReference notifcol = db.collection("notifications");
         notifcol.whereArrayContains("deviceIds", deviceId)
                 //.orderBy("timestamp", Query.Direction.DESCENDING)
-                .addSnapshotListener((queryDocumentSnapshots, error) -> {
-                    if (error != null) {
-                        callback.onError(error);
-                        return;
-                    }
-
-                    if (queryDocumentSnapshots != null) {
+                .get()
+                .addOnCompleteListener(( task) -> {
+                    if (task.isSuccessful()) {
                         List<Notification> notifications = new ArrayList<>();
-                        for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
-                            Notification notif = queryDocumentSnapshots.getDocuments().get(i).toObject(Notification.class);
+                        for (QueryDocumentSnapshot document: task.getResult()){
+                            Notification notif = document.toObject(Notification.class);
                             if (notif != null) {
                                 notifications.add(notif);
                             }
                         }
+                        Collections.sort(notifications, (n1, n2) ->
+                                Long.compare(n2.getTimestamp(), n1.getTimestamp()));
                         callback.onCallback(notifications);
+                        return;
+                    } else {
+                        Log.e(TAG, "error getting notifications", task.getException());
+                        callback.onError(task.getException());
                     }
+
+
                 });
     }
 
@@ -385,22 +416,25 @@ public class DatabaseFunctions {
         CollectionReference notifcol = db.collection("notifications");
         notifcol.whereArrayContains("respondedDeviceIds", deviceId)
                 //.orderBy("timestamp", Query.Direction.DESCENDING)
-                .addSnapshotListener((queryDocumentSnapshots, error) -> {
-                    if (error != null) {
-                        callback.onError(error);
-                        return;
-                    }
-
-                    if (queryDocumentSnapshots != null) {
+                .get()
+                .addOnCompleteListener((task) -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
                         List<Notification> notifications = new ArrayList<>();
-                        for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
-                            Notification notif = queryDocumentSnapshots.getDocuments().get(i).toObject(Notification.class);
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Notification notif = document.toObject(Notification.class);
                             if (notif != null) {
                                 notifications.add(notif);
                             }
                         }
+                        Collections.sort(notifications, (n1, n2) ->
+                                Long.compare(n2.getTimestamp(), n1.getTimestamp()));
                         callback.onCallback(notifications);
+                        return;
+                    } else {
+                        Log.e(TAG, "error getting notifications in interacted one", task.getException());
                     }
+
+
                 });
     }
 
@@ -417,6 +451,40 @@ public class DatabaseFunctions {
                     .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from notification"));
         }
     }
+    /**
+     * Get all notifications from the notifications collection (for admin review - US 03.08.01)
+     * @param callback Callback with list of all notifications
+     */
+    public void getAllNotifications(DatabaseCallback<List<Notification>> callback) {
+        db.collection("notifications")
+                //.orderBy("timestamp", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        List<Notification> notifications = new ArrayList<>();
+
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Notification notif = document.toObject(Notification.class);
+                            if (notif != null) {
+                                notifications.add(notif);
+                            }
+                        }
+                        Collections.sort(notifications, (n1, n2) ->
+                                Long.compare(n2.getTimestamp(), n1.getTimestamp()));
+
+                        callback.onCallback(notifications);
+                    } else {
+                        Log.e(TAG, "Error getting all notifications", task.getException());
+                        if (task.getException() != null) {
+                            callback.onError(task.getException());
+                        } else {
+                            callback.onError(new Exception("Unknown error"));
+                        }
+                    }
+                });
+    }
+
+
 }
 
 
