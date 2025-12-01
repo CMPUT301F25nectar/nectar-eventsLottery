@@ -176,6 +176,30 @@
             android:layout_height="1dp"
             android:background="@color/light_yellow"/>
         <TextView
+            android:id="@+id/admin_settings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Admin settings"
+            android:textSize="16sp"
+            android:textColor="@color/dark_brown"
+            android:fontFamily="@font/work_sans_bold"
+            />
+        <TextView
+            android:id="@+id/admin_dashboard"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="8dp"
+            android:text="View dashboard"
+            android:textSize="15sp"
+            android:textColor="@color/dark_brown"
+            android:fontFamily="@font/work_sans"
+            android:background="?attr/selectableItemBackground"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/light_yellow"/>
+        <TextView
             android:id="@+id/account_settings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
