@@ -1,70 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:orientation="vertical"
+    android:background="#F5F5F5">
 
-    <ImageButton
-        android:id="@+id/backButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="44dp"
-        android:background="@drawable/back_button_background"
-        android:src="@drawable/left_arrow"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/adminProfilesTitle"
-        app:layout_constraintTop_toBottomOf="@+id/backButton"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="All Profiles"
-        android:fontFamily="@font/space_mono_bold"
-        android:textColor="@color/dark_brown"
-        android:layout_margin="15dp"
-        android:textSize="35sp" />
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="#FFFFFF">
 
-    <SearchView
-        android:id="@+id/all_profiles_search_view"
-        android:layout_width="325dp"
-        android:layout_height="37dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/back_button_background"
+            android:src="@drawable/left_arrow"
+            android:contentDescription="Back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="All Profiles"
+            android:textColor="@color/dark_brown"
+            android:textSize="34sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
         android:background="@drawable/search_bar"
-        android:queryHint="Search"
-        android:closeIcon="@null"
-        android:searchIcon="@null"
-        android:submitBackground="@null"
-        android:queryBackground="@null"
-        android:focusable="true"
-        android:iconifiedByDefault="false"
-        android:textColor="@color/dark_brown"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/adminProfilesTitle" />
+        android:padding="12dp">
 
-    <ImageButton
-        android:id="@+id/button_filter"
-        android:layout_width="40dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginBottom="25dp"
-        android:background="@android:color/transparent"
-        android:contentDescription="Filter icon that opens filter selection for events"
-        android:src="@drawable/filter"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/all_profiles_search_view"
-        app:layout_constraintBottom_toTopOf="@id/allProfiles"/>
+        <EditText
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/search_bar"
+            android:hint="Search"
+            android:background="@android:color/transparent"
+            android:textSize="16sp"
+            android:textColor="@color/dark_brown"
+            android:textColorHint="@color/faded_brown" />
 
+    </RelativeLayout>
+
+    <!-- Profiles List -->
     <ListView
-        android:id="@+id/allProfiles"
-        android:layout_width="wrap_content"
+        android:id="@+id/profiles_list_view"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/all_profiles_search_view"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_weight="1"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="8dp"
+        android:paddingHorizontal="16dp" />
+
+</LinearLayout>
