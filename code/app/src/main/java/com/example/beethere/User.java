@@ -16,14 +16,9 @@ public class User {
     private String email;
     private String phone; //optional
     private String deviceid;
-    private Boolean admin = false; //admin flag
-    private Boolean organizer = false;//organizer flag
-    private Boolean violation = false;
-    private Boolean receiveWinningNotifs;
-    private Boolean receiveLosingNotifs;
-    private Boolean receiveCancelledNotifs;
-    private Boolean receiveOrganizerNotifs;
-    private Boolean receiveAdminNotifs;
+    private Boolean admin; //admin flag
+    private Boolean organizer;//organizer flag
+    private Boolean violation;
 
     public User(){}
 
@@ -35,11 +30,6 @@ public class User {
     public User (String name, String email){
         this.name = name;
         this.email = email;
-        this.receiveWinningNotifs = false;
-        this.receiveLosingNotifs = false;
-        this.receiveCancelledNotifs = false;
-        this.receiveOrganizerNotifs = false;
-        this.receiveAdminNotifs = false;
     }
 
     /**
@@ -149,102 +139,6 @@ public class User {
      * @param violation initially false
      */
     public void setViolation(Boolean violation) {this.violation = violation;} //CHANGE: CHANGE MADE HERE
-
-
-    /**
-     * returns whether user wants to receive winning lottery notifications
-     * @return true if enabled, false otherwise
-     */
-    public Boolean getReceiveWinningNotifs() {
-        if (receiveWinningNotifs == null){
-            return false;
-        }
-        return receiveWinningNotifs;
-    }
-
-    /**
-     * sets the preference for receiving winning lottery notifications
-     * @param receiveWinningNotifs true to receive, false to opt out
-     */
-    public void setReceiveWinningNotifs(Boolean receiveWinningNotifs) {
-        this.receiveWinningNotifs = receiveWinningNotifs;
-    }
-
-    /**
-     * returns whether user wants to receive losing lottery notifications
-     * @return true if enabled, false otherwise
-     */
-    public Boolean getReceiveLosingNotifs() {
-        if (receiveLosingNotifs == null){
-            return false;
-        }
-        return receiveLosingNotifs;
-    }
-
-    /**
-     * sets the preference for receiving losing lottery notifications
-     * @param receiveLosingNotifs true to receive, false to opt out
-     */
-    public void setReceiveLosingNotifs(Boolean receiveLosingNotifs) {
-        this.receiveLosingNotifs = receiveLosingNotifs;
-    }
-
-    /**
-     * returns whether user wants to receive cancelled event notifications
-     * @return true if enabled, false otherwise
-     */
-    public Boolean getReceiveCancelledNotifs(){
-        if (receiveCancelledNotifs == null){
-            return false;
-        }
-        return receiveCancelledNotifs;
-    }
-
-    /**
-     * sets the preference for receiving cancelled event notifications
-     * @param receiveCancelledNotifs true to receive, false to opt out
-     */
-    public void setReceiveCancelledNotifs(Boolean receiveCancelledNotifs) {
-        this.receiveCancelledNotifs = receiveCancelledNotifs;
-    }
-
-    /**
-     * returns whether user wants to receive organizer messages
-     * @return true if enabled, false otherwise
-     */
-    public Boolean getReceiveOrganizerNotifs() {
-        if (receiveOrganizerNotifs == null){
-            return false;
-        }
-        return receiveOrganizerNotifs;
-    }
-
-    /**
-     * sets the preference for receiving organizer messages
-     * @param receiveOrganizerNotifs true to receive, false to opt out
-     */
-    public void setReceiveOrganizerNotifs(Boolean receiveOrganizerNotifs) {
-        this.receiveOrganizerNotifs = receiveOrganizerNotifs;
-    }
-
-    /**
-     * returns whether user wants to receive admin notifications
-     * @return true if enabled, false otherwise
-     */
-    public Boolean getReceiveAdminNotifs() {
-        if (receiveAdminNotifs == null){
-            return false;
-        }
-        return receiveAdminNotifs;
-    }
-
-    /**
-     * sets the preference for receiving admin notifications
-     * @param receiveAdminNotifs true to receive, false to opt out
-     */
-    public void setReceiveAdminNotifs(Boolean receiveAdminNotifs) {
-        this.receiveAdminNotifs = receiveAdminNotifs;
-    }
 }
 
 

@@ -10,10 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -22,6 +23,7 @@ import androidx.navigation.Navigation;
 import com.example.beethere.R;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.eventclasses.EventDataViewModel;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
@@ -99,7 +101,7 @@ public class QRCodeFragment extends DialogFragment {
             String scannedData = decodeQRCode(bitmap);
 
             if (scannedData != null) {
-                Toast.makeText(getContext(), "Scanned: " + scannedData, Toast.LENGTH_LONG).show();
+                showSnackbar(view, "Scanned: " + scannedData);
 
                 db.collection("events")
                         .document(scannedData)
@@ -108,7 +110,7 @@ public class QRCodeFragment extends DialogFragment {
                             event = snapshot.toObject(Event.class);
 
                             if (event == null) {
-                                Toast.makeText(getContext(), "Error: Event Not Found", Toast.LENGTH_SHORT).show();
+                                showSnackbar(view, "Error: Event Not Found");
                                 return;
                             }
 
@@ -120,10 +122,10 @@ public class QRCodeFragment extends DialogFragment {
 
                         })
                         .addOnFailureListener(e ->
-                                Toast.makeText(getContext(), "Error loading event", Toast.LENGTH_SHORT).show()
+                                showSnackbar(view, "Error Loading Event")
                         );
             } else {
-                Toast.makeText(getContext(), "Error: Event Details Not Found", Toast.LENGTH_SHORT).show();
+                showSnackbar(view, "Error: Event Details Not Found");
             }
         });
 
@@ -155,6 +157,18 @@ public class QRCodeFragment extends DialogFragment {
             e.printStackTrace();
             return null;
         }
+    }
+    public void showSnackbar(View view, String text){
+        Snackbar snackbar = Snackbar.make(view,text, Snackbar.LENGTH_SHORT)
+                .setBackgroundTint(getContext().getColor(R.color.dark_brown))
+                .setTextColor(getContext().getColor(R.color.yellow));
+        View snackbarView = snackbar.getView();
+        TextView snackbarText = (TextView) snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+
+        snackbarText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        snackbarText.setTextSize(20);
+        snackbarText.setTypeface(ResourcesCompat.getFont(getContext(), R.font.work_sans_semibold));
+        snackbar.show();
     }
 
 }
