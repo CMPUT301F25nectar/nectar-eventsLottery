@@ -34,6 +34,8 @@ import com.example.beethere.eventclasses.UserListManager;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -49,6 +51,7 @@ public class EventDetailsFragment extends Fragment {
     private Boolean userCreated;
     private DeviceIDViewModel deviceID;
     private EventDataViewModel eventData;
+    private FirebaseStorage storage = FirebaseStorage.getInstance("gs://beethere-images");
 
     public Event getEvent() {
         return event;
@@ -128,6 +131,17 @@ public class EventDetailsFragment extends Fragment {
         // Event Description Display
         TextView description = view.findViewById(R.id.text_description);
         description.setText(event.getDescription());
+
+        Button deletePosterButton = view.findViewById(R.id.posterDeleteButton);
+        deletePosterButton.setVisibility(View.GONE);
+        if (user.getAdmin()) {
+            deletePosterButton.setVisibility(View.VISIBLE);
+
+            deletePosterButton.setOnClickListener(v -> {
+                StorageReference PosterRef = storage.getReferenceFromUrl(event.getPosterPath());
+                PosterRef.delete();
+            });
+        }
 
         // Event Geoloc Req Display
         TextView geoLocReq = view.findViewById(R.id.text_geoloc_req);
