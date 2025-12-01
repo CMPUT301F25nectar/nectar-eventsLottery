@@ -11,8 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.beethere.R;
 
@@ -21,7 +20,7 @@ public class AdminDashboardFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // inflate view
+
         View view = inflater.inflate(R.layout.fragment_admin_dashboard, container, false);
 
         Button buttonBack = view.findViewById(R.id.admin_back_button);
@@ -30,48 +29,30 @@ public class AdminDashboardFragment extends Fragment {
         LinearLayout viewProfiles = view.findViewById(R.id.btn_view_profiles);
         LinearLayout viewEvents = view.findViewById(R.id.btn_view_events);
 
-        NavController nav = Navigation.findNavController(view);
-        buttonBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentManager fragmentManager = getParentFragmentManager();
-                fragmentManager.popBackStack();
-            }
-        });
+        buttonBack.setOnClickListener(v ->
+                getParentFragmentManager().popBackStack()
+        );
 
-        viewNotification.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //nav.navigate(R.id.admin_to_adminNotifs);
-            }
-        });
+        viewNotification.setOnClickListener(v ->
+                NavHostFragment.findNavController(AdminDashboardFragment.this)
+                        .navigate(R.id.admin_to_adminNotifs)
+        );
 
-        viewImages.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //nav.navigate(R.id.admin_to_adminImages);
-            }
-        });
+        viewImages.setOnClickListener(v ->
+                NavHostFragment.findNavController(AdminDashboardFragment.this)
+                        .navigate(R.id.admin_to_adminImages)
+        );
 
-        viewProfiles.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //nav.navigate(R.id.admin_to_adminProfiles);
-            }
-        });
+        viewProfiles.setOnClickListener(v ->
+                NavHostFragment.findNavController(AdminDashboardFragment.this)
+                        .navigate(R.id.admin_to_adminProfiles)
+        );
 
-        viewEvents.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //nav.navigate(R.id.admin_to_adminEvents);
-            }
-        });
+        viewEvents.setOnClickListener(v ->
+                NavHostFragment.findNavController(AdminDashboardFragment.this)
+                        .navigate(R.id.admin_to_adminEvents)
+        );
 
         return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
     }
 }

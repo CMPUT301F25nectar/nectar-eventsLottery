@@ -139,7 +139,7 @@ public class AdminProfileFragment extends Fragment {
             return position;
         }
         public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView != null) {
+            if (convertView == null) {
                 convertView = LayoutInflater.from(requireContext())
                         .inflate(R.layout.fragment_admin_profile_item, parent, false);
             }

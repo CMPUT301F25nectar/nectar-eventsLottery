@@ -5,10 +5,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.beethere.DatabaseCallback;
 import com.example.beethere.DatabaseFunctions;
@@ -25,8 +27,15 @@ public class AdminNotificationsFragment extends Fragment {
     private ArrayList<Notification> notifications;
     private DatabaseFunctions dbFunctions;
 
+
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_admin_view_notification, container, false);
+        ImageButton backButton = view.findViewById(R.id.back_button);
+        backButton.setOnClickListener(v ->
+                NavHostFragment.findNavController(AdminNotificationsFragment.this).navigateUp()
+        );
+
         notificationLogsList = view.findViewById(R.id.admin_notifications_list);
         notifications = new ArrayList<>();
         dbFunctions = new DatabaseFunctions();
