@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import com.example.beethere.eventclasses.Event;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 public class DatabaseFunctions {
@@ -260,6 +261,31 @@ public class DatabaseFunctions {
             }
         });
     }
+    /**
+     * This method returns all users in the database via callback
+     * @param callback Database Callback to return the list of users
+     */
+    public void getUsersDB(DatabaseCallback<List<User>> callback) {
+        CollectionReference users = db.collection("users");
+
+        users.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    List<User> userList = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        User user = document.toObject(User.class);
+                        userList.add(user);
+                    }
+                    callback.onCallback(userList);
+                } else {
+                    Log.d(TAG, "Error getting users: ", task.getException());
+                    callback.onError(task.getException());
+                }
+            }
+        });
+    }
+
     public void updateNotificationPreference(String deviceId, String fieldName, boolean value){
         DocumentReference userRef = db.collection("users").document(deviceId);
         userRef.update(fieldName, value)
