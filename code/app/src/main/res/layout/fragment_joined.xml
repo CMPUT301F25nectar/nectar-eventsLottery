@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -71,11 +72,124 @@
         app:layout_constraintStart_toEndOf="@+id/button_enrolled"
         app:layout_constraintTop_toBottomOf="@+id/joinedTitle" />
 
+    &lt;!&ndash;<FrameLayout
+        android:id="@+id/joined_list_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_enrolled"/>&ndash;&gt;
+
+    <ListView
+        android:id="@+id/joined_event_display_2_try"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_enrolled" />
+
+    <TextView
+        android:id="@+id/joined_fragment_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:fontFamily="@font/space_mono_bold"
+        android:maxWidth="300dp"
+        android:text="@string/placeholder"
+        android:textAlignment="center"
+        android:textColor="@color/dark_brown"
+        android:textSize="25sp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_enrolled" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>-->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/joinedTitle"
+        android:layout_width="225dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="65dp"
+        android:fontFamily="@font/space_mono_bold"
+        android:text="@string/title_joined"
+        android:textColor="@color/dark_brown"
+        android:textSize="35sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_waitlisted"
+        android:minWidth="125dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/work_sans_semibold"
+        android:text="@string/waitlisted"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:background="@drawable/view_entrants_buttons"
+        android:textColor="@drawable/view_entrants_buttons_text"
+        app:layout_constraintEnd_toStartOf="@+id/button_enrolled"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/joinedTitle" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_enrolled"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/view_entrants_buttons"
+        android:fontFamily="@font/work_sans_semibold"
+        android:minWidth="120dp"
+        android:text="@string/enrolled"
+        android:textAllCaps="false"
+        android:textColor="@drawable/view_entrants_buttons_text"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/joinedTitle" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_history"
+        android:minWidth="125dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="20dp"
+        android:fontFamily="@font/work_sans_semibold"
+        android:text="@string/history"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:background="@drawable/view_entrants_buttons"
+        android:textColor="@drawable/view_entrants_buttons_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/button_enrolled"
+        app:layout_constraintTop_toBottomOf="@+id/joinedTitle" />
+
     <ListView
         android:id="@+id/joined_event_display"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:divider="@android:color/transparent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
