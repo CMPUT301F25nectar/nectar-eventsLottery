@@ -75,6 +75,10 @@ public class ProfileFragment extends Fragment {
                     .navigate(R.id.navigation_admin_dashboard)
         );
 
+        //how to use
+        howtouse.setOnClickListener(v->
+                NavHostFragment.findNavController(ProfileFragment.this).navigate(R.id.howToUseFragment));
+
         return view;
     }
 //gets profile information for a device

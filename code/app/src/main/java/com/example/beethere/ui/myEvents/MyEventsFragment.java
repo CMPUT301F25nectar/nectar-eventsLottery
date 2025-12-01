@@ -100,6 +100,9 @@ public class MyEventsFragment extends Fragment {
                             if (Boolean.TRUE.equals(currentUser.getViolation())) {
                                 showSnackbar("Unable to create events " +
                                         "with past organizer violations committed");
+                            } else if (currentUser.getDeviceid() == null){
+                                ProfileDialogFragment profileDialogFragment = new ProfileDialogFragment();
+                                profileDialogFragment.show(getParentFragmentManager(), "ProfileCreation");
                             } else {
                                 currentUser = snap.toObject(User.class);
                                 nav.navigate(R.id.myEventsToCreateEvents);
@@ -110,7 +113,7 @@ public class MyEventsFragment extends Fragment {
                             profileDialogFragment.show(getParentFragmentManager(), "ProfileCreation");
                         }
                     });
-                });
+        });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override

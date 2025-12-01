@@ -1,13 +1,27 @@
 package com.example.beethere.eventclasses;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
+
 import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.User;
 import com.example.beethere.notifications_classes.NotificationHandler;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -321,24 +335,39 @@ public class UserListManager {
      *          if fails to write with writer
      *          if fails to close writer
      */
-    public void exportCSV() throws IOException {
-        //TODO this doesn't work, crashes after with read only exception
-        File file = new File("Registered.csv");
+    public String exportCSV(Context context) throws IOException {
+        Log.d("exportCSV", "top of function call");
+
+
+        String downloadsDirectory = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString();
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh_mm", Locale.US);
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
+        String time = LocalTime.now().format(timeFormatter);
+        String date = LocalDate.now().format(dateFormatter);
+        String fileName = "/Registered_" + time + "_" + date + ".csv";
+
+        File file = new File(downloadsDirectory + fileName);
+        file.getParentFile().mkdir();
         file.createNewFile();
+
         FileWriter writer = new FileWriter(file);
         writer.write("name,email,phone\n");
 
-        for (User user : event.getRegistered()){
-            String phone = "";
-            if (user.getPhone() != null) phone = user.getPhone();
-            writer.write(
-                    user.getName() + "," +
-                            user.getEmail() + "," +
-                            phone +
-                            "\n");
+        if (event != null && event.getRegistered() != null) {
+            for (User user : event.getRegistered()){
+                String phone = "no phone number available";
+                if (user.getPhone() != null && !(Objects.equals(user.getPhone(), "")) ) phone = user.getPhone();
+                writer.write(
+                        user.getName() + "," +
+                                user.getEmail() + "," +
+                                phone +
+                                "\n");
+            }
         }
+
         writer.close();
+
+        /*return file.getAbsolutePath();*/
+        return file.getName();
     }
-
-
 }

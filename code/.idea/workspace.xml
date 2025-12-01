@@ -165,7 +165,17 @@
           <theme>@style/Theme.BeeThere</theme>
         </config>
       </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/content_admin_profiles.xml">
+        <config>
+          <theme>@style/Theme.BeeThere</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/content_all_events.xml">
+        <config>
+          <theme>@style/Theme.BeeThere</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/content_entrant_list.xml">
         <config>
           <theme>@style/Theme.BeeThere</theme>
         </config>
@@ -328,12 +338,12 @@
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/eventclasses/eventDetails/EventDetailsFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/eventclasses/eventDetails/EventDetailsFragment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/eventclasses/eventDetails/WaitlistButtons.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/eventclasses/eventDetails/WaitlistButtons.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/ui/joined/JoinedFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/ui/joined/JoinedFragment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/ui/joined/JoinedListFragment.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_joined.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_joined.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_joined_list_display.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/eventclasses/UserListManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/eventclasses/UserListManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/ui/myEvents/MyEventsFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/ui/myEvents/MyEventsFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/ui/myEvents/ViewEntrantsFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/ui/myEvents/ViewEntrantsFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/ui/profile/ProfileFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/beethere/ui/profile/ProfileFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/fragment_profile.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/fragment_profile.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -397,6 +407,18 @@
   }
 }</component>
   <component name="GradleScriptDefinitionsStorage" workingDir="$PROJECT_DIR$" gradleHome="C:\Users\nour\.gradle\wrapper\dists\gradle-8.13-bin\5xuhj0ry160q40clulazy9h7d\gradle-8.13" javaHome="C:\Program Files\Android\Android Studio\jbr" gradleVersion="8.13" />
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$USER_HOME$/AppData/Local/Google/AndroidStudio2025.2.1/device-explorer/Medium Phone API 36.1/_/storage/emulated/0/Android/data/com.example.beethere/files/Download/Registered_02.53_2025_12_01.csv" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/AppData/Local/Google/AndroidStudio2025.2.1/device-explorer/Medium Phone API 36.1/_/storage/emulated/0/Android/data/com.example.beethere/files/Download/Registered_02_51 PM_2025_12_01.csv" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/AppData/Local/Google/AndroidStudio2025.2.1/device-explorer/Medium Phone API 36.1/_/storage/emulated/0/Android/data/com.example.beethere/files/Download/Registered_02_58_2025_12_01.csv" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/AppData/Local/Google/AndroidStudio2025.2.1/device-explorer/Medium Phone API 36.1/_/storage/emulated/0/Android/data/com.example.beethere/files/Download/Registered_03_03_2025_12_01.csv" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/AppData/Local/Google/AndroidStudio2025.2.1/device-explorer/Medium Phone API 36.1/_/storage/emulated/0/Android/data/com.example.beethere/files/Download/Registered_03_04_2025_12_01.csv" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/AppData/Local/Google/AndroidStudio2025.2.1/device-explorer/Medium Phone API 36.1/_/storage/emulated/0/Android/data/com.example.beethere/files/DownloadRegistered/14_38_26.548370.csv" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/AppData/Local/Google/AndroidStudio2025.2.1/device-explorer/Medium Phone API 36.1/_/storage/emulated/0/Android/data/com.example.beethere/files/DownloadRegistered/14_41_13.090646.csv" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/AppData/Local/Google/AndroidStudio2025.2.1/device-explorer/Medium Phone API 36.1/_/storage/emulated/0/Android/data/com.example.beethere/files/DownloadRegistered/14_43_42.895734.csv" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/AppData/Local/Google/AndroidStudio2025.2.1/device-explorer/Medium Phone API 36.1/_/storage/emulated/0/Android/data/com.example.beethere/files/DownloadRegistered/14_44_14.396673.csv" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/AppData/Local/Google/AndroidStudio2025.2.1/device-explorer/Medium Phone API 36.1/_/storage/emulated/0/Android/data/com.example.beethere/files/DownloadRegistered/14_44_57.090831.csv" root0="SKIP_INSPECTION" />
+  </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
