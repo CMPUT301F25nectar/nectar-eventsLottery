@@ -1,11 +1,15 @@
 package com.example.beethere;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.beethere.device.DeviceIDViewModel;
 import com.example.beethere.device.DeviceId;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -15,11 +19,14 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.beethere.databinding.ActivityMainBinding;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.example.beethere.DatabaseFunctions;
 
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     private DeviceIDViewModel deviceID;
+    private DatabaseFunctions dbFunctions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
 
         deviceID = new ViewModelProvider(this).get(DeviceIDViewModel.class);
         deviceID.setDeviceID(DeviceId.get(this));
+        dbFunctions = new DatabaseFunctions();
+        getFCMToken();
 
     }
 
@@ -44,6 +53,23 @@ public class MainActivity extends AppCompatActivity {
 
         // Set up NavigationUI for the BottomNavigationView
         NavigationUI.setupWithNavController(navView, navController);
+    }
+
+    private void getFCMToken(){
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()){
+                            Log.w("fcm", "Fetching FCM token failed", task.getException());
+                            return;
+                        }
+                        String token = task.getResult();
+                        Log.d("fcm","FCM token:" + token);
+                        Log.d("fcm", "Device Id:" + deviceID.getDeviceID());
+                        dbFunctions.saveFCMToken(deviceID.getDeviceID(), token);
+                    }
+                });
     }
 
 

@@ -71,6 +71,8 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation("androidx.fragment:fragment-testing:1.5.5")
     implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
+    implementation("com.google.firebase:firebase-messaging")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
     testImplementation("org.mockito:mockito-core:4.8.1")
     implementation("com.google.firebase:firebase-firestore")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
