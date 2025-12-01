@@ -6,12 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -49,6 +51,7 @@ public class EventDetailsFragment extends Fragment {
 
     private DateTimeFormatter dateFormatter;
     private UserListManager eventManager;
+    private ImageButton deletePosterButton;
 
     public Event getEvent() {
         return event;
@@ -85,37 +88,31 @@ public class EventDetailsFragment extends Fragment {
 
         // Go back to prev fragment
         Button prevButton = view.findViewById(R.id.event_detail_back_button);
-        prevButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentManager fragmentManager = getParentFragmentManager();
-                fragmentManager.popBackStack();
-            }
+        prevButton.setOnClickListener(v -> {
+            FragmentManager fragmentManager = getParentFragmentManager();
+            fragmentManager.popBackStack();
         });
 
         Button qrButton = view.findViewById(R.id.button_QR);
-        qrButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                QRCodeFragment qrFragment = QRCodeFragment.newInstance(event.getEventID(), Boolean.TRUE);
+        qrButton.setOnClickListener(v -> {
+            QRCodeFragment qrFragment = QRCodeFragment.newInstance(event.getEventID(), Boolean.TRUE);
 
-                if (getContext() instanceof AppCompatActivity) {
-                    AppCompatActivity activity = (AppCompatActivity) getContext();
-                    qrFragment.show(activity.getSupportFragmentManager(), "qrCodeDialog");
-                }
+            if (getContext() instanceof AppCompatActivity) {
+                AppCompatActivity activity = (AppCompatActivity) getContext();
+                qrFragment.show(activity.getSupportFragmentManager(), "qrCodeDialog");
             }
         });
 
-
         // Event Image
         ImageView imagePoster = view.findViewById(R.id.event_image);
-        if (event.getPosterPath() != null) {
-            Glide.with(getContext())
-                    .load(event.getPosterPath()) // This is the download URL
-                    //.placeholder(R.drawable.placeholder) // optional
-                    //.error(R.drawable.error) // optional
-                    .into(imagePoster);
-        }
+        Glide.with(requireContext()).clear(imagePoster);
+        Glide.with(requireContext())
+                .load(event.getPosterPath())
+                .placeholder(R.drawable.placeholder_event_poster)
+                .error(R.drawable.placeholder_event_poster)
+                .into(imagePoster);
+
+
 
         // Event Name display
         TextView name = view.findViewById(R.id.text_event_name);
@@ -129,16 +126,9 @@ public class EventDetailsFragment extends Fragment {
         TextView description = view.findViewById(R.id.text_description);
         description.setText(event.getDescription());
 
-        Button deletePosterButton = view.findViewById(R.id.posterDeleteButton);
+        deletePosterButton = view.findViewById(R.id.posterDeleteButton);
         deletePosterButton.setVisibility(View.GONE);
-        if (user.getAdmin()) {
-            deletePosterButton.setVisibility(View.VISIBLE);
 
-            deletePosterButton.setOnClickListener(v -> {
-                StorageReference PosterRef = storage.getReferenceFromUrl(event.getPosterPath());
-                PosterRef.delete();
-            });
-        }
 
         // Event Geoloc Req Display
         TextView geoLocReq = view.findViewById(R.id.text_geoloc_req);
@@ -265,6 +255,16 @@ public class EventDetailsFragment extends Fragment {
             @Override
             public void onCallback(User result) {
                 user = result;
+                if (Boolean.TRUE.equals(user.getAdmin())) {
+                    deletePosterButton.setVisibility(View.VISIBLE);
+
+                    if(event.getPosterPath() != null && !event.getPosterPath().isEmpty()){
+                        deletePosterButton.setOnClickListener(v -> {
+                            StorageReference PosterRef = storage.getReferenceFromUrl(event.getPosterPath());
+                            PosterRef.delete(); //TODO handel confirm delete and some on sucofail
+                        });
+                    }
+                }
                 setBottomDisplay();
             }
             @Override

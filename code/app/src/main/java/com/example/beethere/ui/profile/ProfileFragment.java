@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,13 +22,21 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.example.beethere.ui.profile.NotificationSettingsFragment;
 
+import org.w3c.dom.Text;
+
 /**
  * In app profile screen to view/edit/delete the current device's profile
  */
 public class ProfileFragment extends Fragment {
     private EditText firstname, lastname, emailid, phone;
     private TextView userdeviceId;
+
+    private View adminLine;
+    private TextView adminHeader;
+    private TextView adminDashboard;
+    private ImageView adminCrown;
     DatabaseFunctions dbFunctions = new DatabaseFunctions();
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -41,8 +50,13 @@ public class ProfileFragment extends Fragment {
         phone = view.findViewById(R.id.edit_phone);
 
         Button btnsave = view.findViewById(R.id.button_save_profile);
-        TextView personalSettings = view.findViewById(R.id.row_personal_settings);
-        TextView notificationsSettings = view.findViewById(R.id.row_notification_settings);
+        TextView personalSettings = view.findViewById(R.id.personal_settings);
+        TextView notificationsSettings = view.findViewById(R.id.notification_settings);
+        adminLine = view.findViewById(R.id.admin_line);
+        adminHeader = view.findViewById(R.id.admin_header);
+        adminDashboard = view.findViewById(R.id.admin_dashboard);
+        adminCrown = view.findViewById(R.id.adminCrown);
+
         profile();
         btnsave.setOnClickListener(v -> saveprofile());
         //go to personal settings screen
@@ -54,6 +68,11 @@ public class ProfileFragment extends Fragment {
         notificationsSettings.setOnClickListener(v ->
                 NavHostFragment.findNavController(ProfileFragment.this)
                         .navigate(R.id.notificationSettingsFragment)
+        );
+
+        adminDashboard.setOnClickListener(v ->
+            NavHostFragment.findNavController(ProfileFragment.this)
+                    .navigate(R.id.navigation_admin_dashboard)
         );
 
         return view;
@@ -75,6 +94,13 @@ public class ProfileFragment extends Fragment {
                                     if (u==null) {
                                         clear();
                                         return;
+                                    }
+
+                                    if (u.getAdmin()) {
+                                        adminLine.setVisibility(View.VISIBLE);
+                                        adminHeader.setVisibility(View.VISIBLE);
+                                        adminDashboard.setVisibility(View.VISIBLE);
+                                        adminCrown.setVisibility(View.VISIBLE);
                                     }
                                     //split full name into first and last
                                     String fullname = u.getName();

@@ -21,8 +21,12 @@ public class AdminDashboardFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // inflate view
-        View view = inflater.inflate(R.layout.fragment_admin_dashboard, container, false);
+        return inflater.inflate(R.layout.fragment_admin_dashboard, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         Button buttonBack = view.findViewById(R.id.admin_back_button);
         LinearLayout viewNotification = view.findViewById(R.id.btn_view_notifications);
@@ -30,48 +34,28 @@ public class AdminDashboardFragment extends Fragment {
         LinearLayout viewProfiles = view.findViewById(R.id.btn_view_profiles);
         LinearLayout viewEvents = view.findViewById(R.id.btn_view_events);
 
+        // SAFE here
         NavController nav = Navigation.findNavController(view);
-        buttonBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentManager fragmentManager = getParentFragmentManager();
-                fragmentManager.popBackStack();
-            }
-        });
 
-        viewNotification.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //nav.navigate(R.id.admin_to_adminNotifs);
-            }
-        });
+        buttonBack.setOnClickListener(v ->
+                getParentFragmentManager().popBackStack()
+        );
 
-        viewImages.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //nav.navigate(R.id.admin_to_adminImages);
-            }
-        });
+        viewNotification.setOnClickListener(v ->
+                nav.navigate(R.id.admin_to_adminNotifs)
+        );
 
-        viewProfiles.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //nav.navigate(R.id.admin_to_adminProfiles);
-            }
-        });
+        viewImages.setOnClickListener(v ->
+                nav.navigate(R.id.admin_to_adminImages)
+        );
 
-        viewEvents.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //nav.navigate(R.id.admin_to_adminEvents);
-            }
-        });
+        viewProfiles.setOnClickListener(v ->
+                nav.navigate(R.id.admin_to_adminProfiles)
+        );
 
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        viewEvents.setOnClickListener(v ->
+                nav.navigate(R.id.admin_to_adminEvents)
+        );
     }
 }
+

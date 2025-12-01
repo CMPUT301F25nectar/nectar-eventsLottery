@@ -56,7 +56,6 @@ public class JoinedFragment extends Fragment {
     private EventsAdapter waitlistAdapter;
     private EventsAdapter enrolledAdapter;
     private EventsAdapter historyAdapter;
-    private ListView events;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -99,47 +98,35 @@ public class JoinedFragment extends Fragment {
         // start with waitlisted selected
         buttonSelected(waitlisted, enrolled, history);
 
-        waitlisted.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                buttonSelected(waitlisted, enrolled, history);
-                /*waitlistAdapter.notifyDataSetChanged();
-                switchDisplay(userWaitlist, waitlistAdapter);*/
-                switchDisplay(eventList, eventsAdapter);
-            }
+        waitlisted.setOnClickListener(v -> {
+            buttonSelected(waitlisted, enrolled, history);
+            /*waitlistAdapter.notifyDataSetChanged();
+            switchDisplay(userWaitlist, waitlistAdapter);*/
+            switchDisplay(eventList, eventsAdapter);
         });
 
-        enrolled.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                buttonSelected(enrolled, waitlisted, history);
-                enrolledAdapter.notifyDataSetChanged();
-                switchDisplay(userEnrollList, enrolledAdapter);
-            }
+        enrolled.setOnClickListener(v -> {
+            buttonSelected(enrolled, waitlisted, history);
+            enrolledAdapter.notifyDataSetChanged();
+            switchDisplay(userEnrollList, enrolledAdapter);
         });
 
-        history.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                buttonSelected(history,waitlisted, enrolled);
-                historyAdapter.notifyDataSetChanged();
-                switchDisplay(userHistory, historyAdapter);
-            }
+        history.setOnClickListener(v -> {
+            buttonSelected(history,waitlisted, enrolled);
+            historyAdapter.notifyDataSetChanged();
+            switchDisplay(userHistory, historyAdapter);
         });
 
         // switch to event details when event is clicked on
         events = view.findViewById(R.id.joined_event_display);
         events.setAdapter(eventsAdapter);
-        events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        events.setOnItemClickListener((parent, view1, position, id) -> {
 
-                NavController nav = Navigation.findNavController(view);
-                nav.navigate(R.id.joinedToEventDetails);
+            NavController nav = Navigation.findNavController(view1);
+            nav.navigate(R.id.joinedToEventDetails);
 
-                EventDataViewModel event = new ViewModelProvider(getActivity()).get(EventDataViewModel.class);
-                event.setEvent((Event) parent.getItemAtPosition(position));
-            }
+            EventDataViewModel event = new ViewModelProvider(getActivity()).get(EventDataViewModel.class);
+            event.setEvent((Event) parent.getItemAtPosition(position));
         });
 
         checkUserDB();
@@ -185,12 +172,10 @@ public class JoinedFragment extends Fragment {
                 }
                 userWaitlist.addAll(result);
                 waitlistAdapter.notifyDataSetChanged();
-                switchDisplay(userWaitlist, waitlistAdapter);*/
+                switchDisplay(userWaitlist, waitlistAdapter);
 
                 eventList.clear();
-                for (Event event : result) {
-                    eventList.add(event);
-                }
+                eventList.addAll(result);
                 eventsAdapter.notifyDataSetChanged();
                 switchDisplay(eventList, eventsAdapter);
                 // if not user created handled elsewhere, no events added

@@ -20,6 +20,7 @@ import com.example.beethere.R;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.ui.myEvents.ConfirmDeleteFragment;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -31,7 +32,9 @@ public class AdminImagesAdapter extends ArrayAdapter<Event> {
 
     public AdminImagesAdapter(Context context, ArrayList<Event> events){
         super(context, 0, events);
+        this.events = events;  // <-- FIX
     }
+
 
     @NonNull
     @Override
@@ -48,33 +51,71 @@ public class AdminImagesAdapter extends ArrayAdapter<Event> {
         ImageButton trash = view.findViewById(R.id.trash);
 
         eventTitle.setText(event.getTitle());
-        if (event.getPosterPath() != null) {
+
+        Glide.with(getContext()).clear(eventPoster); // clear old image
+        if (event.getPosterPath() != null && !event.getPosterPath().isEmpty()) {
             Glide.with(getContext())
                     .load(event.getPosterPath())
                     .placeholder(R.drawable.placeholder_event_poster)
                     .error(R.drawable.placeholder_event_poster)
                     .into(eventPoster);
+        } else {
+            eventPoster.setImageResource(R.drawable.placeholder_event_poster);
         }
+
 
         trash.setOnClickListener(v -> {
             eventPoster.setAlpha(0.7f);
             StorageReference PosterRef = storage.getReferenceFromUrl(event.getPosterPath());
-            PosterRef.delete();
-            removePoster(event.getEventID());
+            PosterRef.delete()
+                    .addOnSuccessListener(a -> FirebaseFirestore.getInstance()
+                            .collection("events")
+                            .document(event.getEventID())
+                            .update("posterPath", null)
+                            .addOnSuccessListener(update -> {
+                                removePoster(event.getEventID());
+                                showSnackbar(v, "Poster deleted successfully");
+                            })
+                            .addOnFailureListener(e -> {
+                                eventPoster.setAlpha(1f);
+                                Log.e("ImageFromDatabase", "Failed to update event in database");//ehhhhhhhhhhh
+                            }))
+                    .addOnFailureListener(e -> {
+                        eventPoster.setAlpha(1f);
+                        showSnackbar(v, "Failed to delete poster");
+                    });
         });
 
-        return super.getView(position, convertView, parent);
+
+
+        return view;
     }
 
     public void removePoster(String eventID) {
-        for (int i = 0; i < getCount(); i++) {
-            Event event = getItem(i);
-            if (event != null && event.getEventID().equals(eventID)) {
-                remove(event);
+        for (int i = 0; i < events.size(); i++) {
+            Event e = events.get(i);
+            if (e.getEventID().equals(eventID)) {
+                events.remove(i);
                 notifyDataSetChanged();
                 break;
             }
         }
     }
 
+
+    public void showSnackbar(View view, String text){
+        if (view == null) return;
+        Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_SHORT)
+                .setBackgroundTint(getContext().getColor(R.color.dark_brown))
+                .setTextColor(getContext().getColor(R.color.yellow));
+
+        View snackbarView = snackbar.getView();
+        TextView snackbarText = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+
+        snackbarText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        snackbarText.setTextSize(20);
+        snackbarText.setTypeface(ResourcesCompat.getFont(getContext(), R.font.work_sans_semibold));
+
+        snackbar.show();
+    }
 }

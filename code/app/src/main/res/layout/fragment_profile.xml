@@ -19,45 +19,54 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
+    <ImageView
+        android:id="@+id/adminCrown"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:visibility="invisible"
+        android:background="@drawable/crown"
+        app:layout_constraintBottom_toTopOf="@id/account_title"
+        app:layout_constraintStart_toStartOf="parent"/>
+
     <LinearLayout
         android:id="@+id/name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginTop="6dp"
-        app:layout_constraintTop_toBottomOf="@id/account_title"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/account_title">
 
         <EditText
             android:id="@+id/firstname"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:hint="First name"
-            android:textSize="16sp"
             android:background="@drawable/text_input_background"
-            android:inputType="textPersonName"
             android:fontFamily="@font/work_sans"
+            android:hint="First name"
+            android:inputType="textPersonName"
             android:textColor="@color/dark_brown"
-            android:textColorHint="@color/grey"/>
+            android:textColorHint="@color/grey"
+            android:textSize="16sp" />
 
         <Space
             android:layout_width="12dp"
-            android:layout_height="0dp"/>
+            android:layout_height="0dp" />
 
         <EditText
             android:id="@+id/lastname"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:hint="Last name"
-            android:textSize="16sp"
             android:background="@drawable/text_input_background"
-            android:inputType="textPersonName"
             android:fontFamily="@font/work_sans"
+            android:hint="Last name"
+            android:inputType="textPersonName"
             android:textColor="@color/dark_brown"
-            android:textColorHint="@color/grey"/>
+            android:textColorHint="@color/grey"
+            android:textSize="16sp" />
     </LinearLayout>
 
     <TextView
@@ -180,6 +189,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Account settings"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:textSize="16sp"
             android:textColor="@color/dark_brown"
             android:fontFamily="@font/work_sans_bold"
@@ -189,7 +200,6 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:gravity="center_vertical"
-            android:paddingHorizontal="8dp"
             android:text="Personal settings"
             android:textSize="15sp"
             android:textColor="@color/dark_brown"
@@ -206,7 +216,6 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:gravity="center_vertical"
-            android:paddingHorizontal="8dp"
             android:text="Notification settings"
             android:textSize="15sp"
             android:textColor="@color/dark_brown"
@@ -220,7 +229,9 @@
             android:id="@+id/entrant_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Entrant"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:text="Entrant Settings"
             android:textSize="16sp"
             android:textColor="@color/dark_brown"
             android:fontFamily="@font/work_sans_bold"
@@ -234,6 +245,37 @@
             android:textSize="14sp"
             android:textColor="@color/dark_brown"
             android:fontFamily="@font/work_sans"
+            android:background="?attr/selectableItemBackground"
+            />
+
+        <View
+            android:id="@+id/admin_line"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:visibility="invisible"
+            android:background="@color/light_yellow"/>
+        <TextView
+            android:id="@+id/admin_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:text="Admin Settings"
+            android:textSize="16sp"
+            android:visibility="invisible"
+            android:textColor="@color/dark_brown"
+            android:fontFamily="@font/work_sans_bold"
+            />
+        <TextView
+            android:id="@+id/admin_dashboard"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            android:text="Admin Dashboard"
+            android:textSize="14sp"
+            android:textColor="@color/dark_brown"
+            android:fontFamily="@font/work_sans"
+            android:visibility="invisible"
             android:background="?attr/selectableItemBackground"
             />
 
