@@ -1,4 +1,4 @@
-package com.example.beethere.ui.adminDashboard;
+package com.example.beethere.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;

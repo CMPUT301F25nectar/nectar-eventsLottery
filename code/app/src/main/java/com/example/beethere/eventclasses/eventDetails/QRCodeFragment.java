@@ -117,7 +117,7 @@ public class QRCodeFragment extends DialogFragment {
                             eventDataViewModel.setEvent(event);
 
                             NavController nav = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-                            nav.navigate(R.id.MyEventsToEventDetails);
+                            nav.navigate(R.id.action_global_eventDetails);
                             dismiss(); // close the dialog after navigation
 
                         })
