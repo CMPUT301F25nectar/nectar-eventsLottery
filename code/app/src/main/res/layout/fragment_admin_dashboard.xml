@@ -16,6 +16,7 @@
         android:drawableEnd="@drawable/outline_arrow_back_24"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
+        android:layout_marginTop="55dp"
         android:contentDescription="Back" />
 
     <TextView
