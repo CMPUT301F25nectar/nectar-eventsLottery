@@ -6,7 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,12 +23,34 @@ import java.util.Map;
 public class InvitedAdapter extends ArrayAdapter<String> {
 
     private Map<String, Boolean> invitedList;
+    private User user;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private ImageButton deleteInvited;
+
+    /**
+     *
+     * @param context context of the adapter
+     * @param invitedList list of entrants who have been selected from the wait-list
+     */
 
     public InvitedAdapter(Context context, Map<String, Boolean> invitedList) {
         super(context, 0, new ArrayList<>(invitedList.keySet()));
         this.invitedList = invitedList;
     }
+
+    /**
+     *
+     * @param position The position of the item within the adapter's data set of the item whose view
+     *        we want.
+     * @param convertView The old view to reuse, if possible. Note: You should check that this view
+     *        is non-null and of an appropriate type before using. If it is not possible to convert
+     *        this view to display the correct data, this method can create a new view.
+     *        Heterogeneous lists can specify their number of view types, so that this View is
+     *        always of the right type (see {@link #getViewTypeCount()} and
+     *        {@link #getItemViewType(int)}).
+     * @param parent The parent that this view will eventually be attached to
+     * @return view
+     */
 
     @NonNull
     @Override
@@ -49,9 +73,24 @@ public class InvitedAdapter extends ArrayAdapter<String> {
         db.collection("users").document(userID)
                 .get()
                 .addOnSuccessListener(document -> {
-                    User user = document.toObject(User.class);
+                    user = document.toObject(User.class);
                     name.setText(user.getName());
                 });
+
+        deleteInvited.setOnClickListener(v -> {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("users").document(userID)
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(getContext(), user.getName() +
+                                "was removed from invites list", Toast.LENGTH_LONG).show();
+                        notifyDataSetChanged();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(getContext(), "Error" + user.getName() +
+                                "could not be removed from invites list", Toast.LENGTH_LONG).show();
+                    });
+        });
 
 
         if (Boolean.TRUE.equals(invited)) {
@@ -65,7 +104,10 @@ public class InvitedAdapter extends ArrayAdapter<String> {
         return view;
     }
 
-
+    /**
+     *
+     * @param newList update the invited list after any changes made
+     */
     public void update(Map<String, Boolean> newList) {
         invitedList.clear();
         invitedList.putAll(newList);
@@ -74,4 +116,5 @@ public class InvitedAdapter extends ArrayAdapter<String> {
         addAll(new ArrayList<>(newList.keySet()));
         notifyDataSetChanged();
     }
+
 }

@@ -52,7 +52,7 @@
             android:background="@drawable/text_input_background"
             android:fontFamily="@font/work_sans"
             android:textColor="@color/dark_brown"
-            android:textColorHint="@color/gray"
+            android:textColorHint="@color/grey"
             android:focusable="false"
             android:clickable="true" />
 
@@ -79,7 +79,7 @@
             android:background="@drawable/text_input_background"
             android:fontFamily="@font/work_sans"
             android:textColor="@color/dark_brown"
-            android:textColorHint="@color/gray"
+            android:textColorHint="@color/grey"
             android:focusable="false"
             android:clickable="true" />
     </LinearLayout>
@@ -118,7 +118,7 @@
             android:background="@drawable/text_input_background"
             android:fontFamily="@font/work_sans"
             android:textColor="@color/dark_brown"
-            android:textColorHint="@color/gray"
+            android:textColorHint="@color/grey"
             android:focusable="false"
             android:clickable="true" />
 
@@ -145,7 +145,7 @@
             android:background="@drawable/text_input_background"
             android:fontFamily="@font/work_sans"
             android:textColor="@color/dark_brown"
-            android:textColorHint="@color/gray"
+            android:textColorHint="@color/grey"
             android:focusable="false"
             android:clickable="true" />
     </LinearLayout>
@@ -184,7 +184,7 @@
             android:background="@drawable/text_input_background"
             android:fontFamily="@font/work_sans"
             android:textColor="@color/dark_brown"
-            android:textColorHint="@color/gray"
+            android:textColorHint="@color/grey"
             android:focusable="false"
             android:clickable="true" />
 
@@ -211,7 +211,7 @@
             android:background="@drawable/text_input_background"
             android:fontFamily="@font/work_sans"
             android:textColor="@color/dark_brown"
-            android:textColorHint="@color/gray"
+            android:textColorHint="@color/grey"
             android:focusable="false"
             android:clickable="true" />
     </LinearLayout>
@@ -240,7 +240,7 @@
         android:background="@drawable/text_input_background"
         android:fontFamily="@font/work_sans"
         android:textColor="@color/dark_brown"
-        android:textColorHint="@color/gray"
+        android:textColorHint="@color/grey"
         app:layout_constraintTop_toBottomOf="@id/tags_label"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

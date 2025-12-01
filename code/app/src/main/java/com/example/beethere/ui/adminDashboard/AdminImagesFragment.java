@@ -2,5 +2,5 @@ package com.example.beethere.ui.adminDashboard;
 
 import androidx.fragment.app.Fragment;
 
-public class adminDashboardFragment extends Fragment {
+public class AdminImagesFragment extends Fragment {
 }

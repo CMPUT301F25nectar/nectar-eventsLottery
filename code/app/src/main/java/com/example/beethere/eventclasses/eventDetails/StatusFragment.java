@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,8 +26,8 @@ public class StatusFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_event_details_status, container, false);
 
-        Button status = view.findViewById(R.id.button_status);
-        status.setText(statusText);
+        TextView textStatus = view.findViewById(R.id.text_status);
+        textStatus.setText(statusText);
 
         return view;
     }

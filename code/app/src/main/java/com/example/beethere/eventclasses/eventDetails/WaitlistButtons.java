@@ -5,21 +5,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.beethere.R;
 import com.example.beethere.User;
 import com.example.beethere.eventclasses.Event;
+import com.example.beethere.eventclasses.UserListManager;
 import com.google.android.material.snackbar.Snackbar;
 
 public class WaitlistButtons extends Fragment {
 
     private Event event;
     private User user;
-    private Boolean userCreated;
+    private Button waitlistButton;
 
     public void setEvent(Event event) {
         this.event = event;
@@ -27,55 +32,71 @@ public class WaitlistButtons extends Fragment {
     public void setUser(User user) {
         this.user = user;
     }
-    public void setUserCreated(Boolean userCreated) {
-        this.userCreated = userCreated;
-    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event_details_waitlist_buttons, container, false);
+        waitlistButton = view.findViewById(R.id.button_waitlist);
 
-        Button waitlistButton = view.findViewById(R.id.button_waitlist);
-        if (userCreated && Boolean.TRUE/*event.getEntrantList().inWaitlist(user)*/) {
-            leaveButton(waitlistButton);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        UserListManager manager = new UserListManager(event);
+
+        if (user != null && manager.inWaitlist(user)) {
+            leaveButton();
+        } else {
+            joinButton();
         }
 
         waitlistButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if (!userCreated){
-                    //TODO
-                    // create profile dialog popup
+                if (user == null){
+                    NavController nav = Navigation.findNavController(view);
+                    nav.navigate(R.id.eventDetailsToProfileCreation);
                 }
-                else if (/*event.getEntrantList().inWaitlist(user)*/Boolean.TRUE) {
-                    //event.getEntrantList().removeWaitlist(user);
-                    Snackbar
-                            .make(view, "You have left the waitlist!", Snackbar.LENGTH_SHORT)
-                            .show();
-                    joinButton(waitlistButton);
+                else if (manager.inWaitlist(user)) {
+                    manager.removeWaitlist(user);
+                    showSnackbar(view, "You have left the waitlist!");
+                    joinButton();
                 }
                 else {
-                    //event.getEntrantList().addWaitlist(user);
-                    Snackbar
-                            .make(view, "You have joined the waitlist!", com.google.android.material.snackbar.Snackbar.LENGTH_SHORT)
-                            .show();
-                    leaveButton(waitlistButton);
+                    manager.addWaitlist(user);
+                    showSnackbar(view, "You have joined the waitlist!");
+                    leaveButton();
                 }
             }
         });
 
-        return view;
+        super.onViewCreated(view, savedInstanceState);
     }
 
-    public void leaveButton(Button waitlistButton) {
+    public void leaveButton() {
         waitlistButton.setText(getContext().getString(R.string.leave));
-        waitlistButton.setBackgroundColor(getContext().getColor(R.color.red));
+        waitlistButton.setSelected(false);
     }
 
-    public void joinButton(Button waitlistButton){
+    public void joinButton(){
         waitlistButton.setText(getContext().getString(R.string.join_waitlist));
-        waitlistButton.setBackgroundColor(getContext().getColor(R.color.yellow));
+        waitlistButton.setSelected(true);
+    }
+
+    public void showSnackbar(View view, String text){
+        Snackbar snackbar = Snackbar.make(view,text, Snackbar.LENGTH_SHORT)
+                .setAnchorView(R.id.geoLocReq)
+                .setBackgroundTint(getContext().getColor(R.color.dark_brown))
+                .setTextColor(getContext().getColor(R.color.yellow));
+        View snackbarView = snackbar.getView();
+        TextView snackbarText = (TextView) snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+
+        snackbarText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        snackbarText.setTextSize(20);
+        snackbarText.setTypeface(ResourcesCompat.getFont(getContext(), R.font.work_sans_semibold));
+        snackbar.show();
     }
 }

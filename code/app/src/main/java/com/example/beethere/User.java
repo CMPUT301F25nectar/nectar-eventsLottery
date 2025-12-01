@@ -16,9 +16,9 @@ public class User {
     private String email;
     private String phone; //optional
     private String deviceid;
-    private Boolean admin; //admin flag
-    private Boolean organizer;//organizer flag
-    private Boolean violation;
+    private Boolean admin = false; //admin flag
+    private Boolean organizer = false;//organizer flag
+    private Boolean violation = false;
     private Boolean receiveWinningNotifs;
     private Boolean receiveLosingNotifs;
     private Boolean receiveCancelledNotifs;

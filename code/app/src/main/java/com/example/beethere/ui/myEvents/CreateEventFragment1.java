@@ -1,14 +1,13 @@
 package com.example.beethere.ui.myEvents;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -17,6 +16,7 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.SwitchCompat;
@@ -25,16 +25,21 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.beethere.device.DeviceId;
+import com.example.beethere.adapters.MyEventsAdapter;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.R;
 import com.example.beethere.User;
 import com.example.beethere.device.DeviceIDViewModel;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.example.beethere.DatabaseFunctions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -45,6 +50,7 @@ import java.util.Map;
 import android.app.DatePickerDialog;
 import android.widget.Toast;
 import java.util.Calendar;
+import java.util.UUID;
 
 
 public class CreateEventFragment1 extends Fragment {
@@ -55,8 +61,12 @@ public class CreateEventFragment1 extends Fragment {
     private DeviceIDViewModel deviceIDViewModel;
     private User organizer;
 
-    DatabaseFunctions dbFunctions = new DatabaseFunctions();
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseStorage storage = FirebaseStorage.getInstance("gs://beethere-images");
+    private StorageReference storageReference;
+
+    private DatabaseFunctions dbFunctions = new DatabaseFunctions();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
 
     private boolean wantMaxWaitList, wantRandomSelect, wantGeoLocation = false;
 
@@ -70,35 +80,47 @@ public class CreateEventFragment1 extends Fragment {
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US);
 
-    // Launcher for selecting image
-    private ActivityResultLauncher<Intent> pickImageLauncher;
+    private ActivityResultLauncher<String> pickImageLauncher;
+
+    /**
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return view
+     */
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_event_pg1, container, false);
 
+        storageReference = storage.getReference();
+
         pickImageLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        Uri uri = result.getData().getData();
-
-                        try {
-                            requireContext().getContentResolver().takePersistableUriPermission(
-                                    uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
-                            );
-                        } catch (SecurityException e) {
-                            e.printStackTrace();
-                        }
-
+                new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null) {
                         imageURL = uri;
-                        eventPoster.setImageURI(imageURL);
-
-                        eventPoster.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        try {
+                            InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
+                            if (inputStream != null) {
+                                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                eventPoster.setImageBitmap(bitmap);
+                                eventPoster.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                            } else {
+                                showErrorMessage("Unable to open selected image.");
+                            }
+                        } catch (Exception e) {
+                            showErrorMessage("Error uploading image: " + e.getMessage());
+                        }
                     }
                 }
-        );
-
+            );
 
 
         events = new ArrayList<>();
@@ -128,7 +150,7 @@ public class CreateEventFragment1 extends Fragment {
         geoLocationSwitch = view.findViewById(R.id.geoLocSwitch);
         maxWaitList = view.findViewById(R.id.maxWaitFill);
 
-        eventPoster.setOnClickListener(v -> choosePoster());
+        eventPoster.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
 
         View.OnClickListener dateClickListener = v -> showDatePicker((EditText) v);
         regStart.setOnClickListener(dateClickListener);
@@ -156,7 +178,7 @@ public class CreateEventFragment1 extends Fragment {
         geoLocationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> wantGeoLocation = isChecked);
         randomSelectSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> wantRandomSelect = isChecked);
 
-        Button completeButton = view.findViewById(R.id.completeButton);
+        AppCompatButton completeButton = view.findViewById(R.id.completeButton);
         completeButton.setOnClickListener(v -> complete());
 
         AppCompatImageButton backButton = view.findViewById(R.id.backButton);
@@ -164,6 +186,47 @@ public class CreateEventFragment1 extends Fragment {
 
         return view;
     }
+
+
+    /**
+     *
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        BottomNavigationView bottomNav = requireActivity().findViewById(R.id.nav_view);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+
+            if (bottomNav.getSelectedItemId() == itemId) return true;
+
+            NavController navController = NavHostFragment.findNavController(this);
+            int currentDestination = navController.getCurrentDestination().getId();
+
+            if (currentDestination == R.id.navigation_createEvents) {
+                GoBackDialogFragment dialog = new GoBackDialogFragment();
+                dialog.setGoBackListener(() -> {
+                    navigateTo(itemId);
+                    bottomNav.setSelectedItemId(itemId);
+                });
+                dialog.show(getParentFragmentManager(), "GoBackDialog");
+                return false;
+            } else {
+                navigateTo(itemId);
+                bottomNav.setSelectedItemId(itemId);
+                return true;
+            }
+        });
+    }
+
+    /**
+     *
+     * @param targetEditText shows datePicker selector based on editText target clicked
+     */
 
     private void showDatePicker(EditText targetEditText) {
         Calendar c = Calendar.getInstance();
@@ -179,24 +242,45 @@ public class CreateEventFragment1 extends Fragment {
         dialog.show();
     }
 
+
+    /**
+     *
+     * @param view takes in view for navigation from current view
+     */
     private void backMain(View view) {
         NavController nav = Navigation.findNavController(view);
         nav.navigate(R.id.createEventstoMyEvents);
     }
 
+    /**
+     *
+     * @param view takes in view to move back to after option selected
+     */
     private void showGoBackDialog(View view) {
         GoBackDialogFragment dialog = new GoBackDialogFragment();
         dialog.setGoBackListener(() -> backMain(view));
         dialog.show(getParentFragmentManager(), "GoBackDialog");
     }
 
-    private void choosePoster() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.setType("image/*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        pickImageLauncher.launch(intent);
+    /**
+     *
+     * @param itemId takes in itemID if user switches through bottom navigation
+     */
+    private void navigateTo(final int itemId) {
+        NavController nav = NavHostFragment.findNavController(this);
+        if (itemId == R.id.navigation_events) {
+            nav.navigate(R.id.navigation_events);
+        } else if (itemId == R.id.navigation_joined) {
+            nav.navigate(R.id.navigation_joined);
+        } else if (itemId == R.id.navigation_myEvents) {
+            nav.navigate(R.id.navigation_myEvents);
+        } else if (itemId == R.id.navigation_notifications) {
+            nav.navigate(R.id.navigation_notifications);
+        } else if (itemId == R.id.navigation_profile) {
+            nav.navigate(R.id.navigation_profile);
+        }
     }
+
 
     @SuppressLint("SetTextI18n")
     public void complete() {
@@ -217,20 +301,18 @@ public class CreateEventFragment1 extends Fragment {
                 timeStartInput.isEmpty() || timeEndInput.isEmpty() ||
                 maxAttendInput.isEmpty() || descInput.isEmpty() ||
                 (wantMaxWaitList && maxWaitListInput.isEmpty()) || imageURL == null) {
-            errorMessage.setText("Please fill all required fields.");
-            errorMessage.setVisibility(View.VISIBLE);
+            showErrorMessage("Please fill all required fields.");
             return;
         }
 
+
         if (descInput.length() > 500) {
-            errorMessage.setText("Description cannot be longer than 500 characters.");
-            errorMessage.setVisibility(View.VISIBLE);
+            showErrorMessage("Description cannot be longer than 500 characters.");
             return;
         }
 
         if (titleInput.length() > 24) {
-            errorMessage.setText("Title cannot be longer than 24 characters.");
-            errorMessage.setVisibility(View.VISIBLE);
+            showErrorMessage("Title cannot be longer than 24 characters.");
             return;
         }
 
@@ -245,27 +327,72 @@ public class CreateEventFragment1 extends Fragment {
             int maxAttendeesInt = Integer.parseInt(maxAttendInput);
             int maxWaitListInt = wantMaxWaitList && !maxWaitListInput.isEmpty() ? Integer.parseInt(maxWaitListInput) : 0;
 
-            if (regStartDate.isAfter(regEndDate) || eventStartDate.isAfter(eventEndDate) || startTime.isAfter(endTime)) {
-                errorMessage.setText("Ensure start date/time is after end date/time.");
-                errorMessage.setVisibility(View.VISIBLE);
+            if (wantMaxWaitList) {
+                if (maxWaitListInt < maxAttendeesInt) {
+                    showErrorMessage("Number of wait-list entrants must exceed max attendees.");
+                    return;
+                }
+            }
+
+            if (regStartDate.isAfter(regEndDate) || eventStartDate.isAfter(eventEndDate)) {
+                showErrorMessage("Ensure start date is before end date.");
                 return;
             }
 
-            addToDatabase(titleInput, regStartInput, regEndInput, eventStartInput, eventEndInput,
-                    timeStartInput, timeEndInput, maxAttendeesInt, descInput, imageURL.toString(),
-                    wantMaxWaitList, wantGeoLocation, wantRandomSelect, maxWaitListInt);
+            if (startTime.isAfter(endTime)) {
+                showErrorMessage("Ensure start time is before end time.");
+                return;
+            }
 
-            FragmentManager fragmentManager = getParentFragmentManager();
-            fragmentManager.popBackStack();
-            Toast.makeText(getActivity(), "Event created successfully!", Toast.LENGTH_SHORT).show();
+            if (regEndDate == eventStartDate || regEndDate.isAfter(eventStartDate)) {
+                showErrorMessage("Registration and event dates cannot overlap");
+                return;
+            }
+
+            StorageReference ref = storageReference.child("images/" + UUID.randomUUID() + ".jpg");
+
+            ref.putFile(imageURL)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        ref.getDownloadUrl().addOnSuccessListener(uri -> {
+                            String downloadUrl = uri.toString();
+                            addToDatabase(titleInput, regStartInput, regEndInput, eventStartInput, eventEndInput,
+                                    timeStartInput, timeEndInput, maxAttendeesInt, descInput, downloadUrl,
+                                    wantMaxWaitList, wantGeoLocation, wantRandomSelect, maxWaitListInt);
+
+                            FragmentManager fragmentManager = getParentFragmentManager();
+                            fragmentManager.popBackStack();
+                            Toast.makeText(getActivity(), "Event created successfully!", Toast.LENGTH_SHORT).show();
+                            organizer.setOrganizer(true);
+                        });
+                        }).addOnFailureListener(e -> {
+                            showErrorMessage("Upload Error: " + e);
+                        });
 
         } catch (Exception e) {
-            Log.e("CreateEventFragment", "Parsing error: " + e.getMessage());
-            errorMessage.setText("Ensure input formats are correct.");
-            errorMessage.setVisibility(View.VISIBLE);
+            showErrorMessage("Ensure input formats are correct.");
         }
+
     }
 
+    /**
+     *
+     * @param title title of event
+     * @param regStart registration begin date
+     * @param regEnd registration end date
+     * @param eventStart event start date
+     * @param eventEnd event end date
+     * @param timeStart event time start
+     * @param timeEnd event end start
+     * @param maxAttendees max number of people who can attend event
+     * @param description description of the event
+     * @param posterPath path of the poster image
+     * @param wantMaxWaitList boolean value, checking if they'd like a max
+     *                       number of wait-list entrants
+     * @param wantGeoLocation boolean value, checking if they'd like the geolocation of entrants
+     * @param wantRandomSelect boolean value, checking if they'd like to randomly
+     *                         select from wait-list if invitees decline/are deleted
+     * @param maxWaitListInt mac number of people in a waitlist
+     */
     private void addToDatabase(String title, String regStart, String regEnd, String eventStart,
                                String eventEnd, String timeStart, String timeEnd, int maxAttendees,
                                String description, String posterPath, boolean wantMaxWaitList, boolean wantGeoLocation,
@@ -283,27 +410,26 @@ public class CreateEventFragment1 extends Fragment {
             event = new Event(organizer, eventID, title, description, posterPath,
                     status, regStart, regEnd, eventStart, eventEnd, timeStart, timeEnd,
                     maxAttendees, wantGeoLocation, waitList, invited,
-                    registered, wantRandomSelect);
+                    registered, wantRandomSelect, maxWaitListInt);
         } else {
             event = new Event(organizer, eventID, title, description, posterPath,
                     status, regStart, regEnd, eventStart, eventEnd, timeStart, timeEnd,
                     maxAttendees, wantGeoLocation, waitList, invited,
-                    registered, wantRandomSelect, maxWaitListInt);
+                    registered, wantRandomSelect);
         }
 
         dbFunctions.addEventDB(event);
         events.add(event);
         myEventsAdapter.notifyDataSetChanged();
     }
+
+    /**
+     *
+     * @param message message to display at the bottom of view
+     */
+    private void showErrorMessage(String message) {
+        errorMessage.setText(message);
+        errorMessage.setVisibility(View.VISIBLE);
+    }
+
 }
-
-
-
-
-
-
-
-
-
-
-

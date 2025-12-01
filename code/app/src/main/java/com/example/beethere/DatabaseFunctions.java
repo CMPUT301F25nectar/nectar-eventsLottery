@@ -1,5 +1,6 @@
 package com.example.beethere;
 
+import com.example.beethere.eventclasses.UserListManager;
 import com.example.beethere.notifications_classes.Notification;
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -8,6 +9,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
@@ -70,30 +72,89 @@ public class DatabaseFunctions {
 
     }
 
-    public void deleteUserDB(String user){
+    /**
+     * This methods deletes users from the database
+     * @param user  User object of the user that needs to be deleted
+     */
+    public void deleteUserDB(User user){
         CollectionReference users = db.collection("users");
-        DocumentReference docref = users.document(user);
-        docref.delete().addOnSuccessListener(unused -> Log.d("DeleteUser", "User deleted successfully"))
-                .addOnFailureListener(fail -> Log.d(TAG, "Error deleting account"));
+        DocumentReference docref = users.document(user.getDeviceid());
+        ArrayList<Event> eventList = new ArrayList<>();
+
+        // Get interacted notifs happens last
+        DatabaseCallback<List<Notification>> interactedCallback = new DatabaseCallback<List<Notification>>() {
+            @Override
+            public void onCallback(List<Notification> result) {
+                deleteUserFromNotifDB(user.getDeviceid(), result, "respondedDeviceIds");
+                docref.delete().addOnSuccessListener(unused -> Log.d("DeleteUser", "User deleted successfully"))
+                        .addOnFailureListener(fail -> Log.d(TAG, "Error deleting account"));
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.d("DatabaseFunction", "DatabaseFunctions error getting notifs from database");
+            }
+        };
+
+        // Get Non-interacted notifs happens second
+        DatabaseCallback<List<Notification>> notifCallback = new DatabaseCallback<List<Notification>>() {
+            @Override
+            public void onCallback(List<Notification> result) {
+                deleteUserFromNotifDB(user.getDeviceid(), result, "deviceIds");
+                getInteractedNotifsDB(user.getDeviceid(), interactedCallback);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.d("DatabaseFunction", "DatabaseFunctions error getting notifs from database");
+            }
+        };
+
+        // Get Event Callback, gets called first
+        DatabaseCallback<ArrayList<Event>> eventCallback = new DatabaseCallback<>() {
+            @Override
+            public void onCallback(ArrayList<Event> result) {
+                eventList.addAll(result);
+                checkDeleteUserDB(eventList, user);
+                getNotifsDB(user.getDeviceid(), notifCallback);
+            }
+            @Override
+            public void onError(Exception e) {
+                Log.d("DatabaseFunction", "DatabaseFunctions error getting events from database");
+            }
+        };
+        getEventsDB(eventCallback);
     }
 
-    // future javadoc comments
-    //* @param regStart UNUSED CURRENTLY The day registration to waitlist opens
-    //     * @param regEnd UNUSED CURRENTLY The day registration to waitlist ends
-    //     * @param eventDateStart UNUSED CURRENTLY The day the event starts
-    //     * @param eventDateEnd UNUSED CURRENTLY The day the event ends
-    //     * @param eventTimeStart UNUSED CURRENTLY The time the event starts
-    //     * @param eventTimeEnd UNUSED CURRENTLY The time the event ends
-    //     * however we're handling tags (??)
+    /**
+     * This method deletes a user from all the events they've interacted with
+     * and deletes events the user has created
+     * @param eventList All events to sift through
+     * @param user User to compare with
+     */
+    private void checkDeleteUserDB(ArrayList<Event> eventList, User user){
+        UserListManager manager = new UserListManager();
+        for (Event event: eventList){
+            manager.setEvent(event);
+            if (manager.inWaitlist(user)) {
+                manager.removeWaitlist(user);
+            } else if (manager.inInvite(user)){
+                manager.removeInvite(user);
+            } else if (manager.inRegistered(user)){
+                manager.removeRegistered(user);
+            }
+
+            if (Objects.equals(event.getOrganizer().getDeviceid(), user.getDeviceid())) {
+                deleteEventDB(event.getEventID());
+            }
+        }
+    }
 
     /**
-     * This methods returns all the events created
-     * This can either be all events or events filtered by the user
-     * This is intended to only be used for the "All Events" page
-     * @param filter True if any filter is made, False if viewing all events
+     * This method returns all the events in the database via callback
      * @param callback Database Callback to return the database
      */
-    public void getEventsDB(Boolean filter, DatabaseCallback<ArrayList<Event>> callback) {
+    public void getEventsDB(DatabaseCallback<ArrayList<Event>> callback) {
         CollectionReference events = db.collection("events");
         ArrayList<Event> eventArrayList = new ArrayList<>();
 
@@ -104,30 +165,6 @@ public class DatabaseFunctions {
             }
             for(QueryDocumentSnapshot document : task.getResult()) {
                 Event event = document.toObject(Event.class);
-                if(filter == Boolean.TRUE){
-                    /*if(regStart != null && event.getRegStart() != regStart){
-                        continue;
-                    }
-                    if(regEnd != null && event.getRegStart() != regEnd){
-                        continue;
-                    }
-                    if(eventDateStart != null && event.getEventDateStart() != eventDateStart){
-                        continue;
-                    }
-                    if(eventDateEnd != null && event.getEventDateEnd() != eventDateEnd){
-                        continue;
-                    }
-                    if(eventTimeStart != null && event.getEventTimeStart() != eventTimeStart){
-                        continue;
-                    }
-                    if(eventTimeEnd != null && event.getEventTimeEnd() != eventTimeEnd){
-                        continue;
-                    }
-                    if (!userlist.getWaitlist().contains(waitlistID)) {
-                        continue;
-                    }
-                    */
-                }
                 eventArrayList.add(event);
             }
             callback.onCallback(eventArrayList);
@@ -135,62 +172,8 @@ public class DatabaseFunctions {
     }
 
     /**
-     * Get a single event by its ID
-     * @param eventId The event ID to fetch
-     * @param callback Callback with the Event object
-     */
-    public void getEvent(String eventId, DatabaseCallback<Event> callback) {
-        CollectionReference events = db.collection("events");
-        DocumentReference docref = events.document(eventId);
-
-        docref.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    Event event = document.toObject(Event.class);
-                    callback.onCallback(event);
-                } else {
-                    Log.d(TAG, "Event not found: " + eventId);
-                    callback.onCallback(null);  // Event doesn't exist
-                }
-            } else {
-                Log.d(TAG, "Error getting event: ", task.getException());
-                callback.onError(task.getException());
-            }
-        });
-    }
-
-    /**
-     * This methods returns the events a user has waitlisted
-     * @param waitlistID User class of user if they don't want events that they've already added to waitlist
-     * @param callback Database Callback to return the database
-     */
-    public void getWaitlistEventsDB(User waitlistID, DatabaseCallback<ArrayList<Event>> callback){
-        CollectionReference events = db.collection("events");
-        ArrayList<Event> eventArrayList = new ArrayList<>();
-
-        events.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    Event event = document.toObject(Event.class);
-                    //UserListManager userlist = event.getEntrantList();
-                    // Assuming 'event.getWaitlistUserIds()' returns your ArrayList<String>
-                    if (Boolean.TRUE) {
-                        eventArrayList.add(event);
-                    }
-                }
-                callback.onCallback(eventArrayList);
-            } else {
-                Log.d(TAG, "Error getting documents: ", task.getException());
-                callback.onError(task.getException());
-            }
-        });
-
-    }
-
-    /**
      * This methods returns the events a user has created
-     * @param waitlistID User class of user who is the organizer
+     * @param waitlistID String UserID of user who is the organizer
      * @param callback Database Callback to return the database
      */
     public void getCreatedEventsDB(User waitlistID, DatabaseCallback<ArrayList<Event>> callback){
@@ -225,6 +208,95 @@ public class DatabaseFunctions {
                 .addOnFailureListener(fail -> Log.d(TAG, "Error creating notif"));
     }
 
+    /**
+     * This methods returns user from the database that matches the id specified
+     * @param userid String UserID to be found
+     * @param callback Database Callback to return the database result
+     */
+    public void getUserDB(String userid, DatabaseCallback<User>callback){
+        CollectionReference users = db.collection("users");
+        DocumentReference docref = users.document(userid);
+        docref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        callback.onCallback(document.toObject(User.class));
+                    } else {
+                        callback.onError(task.getException());
+                    }
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                    callback.onError(task.getException());
+                }
+            }
+        });
+    }
+    public void updateNotificationPreference(String deviceId, String fieldName, boolean value){
+        DocumentReference userRef = db.collection("users").document(deviceId);
+        userRef.update(fieldName, value)
+                .addOnSuccessListener(aVoid -> Log.d("UpdatePref", fieldName + "updated to" + value))
+                .addOnFailureListener(e -> Log.d(TAG, "Error updating" + fieldName, e));
+    }
+
+    /**
+     * This methods adds user to an event's waitlist or registered list
+     * @param event Event object the user wants to interact with
+     * @param user User object to be added to the event
+     * @param field can be either waitList or registered*/
+    public void addUserToEventDB(Event event, User user, String field){
+        CollectionReference events = db.collection("events");
+        DocumentReference docref = events.document(event.getEventID());
+        docref.update(field, FieldValue.arrayUnion(user)).addOnSuccessListener(unused -> Log.d("AddUser", "User added to event successfully"))
+                .addOnFailureListener(fail -> Log.d(TAG, "Error adding user to event"));
+    }
+
+    /**
+     * This methods removes user from an event's waitlist or registered list
+     * @param event Event object the user wants to interact with
+     * @param user User object to be added to the event
+     * @param field can be either waitList or registered*/
+    public void removeUserFromEventDB(Event event, User user, String field){
+        CollectionReference events = db.collection("events");
+        DocumentReference docref = events.document(event.getEventID());
+        docref.update(field, FieldValue.arrayRemove(user)).addOnSuccessListener(unused -> Log.d("RemoveUser", "User removed from event successfully"))
+                .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from event"));
+    }
+
+    /**
+     * This methods adds user to an event's invited list
+     * can also be called if wanting to edit a user's boolean from true to false
+     * @param event Event object the user wants to interact with
+     * @param userID User's ID string to be added to the event
+     * @param interact True hasn't interacted, False means they declined */
+    public void addInviteDB(Event event, String userID, Boolean interact){
+        CollectionReference events = db.collection("events");
+        DocumentReference docref = events.document(event.getEventID());
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("invited." + userID, interact); // true hasn't interacted, false means they declined
+        docref.update(updates).addOnSuccessListener(unused -> Log.d("AddUser", "User added to event invited successfully"))
+                .addOnFailureListener(fail -> Log.d(TAG, "Error adding user to event invited"));
+    }
+
+    /**
+     * This methods removes user from an event's invited list
+     * @param event Event object the user wants to interact with
+     * @param userID User's ID string to be added to the event*/
+    public void removeInviteDB(Event event, String userID){
+        CollectionReference events = db.collection("events");
+        DocumentReference docref = events.document(event.getEventID());
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("invited." + userID, FieldValue.delete());
+        docref.update(updates).addOnSuccessListener(unused -> Log.d("RemoveUser", "User removed from event invited successfully"))
+                .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from event invited"));
+    }
+
+    /**
+     * This method returns a user's notifications they haven't interacted with via callback
+     * @param deviceId User's ID string to fetch the notifications for
+     * @param callback Database Callback to return the database
+     */
     public void getNotifsDB(String deviceId, DatabaseCallback<List<Notification>> callback){
         CollectionReference notifcol = db.collection("notifications");
         notifcol.whereArrayContains("deviceIds", deviceId)
@@ -247,24 +319,6 @@ public class DatabaseFunctions {
                     }
                 });
     }
-    public void getUserDB(String deviceId, DatabaseCallback<User> callback){
-        DocumentReference userRef = db.collection("users").document(deviceId);
-        userRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()){
-                User user = documentSnapshot.toObject(User.class);
-                callback.onCallback(user);
-            } else {
-                callback.onError(new Exception("User not found"));
-            }
-        }).addOnFailureListener(callback::onError);
-    }
-
-    public void updateNotificationPreference(String deviceId, String fieldName, boolean value){
-        DocumentReference userRef = db.collection("users").document(deviceId);
-        userRef.update(fieldName, value)
-                .addOnSuccessListener(aVoid -> Log.d("UpdatePref", fieldName + "updated to" + value))
-                .addOnFailureListener(e -> Log.d(TAG, "Error updating" + fieldName, e));
-    }
 
     public void saveFCMToken(String deviceId, String fcmToken) {
         DocumentReference userRef = db.collection("users").document(deviceId);
@@ -276,7 +330,95 @@ public class DatabaseFunctions {
                 .addOnFailureListener(e -> Log.e("fcm", "Error saving fcm token", e));
     }
 
+    /**
+     * This method lets the database know a user responded to a notification
+     * @param notifID String ID of the notification to update
+     * @param userID String ID of the user to change in the notification
+     * */
+    public void userRespondedDB(String notifID, String userID){
+        CollectionReference notifcol = db.collection("notifications");
+        DocumentReference docref = notifcol.document(notifID);
+        docref.update("deviceIds", FieldValue.arrayRemove(userID)).addOnSuccessListener(unused -> Log.d("userResponded", "User removed from notif successfully"))
+                .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from notification"));
+        docref.update("respondedDeviceIds", FieldValue.arrayUnion(userID)).addOnSuccessListener(unused -> Log.d("userResponded", "User added to notif successfully"))
+                .addOnFailureListener(fail -> Log.d(TAG, "Error adding user to notif"));
+    }
+    /**
+     * This methods deletes an event from the database
+     * @param eventID String EventID of the event that needs to be deleted
+     */
+    public void deleteEventDB(String eventID){
+        deleteEventNotif(eventID);
+        CollectionReference events = db.collection("events");
+        DocumentReference docref = events.document(eventID);
+        docref.delete().addOnSuccessListener(unused -> Log.d("DeleteEvent", "Event deleted successfully"))
+                .addOnFailureListener(fail -> Log.d(TAG, "Error deleting event"));
+    }
+
+    public void deleteEventNotif(String eventID){
+        CollectionReference notifcol = db.collection("notifications");
+        notifcol.whereEqualTo("eventId", eventID)
+                .addSnapshotListener((queryDocumentSnapshots, error) -> {
+                    if (error != null) {
+                        Log.d(TAG, "Error getting documents");
+                        return;
+                    }
+
+                    if (queryDocumentSnapshots != null) {
+                        for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
+                            DocumentSnapshot notif = queryDocumentSnapshots.getDocuments().get(i);
+                            DocumentReference notifref = notif.getReference();
+                            notifref.delete().addOnSuccessListener(unused -> Log.d("DeleteEventNotif", "Event notif deleted successfully"))
+                                    .addOnFailureListener(fail -> Log.d(TAG, "Error deleting event notif"));
+                        }
+                        Log.d(TAG, "Error getting documents");
+                    }
+                });
+    }
+
+    /**
+     * This method returns a user's notifications they did interact with via callback
+     * @param deviceId User's ID string to fetch the notifications for
+     * @param callback Database Callback to return the database
+     */
+    public void getInteractedNotifsDB(String deviceId, DatabaseCallback<List<Notification>> callback){
+        CollectionReference notifcol = db.collection("notifications");
+        notifcol.whereArrayContains("respondedDeviceIds", deviceId)
+                //.orderBy("timestamp", Query.Direction.DESCENDING)
+                .addSnapshotListener((queryDocumentSnapshots, error) -> {
+                    if (error != null) {
+                        callback.onError(error);
+                        return;
+                    }
+
+                    if (queryDocumentSnapshots != null) {
+                        List<Notification> notifications = new ArrayList<>();
+                        for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
+                            Notification notif = queryDocumentSnapshots.getDocuments().get(i).toObject(Notification.class);
+                            if (notif != null) {
+                                notifications.add(notif);
+                            }
+                        }
+                        callback.onCallback(notifications);
+                    }
+                });
+    }
+
+    /**
+     * This methods removes user from an notification set
+     * @param userID User's ID string to be removed from the notification
+     * @param notifs List of Notification the user wants to interact with
+     * @param field Can be either deviceIds or respondedDeviceIds*/
+    public void deleteUserFromNotifDB(String userID, List<Notification> notifs, String field){
+        CollectionReference notifcol = db.collection("notifications");
+        for(Notification not : notifs){
+            DocumentReference docref = notifcol.document(not.getNotifId());
+            docref.update(field, FieldValue.arrayRemove(userID)).addOnSuccessListener(unused -> Log.d("DeleteUserNotif", "User removed from notif successfully"))
+                    .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from notification"));
+        }
+    }
 }
+
 
 
 

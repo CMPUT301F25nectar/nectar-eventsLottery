@@ -52,6 +52,7 @@ public class Notification {
      * @param timestamp The time when notification was created
      * @param type Type of the notification
      * @param deviceIds List of users that will get the notifications
+     * @param organizerDeviceId Who created this notification
      */
     public Notification( String notificationId, String eventId, String eventName, String message, long timestamp, String type, List<String> deviceIds, List<String> respondedDeviceIds ){
         this.notifId = notificationId;

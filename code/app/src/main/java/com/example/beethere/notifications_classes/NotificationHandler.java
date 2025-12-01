@@ -5,8 +5,13 @@ import android.util.Log;
 import com.example.beethere.DatabaseCallback;
 import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.User;
+import com.example.beethere.eventclasses.Event;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +20,7 @@ import java.util.Map;
  * Manages sending notifications and retrieving them from Firebase Firestore
  */
 public class NotificationHandler {
+    /** Firebase Firestore instance for database operations*/
 
     // Notification types
     public String TYPE_LOTTERY_WON = "winning";  // Changed to match Cloud Function
@@ -30,6 +36,7 @@ public class NotificationHandler {
     public NotificationHandler(){
         dbfunctions = new DatabaseFunctions();
     }
+
 
     /**
      * Sends lottery result notifications to winners and losers
@@ -52,6 +59,7 @@ public class NotificationHandler {
         }
     }
 
+
     /**
      * Sends "you won the lottery!" notification to a selected user
      * @param deviceID The deviceID of the user who won/selected
@@ -66,20 +74,20 @@ public class NotificationHandler {
                 if (user != null && user.getReceiveWinningNotifs()) {
                     String message = "Congratulations! You've been selected for " + eventName + ". Accept your invitation now!";
 
-                    List<String> deviceIds = new ArrayList<>();
-                    deviceIds.add(deviceID);
+        List<String> deviceIds = new ArrayList<>();
+        List<String> interactedIds = new ArrayList<>();
+        deviceIds.add(deviceID);
 
-                    // Match constructor: notificationId, eventId, eventName, message, timestamp, type, deviceIds, respondedDeviceIds
-                    Notification notification = new Notification(
-                            null,  // notificationId - Firestore will auto-generate
-                            eventId,
-                            eventName,
-                            message,
-                            System.currentTimeMillis(),
-                            TYPE_LOTTERY_WON,
-                            deviceIds,
-                            new ArrayList<>()  // respondedDeviceIds - empty initially
-                    );
+        Notification notification = new Notification(
+                notifId,
+                eventId,
+                eventName,
+                message,
+                System.currentTimeMillis(),
+                TYPE_LOTTERY_WON,
+                deviceIds,
+                interactedIds
+        );
 
                     dbfunctions.addNotifsDB(notification);
                 } else {
@@ -113,14 +121,14 @@ public class NotificationHandler {
 
                     // Match constructor: notificationId, eventId, eventName, message, timestamp, type, deviceIds, respondedDeviceIds
                     Notification notification = new Notification(
-                            null,  // notificationId - Firestore will auto-generate
+                            notifId,  // notificationId - Firestore will auto-generate
                             eventId,
                             eventName,
                             message,
                             System.currentTimeMillis(),
                             TYPE_LOTTERY_LOST,
                             deviceIds,
-                            new ArrayList<>()  // respondedDeviceIds - empty initially
+                            interactedIds // respondedDeviceIds - empty initially
                     );
 
                     dbfunctions.addNotifsDB(notification);
@@ -149,6 +157,9 @@ public class NotificationHandler {
                                      String customMessage,
                                      String organizerDeviceId){
         List<String> deviceIds = new ArrayList<>();
+        List<String> interactedIds = new ArrayList<>();
+        DocumentReference newNotifRef = db.collection("notifications").document();
+        String notifId = newNotifRef.getId();
         for (User user : waitlist) {
             if (user.getReceiveOrganizerNotifs()) {
                 deviceIds.add(user.getDeviceid());
@@ -158,14 +169,14 @@ public class NotificationHandler {
         if (!deviceIds.isEmpty()) {
             // Match constructor: notificationId, eventId, eventName, message, timestamp, type, deviceIds, respondedDeviceIds
             Notification notification = new Notification(
-                    null,  // notificationId - Firestore will auto-generate
+                    notifId,  // notificationId - Firestore will auto-generate
                     eventId,
                     eventName,
                     customMessage,
                     System.currentTimeMillis(),
                     TYPE_ORGANIZER_MESSAGE,
                     deviceIds,
-                    new ArrayList<>()  // respondedDeviceIds - empty initially
+                    interactedIds
             );
 
             dbfunctions.addNotifsDB(notification);

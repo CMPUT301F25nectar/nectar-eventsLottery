@@ -19,9 +19,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class ConfirmDeleteFragment extends DialogFragment {
 
     private String eventID;
+
     public interface OnEventDeletedListener {
         void onEventDeleted(String eventID);
     }
+
 
     @Override
     public void onStart() {
@@ -46,6 +48,13 @@ public class ConfirmDeleteFragment extends DialogFragment {
         this.eventID = eventID;
     }
 
+    /**
+     *
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return view
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {

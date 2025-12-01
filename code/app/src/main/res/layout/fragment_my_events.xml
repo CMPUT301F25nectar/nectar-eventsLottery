@@ -8,37 +8,33 @@
 
     <TextView
         android:id="@+id/myEvents"
-        android:layout_width="225dp"
-        android:layout_height="55dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/createEventButton"
-        app:layout_constraintBottom_toTopOf="@id/myEventsSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="35dp"
         android:fontFamily="@font/space_mono_bold"
-        android:text="My Events"
+        android:text="@string/title_myEvents"
+        android:textColor="@color/dark_brown"
         android:textSize="35sp"
-        android:textColor="@color/dark_brown"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/createEventButton"
         android:layout_width="150dp"
         android:layout_height="45dp"
-        android:foregroundGravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/myEvents"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/myEventsSearch"
+        android:layout_marginTop="40dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginTop="65dp"
-        android:background="@drawable/waitlist_button"
+        android:background="@drawable/button_background"
         android:backgroundTint="@color/yellow"
+        android:fontFamily="@font/work_sans_medium"
+        android:foregroundGravity="center"
+        android:text="Create Event"
         android:textAllCaps="false"
         android:textColor="@color/dark_brown"
-        android:textSize="15sp"
-        android:fontFamily="@font/work_sans_medium"
-        android:text="Create Event" />
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/searchNoEventsMessage"
@@ -91,31 +87,32 @@
     <ListView
         android:id="@+id/myEventsList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="200dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
         android:divider="@android:color/transparent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-    </ListView>
+        app:layout_constraintTop_toBottomOf="@id/myEventsSearch"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 
     <SearchView
         android:id="@+id/myEventsSearch"
         android:layout_width="375dp"
         android:layout_height="37dp"
-        android:layout_marginTop="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/myEvents"
-        android:queryHint="Search"
-        android:iconifiedByDefault="false"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/search_bar"
         android:closeIcon="@null"
+        android:focusable="true"
+        android:iconifiedByDefault="false"
+        android:queryBackground="@null"
+        android:queryHint="Search"
         android:searchIcon="@null"
         android:submitBackground="@null"
-        android:focusable="true"
-        android:layout_marginEnd="8dp"
-        android:background="@drawable/search_bar"
         android:textColor="@color/dark_brown"
-        android:queryBackground="@null"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/myEvents" />
 
     <FrameLayout
         android:id="@+id/create_event_container1"

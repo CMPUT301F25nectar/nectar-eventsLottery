@@ -1,14 +1,14 @@
 package com.example.beethere.eventclasses;
 
+import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.User;
 import com.example.beethere.notifications_classes.NotificationHandler;
-import com.example.beethere.notifications_classes.Notification;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
@@ -19,12 +19,29 @@ public class UserListManager {
 
     private Event event;
     private Random random;
+    private DatabaseFunctions dbFunctions;
 
     // Constructors
 
+    /**
+     * Empty constructor so that the class can be reused
+     * initializes random
+     * initializes database functions
+     */
+    public UserListManager (){
+        this.random = new Random();
+        this.dbFunctions = new DatabaseFunctions();
+    }
+
+    /**
+     * Non-empty constructor to be initialized with specific event
+     * @param event
+     *          The event that the manager is working
+     */
     public UserListManager (Event event){
         this.event = event;
         this.random = new Random();
+        this.dbFunctions = new DatabaseFunctions();
     }
 
     //Getters and Setter
@@ -43,9 +60,14 @@ public class UserListManager {
         this.random = random;
     }
 
+    public DatabaseFunctions getDbFunctions() {
+        return dbFunctions;
+    }
+    public void setDbFunctions(DatabaseFunctions dbFunctions) {
+        this.dbFunctions = dbFunctions;
+    }
 
-
-    // Waitlist Management
+// Waitlist Management
     /**
      * Finds and returns the size of the waitlist
      * @return the size of the waitlist
@@ -59,9 +81,9 @@ public class UserListManager {
      * @param user: the user to be added
      */
     public void addWaitlist(User user) {
-
         if (waitlistSize() < event.getMaxWaitlist() && !inWaitlist(user)) {
             event.getWaitList().add(user);
+            dbFunctions.addUserToEventDB(event, user, "waitList");
         }
     }
 
@@ -70,10 +92,41 @@ public class UserListManager {
      * @param user the user to be removed
      */
     public void removeWaitlist(User user) {
-        // TODO
-        // check if user in waitlist
-        if(inWaitlist(user)) {event.getWaitList().remove(user);}
 
+        ArrayList<User> waitlist = event.getWaitList();
+        // this looks really complex bc of
+        // diff objects existing while having the same field
+        // are still diff objects
+        // need to make sure the right object is deleted
+        if (this.inWaitlist(user)) {
+            for (User waitlistUser : waitlist) {
+                if (Objects.equals(waitlistUser.getDeviceid(), user.getDeviceid())) {
+                    event.getWaitList().remove(waitlistUser);
+                    dbFunctions.removeUserFromEventDB(event, waitlistUser, "waitList");
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks if user is in waitlist
+     * @param user
+     *          The user who is being checked if they are in the waitlist
+     * @return
+     *      Boolean, true/false if they are in or not
+     */
+    public Boolean inWaitlist(User user) {
+        boolean result = Boolean.FALSE;
+        for (User waitlistUser : event.getWaitList()) {
+
+            if (waitlistUser.getDeviceid() == null) {
+                continue;
+            } else if (Objects.equals(waitlistUser.getDeviceid(), user.getDeviceid())){
+                result = Boolean.TRUE;
+            }
+        }
+        return result;
     }
 
     // Invite list management
@@ -86,21 +139,32 @@ public class UserListManager {
         // must be in waitlist to get invite in the first place
         if(inWaitlist(user)){
             event.getInvited().put(user.getDeviceid(), Boolean.TRUE);
+            dbFunctions.addInviteDB(event, user.getDeviceid(), Boolean.TRUE);
             removeWaitlist(user);
         }
-        // option to also automatically send the invite notif
     }
 
     /**
      * This removes a user from the event's invite list
      * @param user the user to be removed
      */
-
-    private void removeInvite(User user){
+    public void removeInvite(User user){
         // check if user has been invited/in invite list
         if(inInvite(user)){
             event.getInvited().remove(user.getDeviceid());
+            dbFunctions.removeInviteDB(event, user.getDeviceid());
         }
+    }
+
+    /**
+     * Checks if user is in invite
+     * @param user
+     *          The user who is being checked if they are in the invited
+     * @return
+     *      Boolean, true/false if they are in or not
+     */
+    public boolean inInvite(User user) {
+        return event.getInvited().containsKey(user.getDeviceid());
     }
 
     // Registered list management
@@ -112,6 +176,7 @@ public class UserListManager {
         // check if user is in registered
         if(event.getEntrantMax() > event.getRegistered().size()){
             event.getRegistered().add(user);
+            dbFunctions.addUserToEventDB(event, user, "registered");
         }
     }
 
@@ -121,7 +186,42 @@ public class UserListManager {
      */
     public void removeRegistered(User user){
         // check if user is in registered
-        event.getRegistered().remove(user);
+        ArrayList<User> registered = event.getRegistered();
+
+        // this looks really complex bc of
+        // diff objects existing while having the same field
+        // are still diff objects
+        // need to make sure the right object is deleted
+        if (this.inRegistered(user)){
+            for (User registeredUser : registered){
+                if (Objects.equals(registeredUser.getDeviceid(), user.getDeviceid())){
+                    event.getRegistered().remove(registeredUser);
+                    dbFunctions.removeUserFromEventDB(event, registeredUser, "registered");
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks if user is in registered list
+     * @param user
+     *       The user who is being checked if they are in the registered
+     *  @return
+     *      Boolean, true/false if they are in or not
+     */
+    public Boolean inRegistered(User user){
+        Boolean result = Boolean.FALSE;
+        User registeredUser;
+        ArrayList<User> registered = event.getRegistered();
+        for (int i = 0; i < registered.size(); i++){
+            registeredUser = registered.get(i);
+            if (Objects.equals(registeredUser.getDeviceid(), user.getDeviceid())){
+                result = Boolean.TRUE;
+                break;
+            }
+        }
+        return result;
     }
 
     /**
@@ -144,9 +244,28 @@ public class UserListManager {
      */
     public void declineInvite(User user){
         event.getInvited().replace(user.getName(), Boolean.FALSE);
+        dbFunctions.addInviteDB(event, user.getDeviceid(), Boolean.FALSE);
         if(event.autoRandomSelection){
             selectNewInvite();
         }
+    }
+
+    /**
+     * Checks if user has declined their invite
+     * @param user
+     * @return
+     */
+    public Boolean isDeclined(User user) {
+        Boolean result = Boolean.FALSE;
+        Map<String, Boolean> invited = event.getInvited();
+
+        // user is in invite list
+        // and user has declined invite (Boolean.FALSE)
+        if (inInvite(user) && invited.get(user.getDeviceid()) == Boolean.FALSE) {
+            result = Boolean.TRUE;
+        }
+
+        return result;
     }
 
     /**
@@ -181,25 +300,17 @@ public class UserListManager {
         );
     }
 
-    public Boolean inWaitlist(User user) {
-        return event.getWaitList().contains(user);
-    }
-
-    public boolean inInvite(User user) {
-        return event.getInvited().containsKey(user);
-    }
-
-    public Boolean isDeclined(User user) {
-        return event.getInvited().get(user);
-    }
-
-    public Boolean inRegistered(User user){
-        return event.getRegistered().contains(user);
-    }
-
     public Boolean waitlistFull() {
-        if (event.getMaxWaitlist() > waitlistSize()) return Boolean.FALSE;
-        return Boolean.TRUE;
+        Boolean result = Boolean.FALSE;
+        //return Boolean.FALSE;
+        if(event.getWaitList() == null || event.getMaxWaitlist() == null) {
+            result = Boolean.FALSE;
+        }  else if (event.getMaxWaitlist() > waitlistSize()) {
+            result = Boolean.FALSE;
+        } else if (Objects.equals(event.getMaxWaitlist(), waitlistSize())){
+            result = Boolean.TRUE;
+        }
+        return result;
     }
 
     /**
@@ -211,6 +322,7 @@ public class UserListManager {
      *          if fails to close writer
      */
     public void exportCSV() throws IOException {
+        //TODO this doesn't work, crashes after with read only exception
         File file = new File("Registered.csv");
         file.createNewFile();
         FileWriter writer = new FileWriter(file);
@@ -227,4 +339,6 @@ public class UserListManager {
         }
         writer.close();
     }
+
+
 }
