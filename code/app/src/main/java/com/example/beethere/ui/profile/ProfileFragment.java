@@ -41,9 +41,8 @@ public class ProfileFragment extends Fragment {
         phone = view.findViewById(R.id.edit_phone);
 
         Button btnsave = view.findViewById(R.id.button_save_profile);
-        TextView personalSettings = view.findViewById(R.id.personal_settings);
-        TextView notificationsSettings = view.findViewById(R.id.notification_settings);
-        TextView howtouse = view.findViewById(R.id.row_how_to_use);
+        TextView personalSettings = view.findViewById(R.id.row_personal_settings);
+        TextView notificationsSettings = view.findViewById(R.id.row_notification_settings);
         profile();
         btnsave.setOnClickListener(v -> saveprofile());
         //go to personal settings screen
@@ -59,35 +58,35 @@ public class ProfileFragment extends Fragment {
 
         return view;
     }
-    //gets profile information for a device
+//gets profile information for a device
     private void profile(){
         String deviceID = DeviceId.get(requireContext());
         FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(deviceID)
-                .get()
-                .addOnSuccessListener((DocumentSnapshot snap)->{
-                            if(!snap.exists()){
-                                clear();//clear fields
-                                return;
-                            }
-                            //return nothing, if the profile doesnt exist
-                            User u = snap.toObject(User.class);//user class
-                            if (u==null) {
-                                clear();
-                                return;
-                            }
-                            //split full name into first and last
-                            String fullname = u.getName();
-                            if (fullname!=null){
-                                String[] split = fullname.split(" ",2);
-                                firstname.setText(split[0]);
-                                if (split.length>1) lastname.setText(split[1]);
-                            }
-                            emailid.setText(u.getEmail());
-                            phone.setText(u.getPhone());
-                        }
-                );
+                        .collection("users")
+                        .document(deviceID)
+                        .get()
+                                .addOnSuccessListener((DocumentSnapshot snap)->{
+                                    if(!snap.exists()){
+                                        clear();//clear fields
+                                        return;
+                                    }
+                                    //return nothing, if the profile doesnt exist
+                                    User u = snap.toObject(User.class);//user class
+                                    if (u==null) {
+                                        clear();
+                                        return;
+                                    }
+                                    //split full name into first and last
+                                    String fullname = u.getName();
+                                    if (fullname!=null){
+                                        String[] split = fullname.split(" ",2);
+                                        firstname.setText(split[0]);
+                                        if (split.length>1) lastname.setText(split[1]);
+                                    }
+                                    emailid.setText(u.getEmail());
+                                    phone.setText(u.getPhone());
+                                }
+                                );
     }
 
     /**
@@ -143,7 +142,7 @@ public class ProfileFragment extends Fragment {
                             .document(deviceID)
                             .set(u)
                             .addOnSuccessListener(unused->
-                                    Toast.makeText(requireContext(), "Saved updates!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(requireContext(), "Saved updates!", Toast.LENGTH_SHORT).show()
                             )
                             .addOnFailureListener(fail-> Toast.makeText(requireContext(), "failed to save",Toast.LENGTH_LONG).show()
                             );
@@ -151,7 +150,19 @@ public class ProfileFragment extends Fragment {
                 .addOnFailureListener(fail -> Toast.makeText(requireContext(), "Failed updating profile"+ fail.getMessage(), Toast.LENGTH_SHORT).show());
     }
     //deleting the device's profile and clearing the fields
-
+    private void deleteprofile() {
+        String deviceID = DeviceId.get(requireContext());
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(deviceID)
+                .delete()
+                .addOnSuccessListener(unused -> {
+                    clear();
+                    Toast.makeText(requireContext(), "Deleted Profile", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(fail -> Toast.makeText(requireContext(), "Failed deleting profile", Toast.LENGTH_SHORT).show()
+                );
+    }
 
     private void clear() {
         firstname.setText("");

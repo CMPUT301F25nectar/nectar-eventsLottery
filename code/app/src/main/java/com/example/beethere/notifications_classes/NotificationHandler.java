@@ -15,20 +15,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *This is a class that handles all notifications operations for the BEE-THERE app
+ * This is a class that handles all notifications operations for the BEE-THERE app
  * Manages sending notifications and retrieving them from Firebase Firestore
  */
 public class NotificationHandler {
     /** Firebase Firestore instance for database operations*/
 
     // Notification types
-    /**Notification type constant for lottery winner*/
-    public String TYPE_LOTTERY_WON = "lotteryWon";
-    /**Notification type constant for lottery loser*/
-    public String TYPE_LOTTERY_LOST = "lotteryLost";
-    /**Notification type constant for organizer messages*/
-    public String TYPE_ORGANIZER_MESSAGE = "organizerMessage";
-    public String TYPE_ADMIN_MESSAGE = "adminMessage";
+    public String TYPE_LOTTERY_WON = "winning";  // Changed to match Cloud Function
+    public String TYPE_LOTTERY_LOST = "losing";  // Changed to match Cloud Function
+    public String TYPE_ORGANIZER_MESSAGE = "organizer";
+    public String TYPE_ADMIN_MESSAGE = "admin";
 
     private DatabaseFunctions dbfunctions;
 
@@ -38,6 +35,7 @@ public class NotificationHandler {
     public NotificationHandler(){
         dbfunctions = new DatabaseFunctions();
     }
+
 
     /**
      * Sends lottery result notifications to winners and losers
@@ -74,31 +72,33 @@ public class NotificationHandler {
                 if (user != null && user.getReceiveWinningNotifs()) {
                     String message = "Congratulations! You've been selected for " + eventName + ". Accept your invitation now!";
 
-                    List<String> deviceIds = new ArrayList<>();
-                    deviceIds.add(deviceID);
+        List<String> deviceIds = new ArrayList<>();
+        List<String> interactedIds = new ArrayList<>();
+        deviceIds.add(deviceID);
 
-                    Notification notification = new Notification(
-                            eventId,
-                            eventName,
-                            message,
-                            System.currentTimeMillis(),
-                            TYPE_LOTTERY_WON,
-                            deviceIds,
-                            organizerDeviceId
-                    );
+        Notification notification = new Notification(
+                notifId,
+                eventId,
+                eventName,
+                message,
+                System.currentTimeMillis(),
+                TYPE_LOTTERY_WON,
+                deviceIds,
+                interactedIds
+        );
 
                     dbfunctions.addNotifsDB(notification);
-                }else {
+                } else {
                     Log.d("NotificationHandler", "User opted out of winning notifications");
                 }
             }
+
             @Override
             public void onError(Exception e) {
                 Log.e("NotificationHandler", "Error checking user preferences", e);
             }
         });
     }
-
 
     /**
      * Sends "Not selected" notification to a user
@@ -111,43 +111,53 @@ public class NotificationHandler {
         dbfunctions.getUserDB(user.getDeviceid(), new DatabaseCallback<User>() {
             @Override
             public void onCallback(User result) {
-                if(user != null && user.getReceiveLosingNotifs()){
+                if(result != null && result.getReceiveLosingNotifs()){
                     String message = "Sorry! You weren't selected for " + eventName + " this time. You'll remain on the waitlist.";
 
                     List<String> deviceIds = new ArrayList<>();
                     deviceIds.add(user.getDeviceid());
 
+                    // Match constructor: notificationId, eventId, eventName, message, timestamp, type, deviceIds, respondedDeviceIds
                     Notification notification = new Notification(
+                            notifId,  // notificationId - Firestore will auto-generate
                             eventId,
                             eventName,
                             message,
                             System.currentTimeMillis(),
                             TYPE_LOTTERY_LOST,
                             deviceIds,
-                            organizerDeviceId
+                            interactedIds // respondedDeviceIds - empty initially
                     );
 
                     dbfunctions.addNotifsDB(notification);
-                }
-                else {
-                    Log.d("NotificationHandler", "User opted out of losing notifications!!");
+                } else {
+                    Log.d("NotificationHandler", "User opted out of losing notifications");
                 }
             }
 
             @Override
             public void onError(Exception e) {
-                Log.d("NotificationHandler", "Error checking user's preferences.", e);
+                Log.e("NotificationHandler", "Error checking user preferences", e);
             }
         });
-
     }
 
-
+    /**
+     * Sends organizer message to waitlist users
+     * @param eventId The event ID
+     * @param eventName The event name
+     * @param waitlist List of users on waitlist
+     * @param customMessage Custom message from organizer
+     * @param organizerDeviceId The organizer's device ID
+     */
     public void sendOrganizerMessage(String eventId, String eventName,
                                      ArrayList<User> waitlist,
                                      String customMessage,
                                      String organizerDeviceId){
         List<String> deviceIds = new ArrayList<>();
+        List<String> interactedIds = new ArrayList<>();
+        DocumentReference newNotifRef = db.collection("notifications").document();
+        String notifId = newNotifRef.getId();
         for (User user : waitlist) {
             if (user.getReceiveOrganizerNotifs()) {
                 deviceIds.add(user.getDeviceid());
@@ -155,18 +165,20 @@ public class NotificationHandler {
         }
 
         if (!deviceIds.isEmpty()) {
+            // Match constructor: notificationId, eventId, eventName, message, timestamp, type, deviceIds, respondedDeviceIds
             Notification notification = new Notification(
+                    notifId,  // notificationId - Firestore will auto-generate
                     eventId,
                     eventName,
                     customMessage,
                     System.currentTimeMillis(),
                     TYPE_ORGANIZER_MESSAGE,
                     deviceIds,
-                    organizerDeviceId
+                    interactedIds
             );
 
             dbfunctions.addNotifsDB(notification);
-        }else {
+        } else {
             Log.d("NotificationHandler", "No users opted in to receive organizer messages");
         }
     }
@@ -191,14 +203,16 @@ public class NotificationHandler {
         }
 
         if (!deviceIds.isEmpty()) {
+            // Match constructor: notificationId, eventId, eventName, message, timestamp, type, deviceIds, respondedDeviceIds
             Notification notification = new Notification(
-                    null,  // No specific event
+                    null,  // notificationId - Firestore will auto-generate
+                    null,  // No specific event for admin messages
                     "Admin Message",
                     customMessage,
                     System.currentTimeMillis(),
                     TYPE_ADMIN_MESSAGE,
                     deviceIds,
-                    adminDeviceId
+                    new ArrayList<>()  // respondedDeviceIds - empty initially
             );
 
             dbfunctions.addNotifsDB(notification);

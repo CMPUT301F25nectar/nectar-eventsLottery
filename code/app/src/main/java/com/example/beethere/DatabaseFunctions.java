@@ -34,9 +34,8 @@ public class DatabaseFunctions {
     }
 
     /**
-     * This methods either adds new users to the database
-     * or edits existing ones if the userID is the same
-     * @param user User object of the user that needs to be added or edited
+     * This methods can be used to add new users or edit existing ones
+     * @param user User class of the user that needs to be added or edited
      */
     public void addUserDB(User user){
         CollectionReference users = db.collection("users");
@@ -86,7 +85,7 @@ public class DatabaseFunctions {
         DatabaseCallback<List<Notification>> interactedCallback = new DatabaseCallback<List<Notification>>() {
             @Override
             public void onCallback(List<Notification> result) {
-                /*deleteUserFromNotifDB(user.getDeviceid(), result, "respondedDeviceIds");*/
+                deleteUserFromNotifDB(user.getDeviceid(), result, "respondedDeviceIds");
                 docref.delete().addOnSuccessListener(unused -> Log.d("DeleteUser", "User deleted successfully"))
                         .addOnFailureListener(fail -> Log.d(TAG, "Error deleting account"));
             }
@@ -101,7 +100,7 @@ public class DatabaseFunctions {
         DatabaseCallback<List<Notification>> notifCallback = new DatabaseCallback<List<Notification>>() {
             @Override
             public void onCallback(List<Notification> result) {
-                /*deleteUserFromNotifDB(user.getDeviceid(), result, "deviceIds");*/
+                deleteUserFromNotifDB(user.getDeviceid(), result, "deviceIds");
                 getInteractedNotifsDB(user.getDeviceid(), interactedCallback);
             }
 
@@ -159,7 +158,6 @@ public class DatabaseFunctions {
         CollectionReference events = db.collection("events");
         ArrayList<Event> eventArrayList = new ArrayList<>();
 
-        Log.d("getEventsDB", "outside of on complete listener");
         events.get().addOnCompleteListener(task -> {
             if(!task.isSuccessful()){
                 callback.onError(task.getException());
@@ -234,6 +232,12 @@ public class DatabaseFunctions {
                 }
             }
         });
+    }
+    public void updateNotificationPreference(String deviceId, String fieldName, boolean value){
+        DocumentReference userRef = db.collection("users").document(deviceId);
+        userRef.update(fieldName, value)
+                .addOnSuccessListener(aVoid -> Log.d("UpdatePref", fieldName + "updated to" + value))
+                .addOnFailureListener(e -> Log.d(TAG, "Error updating" + fieldName, e));
     }
 
     /**
@@ -316,13 +320,6 @@ public class DatabaseFunctions {
                 });
     }
 
-    public void updateNotificationPreference(String deviceId, String fieldName, boolean value){
-        DocumentReference userRef = db.collection("users").document(deviceId);
-        userRef.update(fieldName, value)
-                .addOnSuccessListener(aVoid -> Log.d("UpdatePref", fieldName + "updated to" + value))
-                .addOnFailureListener(e -> Log.d(TAG, "Error updating" + fieldName, e));
-    }
-
     public void saveFCMToken(String deviceId, String fcmToken) {
         DocumentReference userRef = db.collection("users").document(deviceId);
         Map<String, Object> tokenData = new HashMap<>();
@@ -331,6 +328,20 @@ public class DatabaseFunctions {
         userRef.set(tokenData, SetOptions.merge())
                 .addOnSuccessListener(aVoid -> Log.d("fcm", "FCM token saved!"))
                 .addOnFailureListener(e -> Log.e("fcm", "Error saving fcm token", e));
+    }
+
+    /**
+     * This method lets the database know a user responded to a notification
+     * @param notifID String ID of the notification to update
+     * @param userID String ID of the user to change in the notification
+     * */
+    public void userRespondedDB(String notifID, String userID){
+        CollectionReference notifcol = db.collection("notifications");
+        DocumentReference docref = notifcol.document(notifID);
+        docref.update("deviceIds", FieldValue.arrayRemove(userID)).addOnSuccessListener(unused -> Log.d("userResponded", "User removed from notif successfully"))
+                .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from notification"));
+        docref.update("respondedDeviceIds", FieldValue.arrayUnion(userID)).addOnSuccessListener(unused -> Log.d("userResponded", "User added to notif successfully"))
+                .addOnFailureListener(fail -> Log.d(TAG, "Error adding user to notif"));
     }
     /**
      * This methods deletes an event from the database
@@ -398,29 +409,16 @@ public class DatabaseFunctions {
      * @param userID User's ID string to be removed from the notification
      * @param notifs List of Notification the user wants to interact with
      * @param field Can be either deviceIds or respondedDeviceIds*/
-    /*public void deleteUserFromNotifDB(String userID, List<Notification> notifs, String field){
+    public void deleteUserFromNotifDB(String userID, List<Notification> notifs, String field){
         CollectionReference notifcol = db.collection("notifications");
         for(Notification not : notifs){
             DocumentReference docref = notifcol.document(not.getNotifId());
             docref.update(field, FieldValue.arrayRemove(userID)).addOnSuccessListener(unused -> Log.d("DeleteUserNotif", "User removed from notif successfully"))
                     .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from notification"));
         }
-    }*/
-
-    /**
-     * This method lets the database know a user responded to a notification
-     * @param notifID String ID of the notification to update
-     * @param userID String ID of the user to change in the notification
-     * */
-    public void userRespondedDB(String notifID, String userID){
-        CollectionReference notifcol = db.collection("notifications");
-        DocumentReference docref = notifcol.document(notifID);
-        docref.update("deviceIds", FieldValue.arrayRemove(userID)).addOnSuccessListener(unused -> Log.d("userResponded", "User removed from notif successfully"))
-                .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from notification"));
-        docref.update("respondedDeviceIds", FieldValue.arrayUnion(userID)).addOnSuccessListener(unused -> Log.d("userResponded", "User added to notif successfully"))
-                .addOnFailureListener(fail -> Log.d(TAG, "Error adding user to notif"));
     }
 }
+
 
 
 

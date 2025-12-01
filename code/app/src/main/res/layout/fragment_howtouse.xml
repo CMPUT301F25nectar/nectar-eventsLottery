@@ -12,7 +12,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:background="@drawable/back_button_background"
-        android:src="@drawable/outline_arrow_back_24"
+        android:src="@drawable/left_arrow"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="55dp" />
