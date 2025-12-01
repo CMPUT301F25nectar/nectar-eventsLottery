@@ -75,8 +75,6 @@ public class AdminEventsFragment extends Fragment {
         events.setOnItemClickListener((parent, view1, position, id) -> {
             EventDataViewModel event = new ViewModelProvider(requireActivity()).get(EventDataViewModel.class);
             event.setEvent((Event) parent.getItemAtPosition(position));
-
-            // TODO
             nav.navigate(R.id.admin_to_event_details);
         });
         loadEvents();

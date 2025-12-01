@@ -30,6 +30,7 @@ import com.example.beethere.R;
 import com.example.beethere.User;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.eventclasses.eventDetails.QRCodeFragment;
+import com.example.beethere.ui.adminDashboard.ConfirmDeleteProfileFragment;
 import com.example.beethere.ui.myEvents.ConfirmDeleteFragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -93,16 +94,26 @@ public class AdminProfilesAdapter extends ArrayAdapter<User> {
                 int id = menuItem.getItemId();
 
                 if (id == R.id.delete_profile) {
-                    DatabaseFunctions dbFunctions = new DatabaseFunctions();
-                    dbFunctions.deleteUserDB(currentUser);
-                    users.remove(position);
-                    notifyDataSetChanged();
-                    showSnackbar(v, "User deleted");
+                    ConfirmDeleteProfileFragment confirmDeleteProfileFragment = new ConfirmDeleteProfileFragment(user);
+                    if (getContext() instanceof AppCompatActivity) {
+                        AppCompatActivity activity = (AppCompatActivity) getContext();
+
+                       confirmDeleteProfileFragment.setOnProfileDeletedListener(user -> {
+                           DatabaseFunctions dbFunctions = new DatabaseFunctions();
+                           dbFunctions.deleteUserDB(currentUser);
+                           users.remove(position);
+                           notifyDataSetChanged();
+                           showSnackbar(v, "User deleted");
+                        });
+                       confirmDeleteProfileFragment
+                               .show(activity.getSupportFragmentManager(), "deleteProfileDialog");
+                    }
                     return true;
                 }
 
                 if (id == R.id.remove_organizer) {
                     currentUser.setViolation(Boolean.TRUE);
+                    currentUser.setOrganizer(Boolean.FALSE);
                     notifyDataSetChanged();
                     showSnackbar(v, "Organizer reported");
                     return true;
@@ -113,7 +124,6 @@ public class AdminProfilesAdapter extends ArrayAdapter<User> {
 
             popupMenu.show();
         });
-
 
         return view;
     }

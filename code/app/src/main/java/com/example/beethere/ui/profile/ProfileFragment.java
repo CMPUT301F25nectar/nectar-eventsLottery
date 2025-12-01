@@ -20,6 +20,7 @@ import com.example.beethere.R;
 import com.example.beethere.User;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.beethere.ui.profile.NotificationSettingsFragment;
 
 import org.w3c.dom.Text;
 
