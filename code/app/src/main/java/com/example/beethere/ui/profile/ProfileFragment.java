@@ -49,9 +49,9 @@ public class ProfileFragment extends Fragment {
         phone = view.findViewById(R.id.edit_phone);
 
         Button btnsave = view.findViewById(R.id.button_save_profile);
+        TextView howtouse = view.findViewById(R.id.row_how_to_use);
         TextView personalSettings = view.findViewById(R.id.personal_settings);
         TextView notificationsSettings = view.findViewById(R.id.notification_settings);
-        TextView howtouse = view.findViewById(R.id.row_how_to_use);
         adminLine = view.findViewById(R.id.admin_line);
         adminHeader = view.findViewById(R.id.admin_header);
         adminDashboard = view.findViewById(R.id.admin_dashboard);
@@ -64,6 +64,7 @@ public class ProfileFragment extends Fragment {
                 NavHostFragment.findNavController(ProfileFragment.this)
                         .navigate(R.id.personalSettingsFragment)
         );
+        //notification settingss TO DO
         notificationsSettings.setOnClickListener(v ->
                 NavHostFragment.findNavController(ProfileFragment.this)
                         .navigate(R.id.notificationSettingsFragment)
@@ -76,7 +77,7 @@ public class ProfileFragment extends Fragment {
 
         return view;
     }
-    //gets profile information for a device
+//gets profile information for a device
     private void profile(){
         String deviceID = DeviceId.get(requireContext());
         FirebaseFirestore.getInstance()
@@ -157,17 +158,17 @@ public class ProfileFragment extends Fragment {
                     u.setDeviceid(deviceID);
 
                     //set admin and organizer default flags
-
-                    u.setViolation(violationcurrent); //CHANGE MADE HERE
+                    if (violationcurrent!=null) u.setViolation(violationcurrent);
+                    else u.setViolation(Boolean.FALSE);
                     if (admincurrent!=null) u.setAdmin(admincurrent);
-                    else u.setAdmin(false);
+                    else u.setAdmin(Boolean.FALSE);
                     if (organizercurrent!=null) u.setOrganizer(organizercurrent);
-                    else u.setOrganizer(true);
+                    else u.setOrganizer(Boolean.FALSE);
                     FirebaseFirestore.getInstance().collection("users")
                             .document(deviceID)
                             .set(u)
                             .addOnSuccessListener(unused->
-                                    Toast.makeText(requireContext(), "Saved updates!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(requireContext(), "Saved updates!", Toast.LENGTH_SHORT).show()
                             )
                             .addOnFailureListener(fail-> Toast.makeText(requireContext(), "failed to save",Toast.LENGTH_LONG).show()
                             );

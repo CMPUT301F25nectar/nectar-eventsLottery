@@ -73,20 +73,20 @@ public class NotificationHandler {
                 if (user != null && user.getReceiveWinningNotifs()) {
                     String message = "Congratulations! You've been selected for " + eventName + ". Accept your invitation now!";
 
-        List<String> deviceIds = new ArrayList<>();
-        List<String> interactedIds = new ArrayList<>();
-        deviceIds.add(deviceID);
+                    List<String> deviceIds = new ArrayList<>();
+                    List<String> interactedIds = new ArrayList<>();
+                    deviceIds.add(deviceID);
 
-        Notification notification = new Notification(
-                null,
-                eventId,
-                eventName,
-                message,
-                System.currentTimeMillis(),
-                TYPE_LOTTERY_WON,
-                deviceIds,
-                interactedIds
-        );
+                    Notification notification = new Notification(
+                            null,
+                            eventId,
+                            eventName,
+                            message,
+                            System.currentTimeMillis(),
+                            TYPE_LOTTERY_WON,
+                            deviceIds,
+                            interactedIds
+                    );
 
                     dbfunctions.addNotifsDB(notification);
                 } else {
