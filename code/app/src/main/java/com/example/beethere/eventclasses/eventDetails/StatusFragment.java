@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,11 +16,6 @@ import com.example.beethere.R;
 public class StatusFragment extends Fragment {
 
     private String statusText;
-
-    public String getStatusText() {
-        return statusText;
-    }
-
     public void setStatusText(String statusText) {
         this.statusText = statusText;
     }
@@ -27,10 +23,11 @@ public class StatusFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_status, container, false);
 
-        Button status = view.findViewById(R.id.button_status);
-        status.setText(statusText);
+        View view = inflater.inflate(R.layout.fragment_event_details_status, container, false);
+
+        TextView textStatus = view.findViewById(R.id.text_status);
+        textStatus.setText(statusText);
 
         return view;
     }

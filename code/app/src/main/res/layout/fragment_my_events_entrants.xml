@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_back_to_prev"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="52dp"
+        android:background="@drawable/button_back_arrow"
+        android:backgroundTint="@color/dark_brown"
+        android:drawableEnd="@drawable/outline_arrow_back_24"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/exportCSV"
+        android:layout_width="115dp"
+        android:layout_height="38dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="20dp"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:visibility="invisible"
+        android:background="@drawable/button_background"
+        android:backgroundTint="@color/yellow"
+        android:fontFamily="@font/work_sans_medium"
+        android:text="Export CSV"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_entrant_waitlist"
+        android:layout_width="115dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="15dp"
+        android:background="@drawable/view_entrants_buttons"
+        android:textColor="@drawable/view_entrants_buttons_text"
+        android:stateListAnimator="@null"
+        android:text="@string/wait_list"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:fontFamily="@font/work_sans_medium"
+        app:layout_constraintEnd_toStartOf="@+id/button_entrant_invited"
+        app:layout_constraintTop_toBottomOf="@+id/button_back_to_prev"
+        app:layout_constraintHorizontal_chainStyle="spread" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_entrant_invited"
+        android:layout_width="115dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/view_entrants_buttons"
+        android:textColor="@drawable/view_entrants_buttons_text"
+        android:stateListAnimator="@null"
+        android:fontFamily="@font/work_sans_medium"
+        android:text="@string/invited"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_back_to_prev" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_entrant_registered"
+        android:layout_width="115dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/view_entrants_buttons"
+        android:textColor="@drawable/view_entrants_buttons_text"
+        android:stateListAnimator="@null"
+        android:text="@string/registered"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:fontFamily="@font/work_sans_medium"
+        app:layout_constraintStart_toEndOf="@+id/button_entrant_invited"
+        app:layout_constraintTop_toBottomOf="@+id/button_back_to_prev" />
+
+    <SearchView
+        android:id="@+id/event_entrant_search"
+        android:layout_width="320dp"
+        android:layout_height="37dp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintEnd_toStartOf="@id/event_entrant_map"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_entrant_invited"
+        android:queryHint="Search"
+        android:iconifiedByDefault="false"
+        android:closeIcon="@null"
+        android:searchIcon="@null"
+        android:submitBackground="@null"
+        android:focusable="true"
+        android:background="@drawable/search_bar"
+        android:textColor="@color/dark_brown"
+        android:queryBackground="@null"/>
+
+    <ImageButton
+        android:id="@+id/event_entrant_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/event_entrant_search"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toBottomOf="@+id/button_entrant_registered"
+        app:srcCompat="@drawable/map_icon" />
+
+    <ListView
+        android:id="@+id/event_entrant_list"
+        android:layout_width="409dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/event_entrant_search" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

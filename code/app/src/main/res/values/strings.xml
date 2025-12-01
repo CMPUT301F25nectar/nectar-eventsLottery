@@ -1,11 +1,18 @@
 <resources>
+    <!-- Titles -->
     <string name="app_name">BeeThere</string>
     <string name="title_events">Events</string>
     <string name="title_myEvents">My Events</string>
     <string name="title_notifications">Notifications</string>
-    <string name="title_eventSignUps">Event Sign-Ups</string>
+    <string name="title_joined">Joined</string>
     <string name="title_profile">Profile</string>
 
+    <!-- Plain Words -->
+    <string name="placeholder">placeholder</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+
+    <!-- Profile Resources -->
     <string name="first_name">First name</string>
     <string name="last_name">Last name</string>
     <string name="email">email@domain.com</string>
@@ -13,29 +20,25 @@
     <string name="device_id">Device ID: </string>
     <string name="btn_save">Save information</string>
     <string name="btn_delete">Delete account</string>
-    <string name="title_joined">Joined</string>
-    <string name="placeholder">placeholder</string>
-    <string name="join_waitlist">Join Waitlist</string>
-    <string name="leave">Leave</string>
-
-    <string name="no">No</string>
-    <string name="yes">Yes</string>
 
     <!-- Event Details Fragment Resources -->
-    <string name="event_name">%s</string>
-    <string name="event_organizer">%s</string>
-    <string name="event_description">%s</string>
     <string name="event_registration">%s - %s</string>
     <string name="event_date">%s to %s</string>
     <string name="event_time">%s - %s</string>
+    <string name="waitlist_full">Waitlist is full</string>
+    <string name="waitlist_ended">Waitlist period ended</string>
 
     <!-- Button titles -->
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
-
-    <!-- Button titles -->
-    <string name="waitlist_full">Waitlist is full</string>
-    <string name="waitlist_ended">Waitlist period ended</string>
+    <string name="join_waitlist">Join Waitlist</string>
+    <string name="leave">Leave</string>
+    <string name="history">History</string>
+    <string name="enrolled">Enrolled</string>
+    <string name="waitlisted">Waitlisted</string>
+    <string name="wait_list">Wait-list</string>
+    <string name="invited">Invited</string>
+    <string name="registered">Registered</string>
 
 
 </resources>

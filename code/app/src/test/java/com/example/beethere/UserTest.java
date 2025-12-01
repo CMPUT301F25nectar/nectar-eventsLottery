@@ -43,6 +43,5 @@ public class UserTest {
         assertEquals("abc292428309", u.getDeviceid());
         assertEquals(Boolean.FALSE, u.getAdmin());
         assertEquals(Boolean.TRUE, u.getOrganizer());
-
     }
 }

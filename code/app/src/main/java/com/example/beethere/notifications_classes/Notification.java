@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class Notification {
     /**Unique identifier for this notification*/
+    private String notifId;
     /**The event this notification is related to*/
     private String eventId;
     /**Name of the event*/
@@ -21,21 +22,22 @@ public class Notification {
     private String type;
     /**List of device IDs who should recieve this notification*/
     private List<String> deviceIds;
-    /**Device id of who created this notification*/
-    private String organizerDeviceId;
+    /**List of device IDs who responded to the notification*/
+    private List<String> respondedDeviceIds;
 
 
     /**
      * No-argument constructor for Firestore
      * */
     public Notification(){
+        this.notifId = "";
         this.eventId = "";
         this.eventName = "";
         this.message = "";
         this.timestamp = 0L;
         this.type = "custom";
         this.deviceIds = new ArrayList<>();
-        this.organizerDeviceId = "";
+        this.respondedDeviceIds = new ArrayList<>();
 
 
     }
@@ -52,18 +54,26 @@ public class Notification {
      * @param deviceIds List of users that will get the notifications
      * @param organizerDeviceId Who created this notification
      */
-    public Notification( String eventId, String eventName, String message, long timestamp, String type, List<String> deviceIds, String organizerDeviceId ){
+    public Notification( String notificationId, String eventId, String eventName, String message, long timestamp, String type, List<String> deviceIds, List<String> respondedDeviceIds ){
+        this.notifId = notificationId;
         this.eventId = eventId;
         this.eventName = eventName;
         this.message=message;
         this.timestamp = timestamp;
         this.type = type;
         this.deviceIds = deviceIds;
-        this.organizerDeviceId = organizerDeviceId;
+        this.respondedDeviceIds = respondedDeviceIds;
+        //this.deviceIds = deviceIds;
     }
 
     //getters
-
+    /**
+     * Gets the notification ID
+     * @return The notif identifier
+     */
+    public String getNotifId() {
+        return notifId;
+    }
 
     /**
      * Gets the event ID
@@ -108,12 +118,10 @@ public class Notification {
         return deviceIds;
     }
     /**
-     * Gets the organzier who created this notification
-     * @return Device ID of the organizer
+     * Gets the list of device IDs of users who responded
+     * @return List of recipients' who responded device IDs
      */
-    public String getOrganizerDeviceId() {
-        return organizerDeviceId;
-    }
+    public List<String> getRespondedDeviceIds() { return respondedDeviceIds; }
     //setters
 
 
@@ -166,11 +174,7 @@ public class Notification {
         this.deviceIds = deviceIds;
     }
 
-    /**
-     * Sets who created this notification
-     * @param organizerDeviceId Device ID of the creator
-     */
-    public void setOrganizerDeviceId(String organizerDeviceId) {
-        this.organizerDeviceId = organizerDeviceId;
+    public void setRespondedDeviceIds(List<String> respondedDeviceIds) {
+        this.respondedDeviceIds = respondedDeviceIds;
     }
 }

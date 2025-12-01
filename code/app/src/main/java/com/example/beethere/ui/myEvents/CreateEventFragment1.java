@@ -1,17 +1,13 @@
 package com.example.beethere.ui.myEvents;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CompoundButton;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -21,41 +17,41 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.SwitchCompat;
-import androidx.fragment.app.DialogFragment;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.beethere.DeviceId;
+import com.example.beethere.adapters.MyEventsAdapter;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.R;
 import com.example.beethere.User;
-import com.example.beethere.eventclasses.EventDataViewModel;
-import com.example.beethere.eventclasses.UserListManager;
-import com.example.beethere.ui.device.DeviceIDViewModel;
-import com.google.android.material.textfield.TextInputLayout;
+import com.example.beethere.device.DeviceIDViewModel;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
 import com.example.beethere.DatabaseFunctions;
-import com.journeyapps.barcodescanner.BarcodeEncoder;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
-import java.io.ByteArrayOutputStream;
-import java.text.SimpleDateFormat;
+import java.io.InputStream;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import android.app.DatePickerDialog;
+import java.util.Calendar;
+import java.util.UUID;
 
 
 public class CreateEventFragment1 extends Fragment {
@@ -63,11 +59,18 @@ public class CreateEventFragment1 extends Fragment {
     private ImageView eventPoster;
     public Uri imageURL;
 
+    private DeviceIDViewModel deviceIDViewModel;
     private User organizer;
-    private DeviceIDViewModel deviceIDProvider;
+
+    private FirebaseStorage storage = FirebaseStorage.getInstance("gs://beethere-images");
+    private StorageReference storageReference;
+
+    private DatabaseFunctions dbFunctions = new DatabaseFunctions();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
     private boolean wantMaxWaitList, wantRandomSelect, wantGeoLocation = false;
+    private boolean isSubmitting = false;
 
     private EditText eventTitle, regStart, regEnd, eventStart,
             eventEnd, timeStart, timeEnd, maxAttend, eventDesc, maxWaitList;
@@ -76,43 +79,62 @@ public class CreateEventFragment1 extends Fragment {
     private MyEventsAdapter myEventsAdapter;
     public ArrayList<Event> events;
 
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    DatabaseFunctions dbFunctions = new DatabaseFunctions();
-
-
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US);  // Use Locale.US for AM/PM format
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US);
 
+    private ActivityResultLauncher<String> pickImageLauncher;
 
-    // Launcher for selecting image
-    private ActivityResultLauncher<Intent> pickImageLauncher;
+    /**
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return view
+     */
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_event_pg1, container, false);
 
+        storageReference = storage.getReference();
+
         pickImageLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        imageURL = result.getData().getData();
-                        eventPoster.setImageURI(imageURL);
+                new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null) {
+                        imageURL = uri;
+                        try {
+                            InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
+                            if (inputStream != null) {
+                                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                eventPoster.setImageBitmap(bitmap);
+                                eventPoster.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                            } else {
+                                showErrorMessage("Unable to open selected image.");
+                            }
+                        } catch (Exception e) {
+                            showErrorMessage("Error uploading image: " + e.getMessage());
+                        }
                     }
                 }
-        );
+            );
+
 
         events = new ArrayList<>();
         myEventsAdapter = new MyEventsAdapter(getContext(), events);
 
-        String deviceID = DeviceId.get(requireContext());
+        deviceIDViewModel = new ViewModelProvider(requireActivity()).get(DeviceIDViewModel.class);
+        String deviceID = deviceIDViewModel.getDeviceID();
         FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(deviceID)
                 .get()
-                .addOnSuccessListener(snap -> {
-                    organizer = snap.toObject(User.class);
-                });
-
+                .addOnSuccessListener(snap -> organizer = snap.toObject(User.class));
 
         eventPoster = view.findViewById(R.id.poster);
         eventTitle = view.findViewById(R.id.eventTitle);
@@ -129,53 +151,150 @@ public class CreateEventFragment1 extends Fragment {
         randomSelectSwitch = view.findViewById(R.id.randomSelectSwitch);
         geoLocationSwitch = view.findViewById(R.id.geoLocSwitch);
         maxWaitList = view.findViewById(R.id.maxWaitFill);
-        eventPoster.setOnClickListener(v -> choosePoster());
+
+        eventPoster.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
+
+        View.OnClickListener dateClickListener = v -> showDatePicker((EditText) v);
+        regStart.setOnClickListener(dateClickListener);
+        regEnd.setOnClickListener(dateClickListener);
+        eventStart.setOnClickListener(dateClickListener);
+        eventEnd.setOnClickListener(dateClickListener);
+
+        timeStart.setOnClickListener(v -> {
+            TimePickerFragment dialog = new TimePickerFragment(timeStart);
+            dialog.show(getParentFragmentManager(), "timePickerStart");
+        });
+
+        timeEnd.setOnClickListener(v -> {
+            TimePickerFragment dialog = new TimePickerFragment(timeEnd);
+            dialog.show(getParentFragmentManager(), "timePickerEnd");
+        });
 
         maxWaitList.setVisibility(maxWaitListSwitch.isChecked() ? View.VISIBLE : View.GONE);
 
-        // Add listeners to handle switch state changes
         maxWaitListSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                maxWaitList.setVisibility(View.VISIBLE);  // Show maxWaitList input
-            } else {
-                maxWaitList.setVisibility(View.GONE);  // Hide maxWaitList input
-            }
+            maxWaitList.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            wantMaxWaitList = isChecked;
         });
 
-        // GeoLocation Switch listener
-        geoLocationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            wantGeoLocation = isChecked;  // Set the value of wantGeoLocation based on the switch state
-        });
+        geoLocationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> wantGeoLocation = isChecked);
+        randomSelectSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> wantRandomSelect = isChecked);
 
-        // Random Select Switch listener
-        randomSelectSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            wantRandomSelect = isChecked;  // Set the value of wantRandomSelect based on the switch state
-        });
+        AppCompatButton completeButton = view.findViewById(R.id.completeButton);
+        completeButton.setOnClickListener(v -> complete(view));
 
-        Button completeButton = view.findViewById(R.id.completeButton);
-        completeButton.setOnClickListener(v -> complete());
-
-        Button backButton = view.findViewById(R.id.backButton);
-        backButton.setOnClickListener(v -> backMain());
-
+        AppCompatImageButton backButton = view.findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> showGoBackDialog(view));
 
         return view;
     }
 
-    private void backMain () {
-//        DialogFragment goBack
-        FragmentManager fragmentManager = getParentFragmentManager();
-        fragmentManager.popBackStack();
-    }
-    private void choosePoster() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.setType("image/*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        pickImageLauncher.launch(intent);
+
+    /**
+     *
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        BottomNavigationView bottomNav = requireActivity().findViewById(R.id.nav_view);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+
+            if (bottomNav.getSelectedItemId() == itemId) return true;
+
+            NavController navController = NavHostFragment.findNavController(this);
+            int currentDestination = navController.getCurrentDestination().getId();
+
+            if (currentDestination == R.id.navigation_createEvents) {
+                GoBackDialogFragment dialog = new GoBackDialogFragment();
+                dialog.setGoBackListener(() -> {
+                    navigateTo(itemId);
+                    bottomNav.setSelectedItemId(itemId);
+                });
+                dialog.show(getParentFragmentManager(), "GoBackDialog");
+                return false;
+            } else {
+                navigateTo(itemId);
+                bottomNav.setSelectedItemId(itemId);
+                return true;
+            }
+        });
     }
 
+    /**
+     *
+     * @param targetEditText shows datePicker selector based on editText target clicked
+     */
+
+    private void showDatePicker(EditText targetEditText) {
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog dialog = new DatePickerDialog(requireContext(),
+                (view, selectedYear, selectedMonth, selectedDay) -> {
+                    String date = String.format("%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear);
+                    targetEditText.setText(date);
+                }, year, month, day);
+        dialog.show();
+    }
+
+
+    /**
+     *
+     * @param view takes in view for navigation from current view
+     */
+    private void backMain(View view) {
+        NavController nav = Navigation.findNavController(view);
+        nav.navigate(R.id.createEventstoMyEvents);
+    }
+
+    /**
+     *
+     * @param view takes in view to move back after option selected
+     */
+    private void showGoBackDialog(View view) {
+        GoBackDialogFragment dialog = new GoBackDialogFragment();
+        dialog.setGoBackListener(() -> backMain(view));
+        dialog.show(getParentFragmentManager(), "GoBackDialog");
+    }
+
+    /**
+     *
+     * @param itemId takes in itemID if user switches through bottom navigation
+     */
+    private void navigateTo(final int itemId) {
+        NavController nav = NavHostFragment.findNavController(this);
+        if (itemId == R.id.navigation_events) {
+            nav.navigate(R.id.navigation_events);
+        } else if (itemId == R.id.navigation_joined) {
+            nav.navigate(R.id.navigation_joined);
+        } else if (itemId == R.id.navigation_myEvents) {
+            nav.navigate(R.id.navigation_myEvents);
+        } else if (itemId == R.id.navigation_notifications) {
+            nav.navigate(R.id.navigation_notifications);
+        } else if (itemId == R.id.navigation_profile) {
+            nav.navigate(R.id.navigation_profile);
+        }
+    }
+
+
     @SuppressLint("SetTextI18n")
-    public void complete() {
+    public void complete(View view) {
+
+        AppCompatButton completeButton = getView().findViewById(R.id.completeButton);
+
+        if (isSubmitting) return;
+        isSubmitting = true;
+
+        completeButton.setEnabled(false);
+        completeButton.setText("Creating…");
+
         String titleInput = eventTitle.getText().toString().trim();
         String regStartInput = regStart.getText().toString().trim();
         String regEndInput = regEnd.getText().toString().trim();
@@ -187,20 +306,35 @@ public class CreateEventFragment1 extends Fragment {
         String descInput = eventDesc.getText().toString().trim();
         String maxWaitListInput = maxWaitList.getText().toString().trim();
 
-        // Validation
+        Runnable resetButton = () -> {
+            isSubmitting = false;
+            completeButton.setEnabled(true);
+            completeButton.setText("Complete");
+        };
+
         if (titleInput.isEmpty() || regStartInput.isEmpty() || regEndInput.isEmpty() ||
                 eventStartInput.isEmpty() || eventEndInput.isEmpty() ||
                 timeStartInput.isEmpty() || timeEndInput.isEmpty() ||
                 maxAttendInput.isEmpty() || descInput.isEmpty() ||
-                (wantMaxWaitList && maxWaitListInput.isEmpty()) || imageURL == null) { //just add an asterick by the fill input line
-            errorMessage.setVisibility(View.VISIBLE);
+                (wantMaxWaitList && maxWaitListInput.isEmpty()) || imageURL == null) {
+
+            showErrorMessage("Please fill all required fields.");
+            resetButton.run();
             return;
         }
+
         if (descInput.length() > 500) {
-            errorMessage.setText("Description cannot be longer than 500 characters.");
-            errorMessage.setVisibility(View.VISIBLE);
+            showErrorMessage("Description cannot be longer than 500 characters.");
+            resetButton.run();
             return;
         }
+
+        if (titleInput.length() > 24) {
+            showErrorMessage("Title cannot be longer than 24 characters.");
+            resetButton.run();
+            return;
+        }
+
         try {
             LocalDate regStartDate = LocalDate.parse(regStartInput, dateFormatter);
             LocalDate regEndDate = LocalDate.parse(regEndInput, dateFormatter);
@@ -209,95 +343,138 @@ public class CreateEventFragment1 extends Fragment {
 
             LocalTime startTime = LocalTime.parse(timeStartInput, timeFormatter);
             LocalTime endTime = LocalTime.parse(timeEndInput, timeFormatter);
+
             int maxAttendeesInt = Integer.parseInt(maxAttendInput);
-            int maxWaitListInt = 0;
+            int maxWaitListInt = wantMaxWaitList && !maxWaitListInput.isEmpty() ?
+                    Integer.parseInt(maxWaitListInput) : 0;
 
-            if (wantMaxWaitList && !maxWaitListInput.isEmpty()) {
-                maxWaitListInt = Integer.parseInt(maxWaitListInput);
+            if (wantMaxWaitList && maxWaitListInt < maxAttendeesInt) {
+                showErrorMessage("Number of wait-list entrants must exceed max attendees.");
+                resetButton.run();
+                return;
             }
 
-            if (regStartDate.isAfter(regEndDate) || eventStartDate.isAfter(eventEndDate) || startTime.isAfter(endTime)) {
-                errorMessage.setText("Ensure start dates/times are before end dates/times.");
-                errorMessage.setVisibility(View.VISIBLE);
+            if (regStartDate.isAfter(regEndDate) || eventStartDate.isAfter(eventEndDate)) {
+                showErrorMessage("Ensure start date is before end date.");
+                resetButton.run();
+                return;
             }
 
-            addToDatabase(titleInput, regStartDate, regEndDate, eventStartDate, eventEndDate,
-                    startTime, endTime, maxAttendeesInt, descInput, imageURL.toString(),
-                    wantMaxWaitList, wantGeoLocation, wantRandomSelect, maxWaitListInt);
+            if (startTime.isAfter(endTime)) {
+                showErrorMessage("Ensure start time is before end time.");
+                resetButton.run();
+                return;
+            }
 
-            FragmentManager fragmentManager = getParentFragmentManager();
-            fragmentManager.popBackStack();
-            android.widget.Toast.makeText(getActivity(), "Event created successfully!", android.widget.Toast.LENGTH_SHORT).show();
+            if (regEndDate.isEqual(eventStartDate) || regEndDate.isAfter(eventStartDate)) {
+                showErrorMessage("Registration and event dates cannot overlap.");
+                resetButton.run();
+                return;
+            }
 
+            StorageReference ref = storageReference.child("images/" + UUID.randomUUID() + ".jpg");
 
+            ref.putFile(imageURL)
+                    .addOnSuccessListener(taskSnapshot ->
+                            ref.getDownloadUrl().addOnSuccessListener(uri -> {
+
+                                addToDatabase(
+                                        titleInput, regStartInput, regEndInput, eventStartInput, eventEndInput,
+                                        timeStartInput, timeEndInput, maxAttendeesInt, descInput, uri.toString(),
+                                        wantMaxWaitList, wantGeoLocation, wantRandomSelect, maxWaitListInt
+                                );
+
+                                showSnackbar("Event created successfully!");
+                                organizer.setOrganizer(Boolean.TRUE);
+
+                                backMain(view);
+                            })
+                    )
+                    .addOnFailureListener(e -> {
+                        showErrorMessage("Upload Error: " + e.getMessage());
+                        resetButton.run();
+                    });
 
         } catch (Exception e) {
-            Log.e("CreateEventFragment", "Parsing error: " + e.getMessage());
-            errorMessage.setText("Ensure input formats are correct.");
-            errorMessage.setVisibility(View.VISIBLE);
+            showErrorMessage("Ensure input formats are correct.");
+            resetButton.run();
         }
-
     }
 
-    private void addToDatabase(String title, LocalDate regStart, LocalDate regEnd, LocalDate eventStart,
-                               LocalDate eventEnd, LocalTime timeStart, LocalTime timeEnd, int maxAttendees,
+    /**
+     *
+     * @param title title of event
+     * @param regStart registration begin date
+     * @param regEnd registration end date
+     * @param eventStart event start date
+     * @param eventEnd event end date
+     * @param timeStart event time start
+     * @param timeEnd event end start
+     * @param maxAttendees max number of people who can attend event
+     * @param description description of the event
+     * @param posterPath path of the poster image
+     * @param wantMaxWaitList boolean value, checking if they'd like a max
+     *                       number of wait-list entrants
+     * @param wantGeoLocation boolean value, checking if they'd like the geolocation of entrants
+     * @param wantRandomSelect boolean value, checking if they'd like to randomly
+     *                         select from wait-list if invitees decline/are deleted
+     * @param maxWaitListInt mac number of people in a waitlist
+     */
+    private void addToDatabase(String title, String regStart, String regEnd, String eventStart,
+                               String eventEnd, String timeStart, String timeEnd, int maxAttendees,
                                String description, String posterPath, boolean wantMaxWaitList, boolean wantGeoLocation,
-                               boolean wantRandomSelect, int maxWaitListInt) throws WriterException {
+                               boolean wantRandomSelect, int maxWaitListInt) {
 
-        DocumentReference newEventRef = db.collection("events").document(); // auto-generated ID
+        DocumentReference newEventRef = db.collection("events").document();
         String eventID = newEventRef.getId();
-
         boolean status = true;
+        ArrayList<User> waitList = new ArrayList<>();
+        Map<String, Boolean> invited = new HashMap<>();
+        ArrayList<User> registered = new ArrayList<>();
 
-
-        //TODO: add QR code to the collection of QR codes
-
+        Event event;
         if (wantMaxWaitList) {
-            Event event = new Event(organizer, eventID, title, description, posterPath,
+            event = new Event(organizer, eventID, title, description, posterPath,
                     status, regStart, regEnd, eventStart, eventEnd, timeStart, timeEnd,
-                    maxAttendees, wantGeoLocation, wantRandomSelect);
-            dbFunctions.addEventDB(event);
-            events.add(event);
-            myEventsAdapter.notifyDataSetChanged();
-
+                    maxAttendees, wantGeoLocation, waitList, invited,
+                    registered, wantRandomSelect, maxWaitListInt);
         } else {
-            Event event = new Event(organizer, eventID, title, description, posterPath,
+            event = new Event(organizer, eventID, title, description, posterPath,
                     status, regStart, regEnd, eventStart, eventEnd, timeStart, timeEnd,
-                    maxAttendees, wantGeoLocation, wantRandomSelect, maxWaitListInt);
-
-            dbFunctions.addEventDB(event);
-            events.add(event);
-            myEventsAdapter.notifyDataSetChanged();
+                    maxAttendees, wantGeoLocation, waitList, invited,
+                    registered, wantRandomSelect);
         }
+
+        dbFunctions.addEventDB(event);
+        events.add(event);
+        myEventsAdapter.notifyDataSetChanged();
     }
 
-    private byte[] convertBitmapToByteArray(Bitmap bitmap) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream); // You can use PNG or JPEG format
-        return stream.toByteArray();
+    /**
+     *
+     * @param message message to display at the bottom of view
+     */
+    private void showErrorMessage(String message) {
+        errorMessage.setText(message);
+        errorMessage.setVisibility(View.VISIBLE);
     }
 
-    private Bitmap convertBitMatrixToBitmap(BitMatrix matrix) {
-        int width = matrix.getWidth();
-        int height = matrix.getHeight();
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+    public void showSnackbar(String text){
+        View rootView = getView();
+        if (rootView == null) return;
 
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                bitmap.setPixel(x, y, matrix.get(x, y) ? Color.BLACK : Color.WHITE);
-            }
-        }
-        return bitmap;
+        Snackbar snackbar = Snackbar.make(rootView, text, Snackbar.LENGTH_SHORT)
+                .setBackgroundTint(getContext().getColor(R.color.dark_brown))
+                .setTextColor(getContext().getColor(R.color.yellow));
+
+        View snackbarView = snackbar.getView();
+        TextView snackbarText = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+
+        snackbarText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        snackbarText.setTextSize(20);
+        snackbarText.setTypeface(ResourcesCompat.getFont(getContext(), R.font.work_sans_semibold));
+
+        snackbar.show();
     }
+
 }
-
-
-
-
-
-
-
-
-
-
-

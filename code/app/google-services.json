@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "436436056503",
+    "project_id": "beethere-477023",
+    "storage_bucket": "beethere-477023.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:436436056503:android:f161f8953a6aca2cb05032",
+        "android_client_info": {
+          "package_name": "com.example.beethere"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWjwGBRs9m-pSZO_AAljYFOZxnVYTvYKc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

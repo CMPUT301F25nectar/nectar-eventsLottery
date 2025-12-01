@@ -4,95 +4,214 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import androidx.appcompat.app.AppCompatActivity; // or android.support.v4.app.FragmentActivity if using older support libs
-import androidx.fragment.app.FragmentManager;
+
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.example.beethere.DatabaseCallback;
+import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.User;
+import com.example.beethere.adapters.MyEventsAdapter;
+import com.example.beethere.device.DeviceIDViewModel;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.R;
-import com.example.beethere.eventclasses.UserListManager;
+import com.example.beethere.ui.profile.ProfileDialogFragment;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.sql.Date;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
-
 
 public class MyEventsFragment extends Fragment {
 
-    /**
-     * Inflates "my events" page and displays event objects within the users associated
-     * events, using a custom made events adapter
-     * User can begin to create an event once clicking the "create event" button
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
-     *
-     * @return view
-     */
+    private MyEventsAdapter adapter;
+    private ArrayList<Event> eventList = new ArrayList<>();
+    private ArrayList<Event> displayedList = new ArrayList<>();
+
+    private DeviceIDViewModel deviceIDViewModel;
+    private User currentUser;
+
+    private DatabaseFunctions dbFunctions = new DatabaseFunctions();
+    private boolean hasAnyEvents = false;
+
+    private TextView noEventsMessage1, noEventsMessage2, searchNoEventsMessage;
+    private ListView eventsListView;
+    private SearchView searchView;
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_my_events, container, false);
-        Button createEventButton = view.findViewById(R.id.createEventButton);
-        TextView noEventsMessage = view.findViewById(R.id.noEventsMessage);
 
-        ListView eventsListView = view.findViewById(R.id.myEventsList);
-        ArrayList<Event> eventList = new ArrayList<>(); // TODO: change when firebase involved, on retrieving userID and their events if any
+        AppCompatButton createEventButton = view.findViewById(R.id.createEventButton);
+        noEventsMessage1 = view.findViewById(R.id.noEventsMessage1);
+        noEventsMessage2 = view.findViewById(R.id.noEventsMessage2);
+        searchNoEventsMessage = view.findViewById(R.id.searchNoEventsMessage);
+        eventsListView = view.findViewById(R.id.myEventsList);
+        searchView = view.findViewById(R.id.myEventsSearch);
 
-        if (!eventList.isEmpty()) {
-            noEventsMessage.setVisibility(View.VISIBLE);
-        } else {
-            noEventsMessage.setVisibility(View.INVISIBLE);
-        }
+        adapter = new MyEventsAdapter(getContext(), displayedList);
+        eventsListView.setAdapter(adapter);
 
-        MyEventsAdapter eventAdapter = new MyEventsAdapter(getContext(), eventList);
-        eventsListView.setAdapter(eventAdapter);
+        deviceIDViewModel = new ViewModelProvider(requireActivity()).get(DeviceIDViewModel.class);
+        String deviceID = deviceIDViewModel.getDeviceID();
 
-        createEventButton.setOnClickListener(this::showCreationPage);
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(deviceID)
+                .get()
+                .addOnSuccessListener(snap -> {
+
+                    if (snap.exists()) {
+                        currentUser = snap.toObject(User.class);
+                        noEventsMessage1.setVisibility(View.GONE);
+                        noEventsMessage2.setVisibility(View.GONE);
+                        loadCreatedEvents();
+                    } else {
+                        currentUser = null;
+                        noEventsMessage1.setVisibility(View.VISIBLE);
+                        noEventsMessage2.setVisibility(View.VISIBLE);
+                    }
+                });
+
+
+        createEventButton.setOnClickListener(v -> {
+            NavController nav = Navigation.findNavController(view);
+
+            // you have to recheck for every click to consider the profile dialog popup behaviour
+            FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(deviceID)
+                    .get()
+                    .addOnSuccessListener(snap -> {
+
+                        if (snap.exists()) {
+                            currentUser = snap.toObject(User.class);
+                            if (Boolean.TRUE.equals(currentUser.getViolation())) {
+                                showSnackbar("Unable to create events " +
+                                        "with past organizer violations committed");
+                            } else {
+                                currentUser = snap.toObject(User.class);
+                                nav.navigate(R.id.myEventsToCreateEvents);
+                            }
+
+                        } else {
+                            ProfileDialogFragment profileDialogFragment = new ProfileDialogFragment();
+                            profileDialogFragment.show(getParentFragmentManager(), "ProfileCreation");
+                        }
+                    });
+                });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                filterEvents(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterEvents(newText);
+                return true;
+            }
+        });
 
         return view;
     }
 
-    private void showCreationPage (View v) {
-        //TODO: check if account exists, if not, go to make account fragment
+    private void loadCreatedEvents() {
+        if (currentUser == null) return;
 
-        //if account exists do what is below
-        NavController nav = Navigation.findNavController(v);
-        nav.navigate(R.id.myEventsToCreateEvents);
+        dbFunctions.getCreatedEventsDB(currentUser, new DatabaseCallback<ArrayList<Event>>() {
+            @Override
+            public void onCallback(ArrayList<Event> events) {
+                eventList.clear();
+                eventList.addAll(events);
+
+                displayedList.clear();
+                displayedList.addAll(eventList);
+                adapter.notifyDataSetChanged();
+
+                hasAnyEvents = !eventList.isEmpty();
+
+                updateNoEventsMessage();
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(getContext(), "Failed to load events",
+                        Toast.LENGTH_SHORT).show();//i think this toast can be left
+            }
+        });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Rfrefresh the lsit every time
+        loadCreatedEvents();
+    }
 
-}//end of fragment
+    private void filterEvents(String query) {
+        String lowerQuery = query.toLowerCase().trim();
 
+        displayedList.clear();
+        if (lowerQuery.isEmpty()) {
+            displayedList.addAll(eventList);
+        } else {
+            for (Event event : eventList) {
+                if (event.getTitle().toLowerCase().contains(lowerQuery)) {
+                    displayedList.add(event);
+                }
+            }
+        }
 
+        adapter.notifyDataSetChanged();
+        updateNoEventsMessage();
+    }
 
+    private void updateNoEventsMessage() {
+        String query = searchView.getQuery().toString().trim();
 
+        if (displayedList.isEmpty()) {
+            if (!hasAnyEvents) {
+                noEventsMessage1.setVisibility(View.VISIBLE);
+                noEventsMessage2.setVisibility(View.VISIBLE);
+            } else if (!query.isEmpty()) {
+                searchNoEventsMessage.setVisibility(View.VISIBLE);
+            }
+        } else {
+            noEventsMessage1.setVisibility(View.GONE);
+            noEventsMessage2.setVisibility(View.GONE);
+            searchNoEventsMessage.setVisibility(View.GONE);
+        }
+    }
+    public void showSnackbar(String text){
+        View rootView = getView();
+        if (rootView == null) return;
 
+        Snackbar snackbar = Snackbar.make(rootView, text, Snackbar.LENGTH_SHORT)
+                .setBackgroundTint(getContext().getColor(R.color.dark_brown))
+                .setTextColor(getContext().getColor(R.color.yellow));
 
-//main activity set up nav controller
-//in the in nav, set up fragments that would be moved to
-// set up nav graph, everywhere u can go
-//make that and thats how you use navigate() (log cat error suggestion)
+        View snackbarView = snackbar.getView();
+        TextView snackbarText = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
 
+        snackbarText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        snackbarText.setTextSize(20);
+        snackbarText.setTypeface(ResourcesCompat.getFont(getContext(), R.font.work_sans_semibold));
 
-//set up the nav view
-
-//new nav graph in the navigation
-//content fragment container view for the fragemnrts in the nav graph, literal graph
-//leads to graph i  navigation
-//set it to match the parent
-// in main, nav controller to find the fragmmnt
+        snackbar.show();
+    }
+}
 

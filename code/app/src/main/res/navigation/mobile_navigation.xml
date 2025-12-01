@@ -5,22 +5,31 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/navigation_events">
 
+    <action
+        android:id="@+id/action_global_eventDetails"
+        app:destination="@id/navigation_event_details" />
+
+
     <fragment
         android:id="@+id/navigation_events"
         android:name="com.example.beethere.ui.allEvents.AllEventsFragment"
         android:label="@string/title_events"
         tools:layout="@layout/fragment_all_events">
-
         <action
             android:id="@+id/allEventToEventDetails"
-            app:destination="@+id/event_details" />
+            app:destination="@+id/navigation_event_details" />
     </fragment>
 
     <fragment
         android:id="@+id/navigation_joined"
-        android:name="com.example.beethere.ui.myEvents.MyEventsFragment"
+        android:name="com.example.beethere.ui.joined.JoinedFragment"
         android:label="@string/title_joined"
-        tools:layout="@layout/fragment_joined" />
+        tools:layout="@layout/fragment_joined">
+        <action
+            android:id="@+id/joinedToEventDetails"
+            app:destination="@+id/navigation_event_details"
+            />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_myEvents"
@@ -29,14 +38,31 @@
         tools:layout="@layout/fragment_my_events">
         <action
             android:id="@+id/myEventsToCreateEvents"
-            app:destination="@id/createEvents1" />
+            app:destination="@id/navigation_createEvents" />
+        <action
+            android:id="@+id/myEventsToProfileCreation"
+            app:destination="@id/navigation_profileCreation" />
+        <action
+            android:id="@+id/myEventsToViewEntrants"
+            app:destination="@id/navigation_view_entrants" />
+        <action
+            android:id="@+id/myEventsToEditEvents"
+            app:destination="@id/navigation_edit_event" />
+
+        <action
+            android:id="@+id/MyEventsToEventDetails"
+            app:destination="@id/navigation_event_details" />
     </fragment>
 
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.example.beethere.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_notifications">
+        <action
+            android:id="@+id/notificationsToEventDetails"
+            app:destination="@id/navigation_event_details" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_profile"
@@ -45,18 +71,126 @@
         tools:layout="@layout/fragment_notifications" />
 
     <fragment
-        android:id="@+id/createEvents1"
+        android:id="@+id/navigation_createEvents"
         android:name="com.example.beethere.ui.myEvents.CreateEventFragment1"
         android:label="Create"
-        tools:layout="@layout/fragment_create_event_pg1"/>
+        tools:layout="@layout/fragment_create_event_pg1">
+    <action
+        android:id="@+id/createEventstoMyEvents"
+        app:destination="@id/navigation_myEvents" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/navigation_profileCreation"
+        android:name="com.example.beethere.ui.profile.ProfileDialogFragment"
+        android:label="ProfileCreate"
+        tools:layout="@layout/fragment_profile"/>
 
     <fragment
-        android:id="@+id/event_details"
+        android:id="@+id/navigation_event_details"
         android:name="com.example.beethere.eventclasses.eventDetails.EventDetailsFragment"
         android:label="Create"
         tools:layout="@layout/fragment_event_details">
+        <action
+            android:id="@+id/eventDetailsToProfileCreation"
+            app:destination="@id/navigation_profileCreation"/>
     </fragment>
 
+    <fragment
+        android:id="@+id/navigation_view_entrants"
+        android:name="com.example.beethere.ui.myEvents.ViewEntrantsFragment"
+        android:label="View Entrants"
+        tools:layout="@layout/fragment_my_events_entrants">
+        <action
+            android:id="@+id/ViewEntrantsToMyEvents"
+            app:destination="@id/navigation_myEvents" />
+    </fragment>
 
+    <fragment
+        android:id="@+id/navigation_edit_event"
+        android:name="com.example.beethere.ui.myEvents.EditingEventFragment"
+        android:label="Edit Events"
+        tools:layout="@layout/fragment_editing_event">
+        <action
+            android:id="@+id/EditEventsToAllEvents"
+            app:destination="@id/navigation_events" />
+        <action
+            android:id="@+id/EditEventsToMyEvents"
+            app:destination="@id/navigation_myEvents" />
+        <action
+            android:id="@+id/EditEventsToJoinedEvents"
+            app:destination="@id/navigation_joined" />
+        <action
+            android:id="@+id/EditEventsToNotifications"
+            app:destination="@id/navigation_notifications" />
+        <action
+            android:id="@+id/EditEventsToProfile"
+            app:destination="@id/navigation_profile" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_admin_dashboard"
+        android:name="com.example.beethere.ui.adminDashboard.AdminDashboardFragment"
+        android:label="Admin dashboard"
+        tools:layout="@layout/fragment_admin_dashboard">
+        <action
+            android:id="@+id/admin_to_adminEvents"
+            app:destination="@+id/navigation_admin_events"/>
+        <action
+            android:id="@+id/admin_to_adminProfiles"
+            app:destination="@+id/navigation_admin_profile"/>
+        <action
+            android:id="@+id/admin_to_adminNotifs"
+            app:destination="@+id/navigation_admin_notification"/>
+        <action
+            android:id="@+id/admin_to_adminImages"
+            app:destination="@+id/navigation_admin_images"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_admin_events"
+        android:name="com.example.beethere.ui.adminDashboard.AdminEventsFragment"
+        android:label="Admin Events"
+        tools:layout="@layout/fragment_admin_view_events">
+        <action
+            android:id="@+id/admin_to_event_details"
+            app:destination="@+id/navigation_event_details"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_admin_images"
+        android:name="com.example.beethere.ui.adminDashboard.AdminImagesFragment"
+        android:label="Admin Images"
+        tools:layout="@layout/fragment_admin_view_images">
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_admin_profile"
+        android:name="com.example.beethere.ui.adminDashboard.AdminProfileFragment"
+        android:label="Admin Profiles"
+        tools:layout="@layout/fragment_admin_view_profiles">
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_admin_notification"
+        android:name="com.example.beethere.ui.adminDashboard.AdminNotificationsFragment"
+        android:label="Admin Notifs"
+        tools:layout="@layout/fragment_admin_view_notification">
+    </fragment>
+
+    <fragment
+        android:id="@+id/personalSettingsFragment"
+        android:name="com.example.beethere.ui.profile.PersonalSettingsFragment"
+        android:label="PersonalSettingsFragment" />
+    <fragment
+        android:id="@+id/notificationSettingsFragment"
+        android:name="com.example.beethere.ui.profile.NotificationSettingsFragment"
+        android:label="Notification Settings"
+        tools:layout="@layout/fragment_notifications_settings" />
+    <fragment
+        android:id="@+id/howToUseFragment"
+        android:name="com.example.beethere.ui.profile.HowToUseFragment"
+        android:label="HowToUseFragment" />
 
 </navigation>
