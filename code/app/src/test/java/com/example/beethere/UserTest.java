@@ -15,8 +15,8 @@ public class UserTest {
         assertNull(u.getEmail());
         assertNull(u.getPhone());
         assertNull(u.getDeviceid());
-        assertNull(u.getAdmin());
-        assertNull(u.getOrganizer());
+        assertEquals(Boolean.FALSE, u.getAdmin());
+        assertEquals(Boolean.FALSE, u.getOrganizer());
     }
     @Test
     public void user_nameemail(){
@@ -25,8 +25,8 @@ public class UserTest {
         assertEquals("abc@gmail.com", u.getEmail());
         assertNull(u.getPhone());
         assertNull(u.getDeviceid());
-        assertNull(u.getAdmin());
-        assertNull(u.getOrganizer());
+        assertEquals(Boolean.FALSE, u.getAdmin());
+        assertEquals(Boolean.FALSE, u.getOrganizer());
     }
     @Test
     public void user_setter(){
