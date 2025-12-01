@@ -2,6 +2,7 @@ package com.example.beethere.eventclasses.eventDetails;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.BadParcelableException;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,10 +68,12 @@ public class EventDetailsFragment extends Fragment {
 
         // intialize value for if the user is created
         // set boolean to true or false?
-        AtomicReference<Boolean> userCreated = new AtomicReference<>(Boolean.FALSE);
+        //AtomicReference<Boolean> userCreated = new AtomicReference<>(Boolean.FALSE);
         // intialize user object
         // figure out alternative to setting a new user
-        AtomicReference<User> user = new AtomicReference<>(new User("some name", "some email"));
+        //AtomicReference<User> user = new AtomicReference<>(new User("some name", "some email"));
+        userCreated = Boolean.FALSE;
+        user = new User("some name", "some email");
 
         // go through database and check device ID
         FirebaseFirestore.getInstance()
@@ -80,13 +83,14 @@ public class EventDetailsFragment extends Fragment {
                     .addOnSuccessListener((DocumentSnapshot snapshot) -> {
                         // User does not exists related to deviceID
                         if (!snapshot.exists()){
-                            userCreated.set(Boolean.FALSE);
+                            user = snapshot.toObject(User.class);
+                            userCreated = Boolean.TRUE;
                         }
                         // User does exist related to deviceID
-                        user.set(snapshot.toObject(User.class));
+
                 })
                 .addOnFailureListener(fail ->
-                                userCreated.set(Boolean.FALSE)
+                                userCreated = Boolean.FALSE
                 );
 
 
@@ -177,7 +181,7 @@ public class EventDetailsFragment extends Fragment {
         UserListManager eventListManager = new UserListManager(event);
         // bottom display choices
         LocalDate currentDate = LocalDate.now();
-        if(!userCreated){ // no profile connected to deviceID
+        if(userCreated == null || !userCreated){ // no profile connected to deviceID
             if (currentDate.isAfter(convertDate(event.getRegEnd(), dateFormatter))){
                 // waitlist period ended display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));

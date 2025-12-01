@@ -110,7 +110,7 @@ public class User {
      * sets the admin flag
      * @param admin true for admin, false otherwise (default)
      */
-    public void setAdmin(boolean admin){
+    public void setAdmin(Boolean admin){
         this.admin = admin;
     }
 
@@ -134,7 +134,7 @@ public class User {
      * sets the organizer flag
      * @param organizer true for organizer(default), false otherwise
      */
-    public void setOrganizer(boolean organizer){
+    public void setOrganizer(Boolean organizer){
         this.organizer=organizer;
     }
 

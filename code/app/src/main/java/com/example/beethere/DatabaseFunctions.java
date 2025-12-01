@@ -135,6 +135,32 @@ public class DatabaseFunctions {
     }
 
     /**
+     * Get a single event by its ID
+     * @param eventId The event ID to fetch
+     * @param callback Callback with the Event object
+     */
+    public void getEvent(String eventId, DatabaseCallback<Event> callback) {
+        CollectionReference events = db.collection("events");
+        DocumentReference docref = events.document(eventId);
+
+        docref.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Event event = document.toObject(Event.class);
+                    callback.onCallback(event);
+                } else {
+                    Log.d(TAG, "Event not found: " + eventId);
+                    callback.onCallback(null);  // Event doesn't exist
+                }
+            } else {
+                Log.d(TAG, "Error getting event: ", task.getException());
+                callback.onError(task.getException());
+            }
+        });
+    }
+
+    /**
      * This methods returns the events a user has waitlisted
      * @param waitlistID User class of user if they don't want events that they've already added to waitlist
      * @param callback Database Callback to return the database
