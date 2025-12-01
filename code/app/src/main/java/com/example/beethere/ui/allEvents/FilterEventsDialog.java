@@ -39,13 +39,12 @@ public class FilterEventsDialog extends DialogFragment {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_fragment_filter_events, null);
         builder.setView(view);
 
-        EditText regStart = view.findViewById(R.id.registration_start_date);
-        EditText regEnd = view.findViewById(R.id.registration_end_date);
-        EditText eventStart = view.findViewById(R.id.event_start_date);
-        EditText eventEnd = view.findViewById(R.id.event_end_date);
-        EditText timeStart = view.findViewById(R.id.start_time);
-        EditText timeEnd = view.findViewById(R.id.end_time);
-        EditText tagsInput = view.findViewById(R.id.tags_input);
+        EditText regStart = view.findViewById(R.id.filter_registration_start_date);
+        EditText regEnd = view.findViewById(R.id.filter_registration_end_date);
+        EditText eventStart = view.findViewById(R.id.filter_event_start_date);
+        EditText eventEnd = view.findViewById(R.id.filter_event_end_date);
+        EditText timeStart = view.findViewById(R.id.filter_start_time);
+        EditText timeEnd = view.findViewById(R.id.filter_end_time);
 
         View.OnClickListener dateClickListener = v -> showDatePicker((EditText) v);
         regStart.setOnClickListener(dateClickListener);
@@ -63,10 +62,10 @@ public class FilterEventsDialog extends DialogFragment {
             dialog.show(getParentFragmentManager(), "timePickerEnd");
         });
 
-        Button cancel = view.findViewById(R.id.cancel_button);
+        Button cancel = view.findViewById(R.id.filter_cancel_button);
         cancel.setOnClickListener(v -> dismiss());
 
-        Button apply = view.findViewById(R.id.apply_button);
+        Button apply = view.findViewById(R.id.filter_apply_button);
         apply.setOnClickListener(v -> {
             String regStartInput = regStart.getText().toString().trim();
             String regEndInput = regEnd.getText().toString().trim();
@@ -74,7 +73,6 @@ public class FilterEventsDialog extends DialogFragment {
             String eventEndInput = eventEnd.getText().toString().trim();
             String timeStartInput = timeStart.getText().toString().trim();
             String timeEndInput = timeEnd.getText().toString().trim();
-            String tagsInputText = tagsInput.getText().toString().trim();
 
             if (filterListener != null) {
                 filterListener.onFilterApplied(regStartInput, regEndInput,
