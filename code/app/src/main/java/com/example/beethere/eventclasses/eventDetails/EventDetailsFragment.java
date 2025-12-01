@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -257,7 +258,12 @@ public class EventDetailsFragment extends Fragment {
                     if(event.getPosterPath() != null && !event.getPosterPath().isEmpty()){
                         deletePosterButton.setOnClickListener(v -> {
                             StorageReference PosterRef = storage.getReferenceFromUrl(event.getPosterPath());
-                            PosterRef.delete(); //TODO handel confirm delete and some on sucofail
+                            PosterRef.delete()
+                                    .addOnSuccessListener(unused->
+                                            showSnackbar(v, "Poster Deleted"))
+                                    .addOnFailureListener(fail->
+                                            showSnackbar(v, "Failed To Delete Poster")
+                                    );
                         });
                     }
                 }
@@ -273,6 +279,18 @@ public class EventDetailsFragment extends Fragment {
 
         DatabaseFunctions db = new DatabaseFunctions();
         db.getUserDB(deviceID.getDeviceID(), userCallback);
+    }
+    public void showSnackbar(View view, String text){
+        Snackbar snackbar = Snackbar.make(view,text, Snackbar.LENGTH_SHORT)
+                .setBackgroundTint(getContext().getColor(R.color.dark_brown))
+                .setTextColor(getContext().getColor(R.color.yellow));
+        View snackbarView = snackbar.getView();
+        TextView snackbarText = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+
+        snackbarText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        snackbarText.setTextSize(20);
+        snackbarText.setTypeface(ResourcesCompat.getFont(getContext(), R.font.work_sans_semibold));
+        snackbar.show();
     }
 
 }

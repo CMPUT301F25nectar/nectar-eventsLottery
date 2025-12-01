@@ -52,7 +52,6 @@ public class Notification {
      * @param timestamp The time when notification was created
      * @param type Type of the notification
      * @param deviceIds List of users that will get the notifications
-     * @param organizerDeviceId Who created this notification
      */
     public Notification( String notificationId, String eventId, String eventName, String message, long timestamp, String type, List<String> deviceIds, List<String> respondedDeviceIds ){
         this.notifId = notificationId;
@@ -63,7 +62,6 @@ public class Notification {
         this.type = type;
         this.deviceIds = deviceIds;
         this.respondedDeviceIds = respondedDeviceIds;
-        //this.deviceIds = deviceIds;
     }
 
     //getters
@@ -124,7 +122,13 @@ public class Notification {
     public List<String> getRespondedDeviceIds() { return respondedDeviceIds; }
     //setters
 
-
+    /**
+     * Sets the notification ID
+     * @param notifId The notification identifier
+     */
+    public void setNotifId(String notifId) {
+        this.notifId = notifId;
+    }
     /**
      * Sets the event ID
      * @param eventId The event identifier
