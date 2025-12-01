@@ -61,11 +61,12 @@ public class ProfileDialogFragment extends DialogFragment {
             u.setEmail(email);
             u.setPhone(phone);
             u.setDeviceid(deviceId);
-            u.setAdmin(false);
-            u.setOrganizer(true);
-            u.setViolation(false);
+            u.setAdmin(Boolean.FALSE);
+            u.setOrganizer(Boolean.FALSE);
+            u.setViolation(Boolean.FALSE);
 
             dbFunctions.addUserDB(u);
+            dismiss();
         });
         return dialog;
     }

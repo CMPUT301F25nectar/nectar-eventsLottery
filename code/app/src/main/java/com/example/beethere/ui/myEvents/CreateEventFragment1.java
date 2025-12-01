@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -33,6 +34,7 @@ import com.example.beethere.R;
 import com.example.beethere.User;
 import com.example.beethere.device.DeviceIDViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.example.beethere.DatabaseFunctions;
@@ -48,7 +50,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import android.app.DatePickerDialog;
-import android.widget.Toast;
 import java.util.Calendar;
 import java.util.UUID;
 
@@ -69,6 +70,7 @@ public class CreateEventFragment1 extends Fragment {
 
 
     private boolean wantMaxWaitList, wantRandomSelect, wantGeoLocation = false;
+    private boolean isSubmitting = false;
 
     private EditText eventTitle, regStart, regEnd, eventStart,
             eventEnd, timeStart, timeEnd, maxAttend, eventDesc, maxWaitList;
@@ -179,7 +181,7 @@ public class CreateEventFragment1 extends Fragment {
         randomSelectSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> wantRandomSelect = isChecked);
 
         AppCompatButton completeButton = view.findViewById(R.id.completeButton);
-        completeButton.setOnClickListener(v -> complete());
+        completeButton.setOnClickListener(v -> complete(view));
 
         AppCompatImageButton backButton = view.findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> showGoBackDialog(view));
@@ -254,7 +256,7 @@ public class CreateEventFragment1 extends Fragment {
 
     /**
      *
-     * @param view takes in view to move back to after option selected
+     * @param view takes in view to move back after option selected
      */
     private void showGoBackDialog(View view) {
         GoBackDialogFragment dialog = new GoBackDialogFragment();
@@ -283,7 +285,16 @@ public class CreateEventFragment1 extends Fragment {
 
 
     @SuppressLint("SetTextI18n")
-    public void complete() {
+    public void complete(View view) {
+
+        AppCompatButton completeButton = getView().findViewById(R.id.completeButton);
+
+        if (isSubmitting) return;
+        isSubmitting = true;
+
+        completeButton.setEnabled(false);
+        completeButton.setText("Creating…");
+
         String titleInput = eventTitle.getText().toString().trim();
         String regStartInput = regStart.getText().toString().trim();
         String regEndInput = regEnd.getText().toString().trim();
@@ -295,24 +306,32 @@ public class CreateEventFragment1 extends Fragment {
         String descInput = eventDesc.getText().toString().trim();
         String maxWaitListInput = maxWaitList.getText().toString().trim();
 
-        // Validation
+        Runnable resetButton = () -> {
+            isSubmitting = false;
+            completeButton.setEnabled(true);
+            completeButton.setText("Complete");
+        };
+
         if (titleInput.isEmpty() || regStartInput.isEmpty() || regEndInput.isEmpty() ||
                 eventStartInput.isEmpty() || eventEndInput.isEmpty() ||
                 timeStartInput.isEmpty() || timeEndInput.isEmpty() ||
                 maxAttendInput.isEmpty() || descInput.isEmpty() ||
                 (wantMaxWaitList && maxWaitListInput.isEmpty()) || imageURL == null) {
+
             showErrorMessage("Please fill all required fields.");
+            resetButton.run();
             return;
         }
 
-
         if (descInput.length() > 500) {
             showErrorMessage("Description cannot be longer than 500 characters.");
+            resetButton.run();
             return;
         }
 
         if (titleInput.length() > 24) {
             showErrorMessage("Title cannot be longer than 24 characters.");
+            resetButton.run();
             return;
         }
 
@@ -324,54 +343,62 @@ public class CreateEventFragment1 extends Fragment {
 
             LocalTime startTime = LocalTime.parse(timeStartInput, timeFormatter);
             LocalTime endTime = LocalTime.parse(timeEndInput, timeFormatter);
-            int maxAttendeesInt = Integer.parseInt(maxAttendInput);
-            int maxWaitListInt = wantMaxWaitList && !maxWaitListInput.isEmpty() ? Integer.parseInt(maxWaitListInput) : 0;
 
-            if (wantMaxWaitList) {
-                if (maxWaitListInt < maxAttendeesInt) {
-                    showErrorMessage("Number of wait-list entrants must exceed max attendees.");
-                    return;
-                }
+            int maxAttendeesInt = Integer.parseInt(maxAttendInput);
+            int maxWaitListInt = wantMaxWaitList && !maxWaitListInput.isEmpty() ?
+                    Integer.parseInt(maxWaitListInput) : 0;
+
+            if (wantMaxWaitList && maxWaitListInt < maxAttendeesInt) {
+                showErrorMessage("Number of wait-list entrants must exceed max attendees.");
+                resetButton.run();
+                return;
             }
 
             if (regStartDate.isAfter(regEndDate) || eventStartDate.isAfter(eventEndDate)) {
                 showErrorMessage("Ensure start date is before end date.");
+                resetButton.run();
                 return;
             }
 
             if (startTime.isAfter(endTime)) {
                 showErrorMessage("Ensure start time is before end time.");
+                resetButton.run();
                 return;
             }
 
-            if (regEndDate == eventStartDate || regEndDate.isAfter(eventStartDate)) {
-                showErrorMessage("Registration and event dates cannot overlap");
+            if (regEndDate.isEqual(eventStartDate) || regEndDate.isAfter(eventStartDate)) {
+                showErrorMessage("Registration and event dates cannot overlap.");
+                resetButton.run();
                 return;
             }
 
             StorageReference ref = storageReference.child("images/" + UUID.randomUUID() + ".jpg");
 
             ref.putFile(imageURL)
-                    .addOnSuccessListener(taskSnapshot -> {
-                        ref.getDownloadUrl().addOnSuccessListener(uri -> {
-                            String downloadUrl = uri.toString();
-                            addToDatabase(titleInput, regStartInput, regEndInput, eventStartInput, eventEndInput,
-                                    timeStartInput, timeEndInput, maxAttendeesInt, descInput, downloadUrl,
-                                    wantMaxWaitList, wantGeoLocation, wantRandomSelect, maxWaitListInt);
+                    .addOnSuccessListener(taskSnapshot ->
+                            ref.getDownloadUrl().addOnSuccessListener(uri -> {
 
-                            FragmentManager fragmentManager = getParentFragmentManager();
-                            fragmentManager.popBackStack();
-                            Toast.makeText(getActivity(), "Event created successfully!", Toast.LENGTH_SHORT).show();
-                            organizer.setOrganizer(true);
-                        });
-                        }).addOnFailureListener(e -> {
-                            showErrorMessage("Upload Error: " + e);
-                        });
+                                addToDatabase(
+                                        titleInput, regStartInput, regEndInput, eventStartInput, eventEndInput,
+                                        timeStartInput, timeEndInput, maxAttendeesInt, descInput, uri.toString(),
+                                        wantMaxWaitList, wantGeoLocation, wantRandomSelect, maxWaitListInt
+                                );
+
+                                showSnackbar("Event created successfully!");
+                                organizer.setOrganizer(Boolean.TRUE);
+
+                                backMain(view);
+                            })
+                    )
+                    .addOnFailureListener(e -> {
+                        showErrorMessage("Upload Error: " + e.getMessage());
+                        resetButton.run();
+                    });
 
         } catch (Exception e) {
             showErrorMessage("Ensure input formats are correct.");
+            resetButton.run();
         }
-
     }
 
     /**
@@ -430,6 +457,24 @@ public class CreateEventFragment1 extends Fragment {
     private void showErrorMessage(String message) {
         errorMessage.setText(message);
         errorMessage.setVisibility(View.VISIBLE);
+    }
+
+    public void showSnackbar(String text){
+        View rootView = getView();
+        if (rootView == null) return;
+
+        Snackbar snackbar = Snackbar.make(rootView, text, Snackbar.LENGTH_SHORT)
+                .setBackgroundTint(getContext().getColor(R.color.dark_brown))
+                .setTextColor(getContext().getColor(R.color.yellow));
+
+        View snackbarView = snackbar.getView();
+        TextView snackbarText = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+
+        snackbarText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        snackbarText.setTextSize(20);
+        snackbarText.setTypeface(ResourcesCompat.getFont(getContext(), R.font.work_sans_semibold));
+
+        snackbar.show();
     }
 
 }

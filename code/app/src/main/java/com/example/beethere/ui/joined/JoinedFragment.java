@@ -53,7 +53,7 @@ public class JoinedFragment extends Fragment {
     EventsAdapter waitlistAdapter;
     EventsAdapter enrolledAdapter;
     EventsAdapter historyAdapter;
-
+    ListView events;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -100,45 +100,33 @@ public class JoinedFragment extends Fragment {
         buttonSelected(waitlisted, enrolled, history);
 
         // switch to event details when event is clicked on
-        ListView events = view.findViewById(R.id.joined_event_display);
+        events = view.findViewById(R.id.joined_event_display);
         events.setAdapter(waitlistAdapter);
-        events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        events.setOnItemClickListener((parent, view1, position, id) -> {
 
-                NavController nav = Navigation.findNavController(view);
-                nav.navigate(R.id.joinedToEventDetails);
+            NavController nav = Navigation.findNavController(view1);
+            nav.navigate(R.id.joinedToEventDetails);
 
-                EventDataViewModel event = new ViewModelProvider(getActivity()).get(EventDataViewModel.class);
-                event.setEvent((Event) parent.getItemAtPosition(position));
-            }
+            EventDataViewModel event = new ViewModelProvider(requireActivity()).get(EventDataViewModel.class);
+            event.setEvent((Event) parent.getItemAtPosition(position));
         });
 
-        waitlisted.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                buttonSelected(waitlisted, enrolled, history);
-                waitlistAdapter.notifyDataSetChanged();
-                switchDisplay(userWaitlist, waitlistAdapter);
-            }
+        waitlisted.setOnClickListener(v -> {
+            buttonSelected(waitlisted, enrolled, history);
+            waitlistAdapter.notifyDataSetChanged();
+            switchDisplay(userWaitlist, waitlistAdapter);
         });
 
-        enrolled.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                buttonSelected(enrolled, waitlisted, history);
-                enrolledAdapter.notifyDataSetChanged();
-                switchDisplay(userEnrollList, enrolledAdapter);
-            }
+        enrolled.setOnClickListener(v -> {
+            buttonSelected(enrolled, waitlisted, history);
+            enrolledAdapter.notifyDataSetChanged();
+            switchDisplay(userEnrollList, enrolledAdapter);
         });
 
-        history.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                buttonSelected(history,waitlisted, enrolled);
-                historyAdapter.notifyDataSetChanged();
-                switchDisplay(userHistory, historyAdapter);
-            }
+        history.setOnClickListener(v -> {
+            buttonSelected(history,waitlisted, enrolled);
+            historyAdapter.notifyDataSetChanged();
+            switchDisplay(userHistory, historyAdapter);
         });
 
         checkUserDB();
@@ -248,11 +236,11 @@ public class JoinedFragment extends Fragment {
             displayMessage("Make an account to join an event!");
         } else if (display.isEmpty()) {
             displayMessage("No events joined...");
-            //events.setVisibility(GONE);
+            events.setVisibility(GONE);
         } else {
             message.setVisibility(GONE);
-            //events.setVisibility(VISIBLE);
-            //events.setAdapter(eventsAdapter);
+            events.setVisibility(VISIBLE);
+            events.setAdapter(eventsAdapter);
         }
     }
 

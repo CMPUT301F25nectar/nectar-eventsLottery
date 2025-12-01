@@ -12,11 +12,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -25,6 +25,7 @@ import com.example.beethere.R;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.eventclasses.eventDetails.QRCodeFragment;
 import com.example.beethere.ui.myEvents.ConfirmDeleteFragment;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -97,7 +98,7 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
                 int id = menuItem.getItemId();
                 if (id == R.id.edit) {
                     if (currentDate.isAfter(eventEnd)) {
-                        Toast.makeText(getContext(), "Unable to edit event: Event period ended.", Toast.LENGTH_LONG).show();
+                        showSnackbar(view, "Unable To Edit Event: Event period ended.");
                     } else {
                         if (getContext() instanceof AppCompatActivity) {
                             AppCompatActivity activity = (AppCompatActivity) getContext();
@@ -160,5 +161,17 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
                 break;
             }
         }
+    }
+    public void showSnackbar(View view, String text){
+        Snackbar snackbar = Snackbar.make(view,text, Snackbar.LENGTH_SHORT)
+                .setBackgroundTint(getContext().getColor(R.color.dark_brown))
+                .setTextColor(getContext().getColor(R.color.yellow));
+        View snackbarView = snackbar.getView();
+        TextView snackbarText = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+
+        snackbarText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        snackbarText.setTextSize(20);
+        snackbarText.setTypeface(ResourcesCompat.getFont(getContext(), R.font.work_sans_semibold));
+        snackbar.show();
     }
 }

@@ -16,9 +16,9 @@ public class User {
     private String email;
     private String phone; //optional
     private String deviceid;
-    private Boolean admin = false; //admin flag
-    private Boolean organizer = false;//organizer flag
-    private Boolean violation = false;
+    private Boolean admin; //admin flag
+    private Boolean organizer;//organizer flag
+    private Boolean violation;
 
     public User(){}
 
@@ -100,7 +100,7 @@ public class User {
      * sets the admin flag
      * @param admin true for admin, false otherwise (default)
      */
-    public void setAdmin(boolean admin){
+    public void setAdmin(Boolean admin){
         this.admin = admin;
     }
 
@@ -124,7 +124,7 @@ public class User {
      * sets the organizer flag
      * @param organizer true for organizer(default), false otherwise
      */
-    public void setOrganizer(boolean organizer){
+    public void setOrganizer(Boolean organizer){
         this.organizer=organizer;
     }
 
