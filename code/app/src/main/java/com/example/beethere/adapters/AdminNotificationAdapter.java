@@ -7,7 +7,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.example.beethere.DatabaseCallback;
+import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.R;
+import com.example.beethere.User;
 import com.example.beethere.notifications_classes.Notification;
 
 import java.text.SimpleDateFormat;
@@ -44,13 +47,58 @@ public class AdminNotificationAdapter extends BaseAdapter {
         TextView messageText = convertView.findViewById(R.id.message);
         TextView timeStampText = convertView.findViewById(R.id.timestamp);
 
-        titleText.setText(notif.getEventName() != null ? notif.getEventName() : "Admin Message");
+        if (notif.getDeviceIds() != null && !notif.getDeviceIds().isEmpty()) {
+            String deviceId = notif.getDeviceIds().get(0);
+            loadUserName(deviceId, titleText);
+        } else {
+            titleText.setText("Unknown User");
+        }
+
+
+        //titleText.setText(notif.getEventName() != null ? notif.getEventName() : "Admin Message");
         messageText.setText(notif.getMessage());
-        Date date = new Date(notif.getTimestamp());
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
-        timeStampText.setText(sdf.format(date));
+        timeStampText.setText(getTimeAgo(notif.getTimestamp()));
 
         return convertView;
     }
+    private void loadUserName(String deviceId, TextView titleText) {
+        DatabaseFunctions db = new DatabaseFunctions();
+
+        db.getUserDB(deviceId, new DatabaseCallback<User>() {
+            @Override
+            public void onCallback(User user) {
+                if (user != null) {
+                    titleText.setText(user.getName());
+                } else {
+                    titleText.setText("Unknown User");
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+                titleText.setText("Unknown User");
+            }
+        });
+    }
+    private String getTimeAgo(long timestamp){
+        long difference = System.currentTimeMillis() - timestamp;
+        long seconds = difference/1000;
+        long minutes = seconds/60;
+        long hours = minutes/60;
+        long days = hours/24;
+
+        if (days > 0){
+            return days + "d ago";
+        } else if (hours > 0) {
+            return hours + "h ago";
+        } else if (minutes > 0) {
+            return minutes + "m ago";
+        } else {
+            return "Just now";
+        }
+    }
+
+
+
 
 }
