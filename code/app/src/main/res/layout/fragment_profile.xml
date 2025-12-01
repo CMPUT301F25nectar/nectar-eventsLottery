@@ -290,7 +290,7 @@
             android:textColor="@color/dark_brown"
             android:fontFamily="@font/work_sans_bold"
             />
-        <TextView
+        <!--<TextView
             android:id="@+id/admin_dashboard"
             android:layout_width="match_parent"
             android:layout_height="40dp"
@@ -301,7 +301,7 @@
             android:fontFamily="@font/work_sans"
             android:visibility="invisible"
             android:background="?attr/selectableItemBackground"
-            />
+            />-->
 
     </LinearLayout>
 
