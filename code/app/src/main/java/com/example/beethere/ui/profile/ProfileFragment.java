@@ -41,8 +41,8 @@ public class ProfileFragment extends Fragment {
         phone = view.findViewById(R.id.edit_phone);
 
         Button btnsave = view.findViewById(R.id.button_save_profile);
-        TextView personalSettings = view.findViewById(R.id.row_personal_settings);
-        TextView notificationsSettings = view.findViewById(R.id.row_notification_settings);
+        TextView personalSettings = view.findViewById(R.id.personal_settings);
+        TextView notificationsSettings = view.findViewById(R.id.notification_settings);
         profile();
         btnsave.setOnClickListener(v -> saveprofile());
         //go to personal settings screen

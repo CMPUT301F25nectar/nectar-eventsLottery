@@ -51,6 +51,10 @@ public class EventsAdapter extends ArrayAdapter<Event> {
         this.admin = admin;
     }
 
+    public ArrayList<Event> getCurrentEventList(){
+        return events;
+    }
+
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {

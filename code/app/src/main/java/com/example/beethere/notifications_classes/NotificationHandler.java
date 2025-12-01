@@ -6,6 +6,7 @@ import com.example.beethere.DatabaseCallback;
 import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.User;
 import com.example.beethere.eventclasses.Event;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -77,7 +78,7 @@ public class NotificationHandler {
         deviceIds.add(deviceID);
 
         Notification notification = new Notification(
-                notifId,
+                null,
                 eventId,
                 eventName,
                 message,
@@ -115,11 +116,12 @@ public class NotificationHandler {
                     String message = "Sorry! You weren't selected for " + eventName + " this time. You'll remain on the waitlist.";
 
                     List<String> deviceIds = new ArrayList<>();
+                    List<String> interactedIds = new ArrayList<>();
                     deviceIds.add(user.getDeviceid());
 
                     // Match constructor: notificationId, eventId, eventName, message, timestamp, type, deviceIds, respondedDeviceIds
                     Notification notification = new Notification(
-                            notifId,  // notificationId - Firestore will auto-generate
+                            null,  // notificationId - Firestore will auto-generate
                             eventId,
                             eventName,
                             message,
@@ -156,8 +158,7 @@ public class NotificationHandler {
                                      String organizerDeviceId){
         List<String> deviceIds = new ArrayList<>();
         List<String> interactedIds = new ArrayList<>();
-        DocumentReference newNotifRef = db.collection("notifications").document();
-        String notifId = newNotifRef.getId();
+
         for (User user : waitlist) {
             if (user.getReceiveOrganizerNotifs()) {
                 deviceIds.add(user.getDeviceid());
@@ -167,7 +168,7 @@ public class NotificationHandler {
         if (!deviceIds.isEmpty()) {
             // Match constructor: notificationId, eventId, eventName, message, timestamp, type, deviceIds, respondedDeviceIds
             Notification notification = new Notification(
-                    notifId,  // notificationId - Firestore will auto-generate
+                    null,  // notificationId - Firestore will auto-generate
                     eventId,
                     eventName,
                     customMessage,

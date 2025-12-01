@@ -194,7 +194,6 @@ public class JoinedFragment extends Fragment {
             // user is in waitlist or user has been invited to register
             if(currentDate.isBefore(eventStart) && (manager.inWaitlist(user) || manager.inInvite(user))){
                 userWaitlist.add(event);
-                Log.d("Joined", "eventid: " + event.getEventID());
             }
             // before the end of the event
             // user has registered for the event

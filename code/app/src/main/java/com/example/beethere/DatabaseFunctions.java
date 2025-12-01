@@ -417,6 +417,28 @@ public class DatabaseFunctions {
                     .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from notification"));
         }
     }
+
+
+    public void getEvent(String eventId, DatabaseCallback<Event> callback) {
+        CollectionReference events = db.collection("events");
+        DocumentReference docref = events.document(eventId);
+
+        docref.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Event event = document.toObject(Event.class);
+                    callback.onCallback(event);
+                } else {
+                    Log.d(TAG, "Event not found: " + eventId);
+                    callback.onCallback(null);
+                }
+            } else {
+                Log.d(TAG, "Error getting event: ", task.getException());
+                callback.onError(task.getException());
+            }
+        });
+    }
 }
 
 

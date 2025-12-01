@@ -1,6 +1,7 @@
 package com.example.beethere.ui.joined;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 
 public class JoinedListFragment extends Fragment {
 
-    private ArrayList<Event> eventList;
+    private ArrayList<Event> eventList = new ArrayList<>();
     private EventsAdapter eventsAdapter;
 
     public ArrayList<Event> getEventList() {
@@ -43,8 +44,15 @@ public class JoinedListFragment extends Fragment {
     }
 
     public void updateEventList(ArrayList<Event> eventList){
-        this.eventList = eventList;
+        this.eventList.clear();
+        this.eventList.addAll(eventList);
         this.eventsAdapter.notifyDataSetChanged();
+
+        ArrayList<Event> tempList = eventsAdapter.getCurrentEventList();
+
+        for (Event event : tempList){
+            Log.d("JoinedList", event.getEventID());
+        }
     }
 
     @Nullable
@@ -52,14 +60,16 @@ public class JoinedListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_joined_list_display, container, false);
 
-        eventsAdapter = new EventsAdapter(getContext(), eventList);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         ListView eventsDisplay = view.findViewById(R.id.joined_event_display_2_try);
+        eventsAdapter = new EventsAdapter(getContext(), eventList);
         eventsDisplay.setAdapter(eventsAdapter);
+
 
         eventsDisplay.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -72,6 +82,6 @@ public class JoinedListFragment extends Fragment {
             }
         });
 
-        super.onViewCreated(view, savedInstanceState);
+
     }
 }

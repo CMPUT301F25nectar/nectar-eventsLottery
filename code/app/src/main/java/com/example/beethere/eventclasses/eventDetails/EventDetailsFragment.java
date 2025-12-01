@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -129,16 +130,16 @@ public class EventDetailsFragment extends Fragment {
         TextView description = view.findViewById(R.id.text_description);
         description.setText(event.getDescription());
 
-        Button deletePosterButton = view.findViewById(R.id.posterDeleteButton);
+        ImageButton deletePosterButton = view.findViewById(R.id.posterDeleteButton);
         deletePosterButton.setVisibility(View.GONE);
-        if (user.getAdmin()) {
+        /*if (user.getAdmin()) {
             deletePosterButton.setVisibility(View.VISIBLE);
 
             deletePosterButton.setOnClickListener(v -> {
                 StorageReference PosterRef = storage.getReferenceFromUrl(event.getPosterPath());
                 PosterRef.delete();
             });
-        }
+        }*/
 
         // Event Geoloc Req Display
         TextView geoLocReq = view.findViewById(R.id.text_geoloc_req);
