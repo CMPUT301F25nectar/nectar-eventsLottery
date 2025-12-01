@@ -20,6 +20,8 @@ import com.example.beethere.User;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.w3c.dom.Text;
+
 /**
  * In app profile screen to view/edit/delete the current device's profile
  */
@@ -43,6 +45,8 @@ public class ProfileFragment extends Fragment {
         TextView personalSettings = view.findViewById(R.id.personal_settings);
         TextView notificationsSettings = view.findViewById(R.id.notification_settings);
         TextView howtouse = view.findViewById(R.id.row_how_to_use);
+        TextView adminDashboard = view.findViewById(R.id.admin_dashboard);
+
         profile();
         btnsave.setOnClickListener(v -> saveprofile());
         //go to personal settings screen
@@ -55,10 +59,10 @@ public class ProfileFragment extends Fragment {
                         .navigate(R.id.notificationSettingsFragment)
         );
         //admin dashboard
-        //adminDashboard.setOnClickListener(v ->
-               // NavHostFragment.findNavController(ProfileFragment.this)
-        //   .navigate(R.id.TODO)
-       // );
+        adminDashboard.setOnClickListener(v ->
+                NavHostFragment.findNavController(ProfileFragment.this)
+           .navigate(R.id.navigation_admin_dashboard)
+        );
         //how to use
         howtouse.setOnClickListener(v->
                 NavHostFragment.findNavController(ProfileFragment.this).navigate(R.id.howToUseFragment));

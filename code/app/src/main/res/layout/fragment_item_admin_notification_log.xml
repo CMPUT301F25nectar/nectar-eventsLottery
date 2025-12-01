@@ -1,47 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="16dp"
-    android:background="?android:attr/selectableItemBackground">
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@drawable/card_background">
 
-
-    <LinearLayout
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/user_name"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:text="User Name"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="@color/dark_brown"/>
 
-        <TextView
-            android:id="@+id/user_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="User Name"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:textColor="@color/dark_brown" />
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Message"
+        android:layout_marginTop="4dp"
+        android:textColor="#666"/>
 
-
-        <TextView
-            android:id="@+id/message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Notification message"
-            android:textSize="14sp"
-            android:textColor="@color/faded_brown"
-            android:layout_marginTop="4dp" />
-
-        <TextView
-            android:id="@+id/timestamp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="3d ago"
-            android:textSize="12sp"
-            android:textColor="@color/faded_brown2"
-            android:layout_marginTop="4dp" />
-
-    </LinearLayout>
+    <TextView
+        android:id="@+id/timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2h ago"
+        android:layout_marginTop="4dp"
+        android:textSize="12sp"
+        android:textColor="#999"/>
 
 </LinearLayout>
