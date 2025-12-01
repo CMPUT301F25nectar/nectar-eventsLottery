@@ -86,7 +86,7 @@ public class DatabaseFunctions {
         DatabaseCallback<List<Notification>> interactedCallback = new DatabaseCallback<List<Notification>>() {
             @Override
             public void onCallback(List<Notification> result) {
-                deleteUserFromNotifDB(user.getDeviceid(), result, "respondedDeviceIds");
+                /*deleteUserFromNotifDB(user.getDeviceid(), result, "respondedDeviceIds");*/
                 docref.delete().addOnSuccessListener(unused -> Log.d("DeleteUser", "User deleted successfully"))
                         .addOnFailureListener(fail -> Log.d(TAG, "Error deleting account"));
             }
@@ -101,7 +101,7 @@ public class DatabaseFunctions {
         DatabaseCallback<List<Notification>> notifCallback = new DatabaseCallback<List<Notification>>() {
             @Override
             public void onCallback(List<Notification> result) {
-                deleteUserFromNotifDB(user.getDeviceid(), result, "deviceIds");
+                /*deleteUserFromNotifDB(user.getDeviceid(), result, "deviceIds");*/
                 getInteractedNotifsDB(user.getDeviceid(), interactedCallback);
             }
 
@@ -159,6 +159,7 @@ public class DatabaseFunctions {
         CollectionReference events = db.collection("events");
         ArrayList<Event> eventArrayList = new ArrayList<>();
 
+        Log.d("getEventsDB", "outside of on complete listener");
         events.get().addOnCompleteListener(task -> {
             if(!task.isSuccessful()){
                 callback.onError(task.getException());
@@ -397,14 +398,14 @@ public class DatabaseFunctions {
      * @param userID User's ID string to be removed from the notification
      * @param notifs List of Notification the user wants to interact with
      * @param field Can be either deviceIds or respondedDeviceIds*/
-    public void deleteUserFromNotifDB(String userID, List<Notification> notifs, String field){
+    /*public void deleteUserFromNotifDB(String userID, List<Notification> notifs, String field){
         CollectionReference notifcol = db.collection("notifications");
         for(Notification not : notifs){
             DocumentReference docref = notifcol.document(not.getNotifId());
             docref.update(field, FieldValue.arrayRemove(userID)).addOnSuccessListener(unused -> Log.d("DeleteUserNotif", "User removed from notif successfully"))
                     .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from notification"));
         }
-    }
+    }*/
 
     /**
      * This method lets the database know a user responded to a notification

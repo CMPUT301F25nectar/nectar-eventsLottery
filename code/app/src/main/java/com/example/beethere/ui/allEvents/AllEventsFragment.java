@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -76,9 +77,6 @@ public class AllEventsFragment extends Fragment {
                 // filter dialog fragment
 
 
-
-
-
                 /*displayedList.clear();
                 filterDate(someDate, someDate, "reg");
                 filterDate(someDate, someDate, "eventDate");
@@ -108,6 +106,7 @@ public class AllEventsFragment extends Fragment {
     }
 
     public void loadEvents(){
+        HashMap<String, Event> eventhashmap= new HashMap<>();
         LocalDate currentDate = LocalDate.now();
         DatabaseFunctions functions = new DatabaseFunctions();
         DatabaseCallback<ArrayList<Event>> callback = new DatabaseCallback<>() {

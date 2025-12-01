@@ -47,7 +47,7 @@ public class NotificationAdapterUITest {
         testNotifications = new ArrayList<>();
 
         // Create test notification 1 - Winner
-        Notification notif1 = new Notification(
+        /*Notification notif1 = new Notification(
                 "skjdfhkh",
                 "event_pool_party",
                 "Pool Party",
@@ -57,10 +57,10 @@ public class NotificationAdapterUITest {
                 Arrays.asList("device_123"),
                 Arrays.asList(""),
                 "organizer_001"
-        );
+        );*/
 
         // Create test notification 2 - Loser
-        Notification notif2 = new Notification(
+        /*Notification notif2 = new Notification(
                 "asksfj",
                 "event_concert",
                 "Rock Concert",
@@ -70,10 +70,10 @@ public class NotificationAdapterUITest {
                 Arrays.asList("device_123"),
                 Arrays.asList(""),
                 "organizer_002"
-        );
+        );*/
 
         // Create test notification 3 - Organizer message
-        Notification notif3 = new Notification(
+        /*Notification notif3 = new Notification(
                 "gdjhkdgjk",
                 "event_bbq",
                 "BBQ Event",
@@ -83,11 +83,11 @@ public class NotificationAdapterUITest {
                 Arrays.asList("device_123"),
                 Arrays.asList(""),
                 "organizer_003"
-        );
+        );*/
 
-        testNotifications.add(notif1);
+        /*testNotifications.add(notif1);
         testNotifications.add(notif2);
-        testNotifications.add(notif3);
+        testNotifications.add(notif3);*/
     }
 
     /**

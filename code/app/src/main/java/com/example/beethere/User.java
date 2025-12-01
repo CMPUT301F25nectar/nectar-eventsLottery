@@ -35,14 +35,14 @@ public class User {
     public User (String name, String email){
         this.name = name;
         this.email = email;
-        this.admin = false;
-        this.organizer = false;
-        this.violation = false;
-        this.receiveWinningNotifs = false;
-        this.receiveLosingNotifs = false;
-        this.receiveCancelledNotifs = false;
-        this.receiveOrganizerNotifs = false;
-        this.receiveAdminNotifs = false;
+        this.admin = Boolean.FALSE;
+        this.organizer = Boolean.FALSE;
+        this.violation = Boolean.FALSE;
+        this.receiveWinningNotifs = Boolean.FALSE;
+        this.receiveLosingNotifs = Boolean.FALSE;
+        this.receiveCancelledNotifs = Boolean.FALSE;
+        this.receiveOrganizerNotifs = Boolean.FALSE;
+        this.receiveAdminNotifs = Boolean.FALSE;
     }
 
     /**
@@ -113,7 +113,7 @@ public class User {
      * sets the admin flag
      * @param admin true for admin, false otherwise (default)
      */
-    public void setAdmin(boolean admin){
+    public void setAdmin(Boolean admin){
         this.admin = admin;
     }
 
@@ -137,7 +137,7 @@ public class User {
      * sets the organizer flag
      * @param organizer true for organizer(default), false otherwise
      */
-    public void setOrganizer(boolean organizer){
+    public void setOrganizer(Boolean organizer){
         this.organizer=organizer;
     }
 
