@@ -1,25 +1,29 @@
 package com.example.beethere.eventclasses.eventDetails;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
-import com.example.beethere.DatabaseCallback;
-import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.R;
 import com.example.beethere.User;
 import com.example.beethere.eventclasses.Event;
@@ -27,9 +31,15 @@ import com.example.beethere.eventclasses.EventDataViewModel;
 
 import com.example.beethere.device.DeviceIDViewModel;
 import com.example.beethere.eventclasses.UserListManager;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  *
@@ -38,11 +48,10 @@ public class EventDetailsFragment extends Fragment {
 
     private Event event;
     private User user;
+    private Boolean userCreated;
     private DeviceIDViewModel deviceID;
     private EventDataViewModel eventData;
-
-    private DateTimeFormatter dateFormatter;
-    private UserListManager eventManager;
+    private FirebaseStorage storage = FirebaseStorage.getInstance("gs://beethere-images");
 
     public Event getEvent() {
         return event;
@@ -62,16 +71,8 @@ public class EventDetailsFragment extends Fragment {
         // get event and its data
         eventData = new ViewModelProvider(requireActivity()).get(EventDataViewModel.class);
         event = eventData.getEvent();
-        eventManager = new UserListManager(event);
 
-        // establish formatter
-        dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        userCreated = Boolean.FALSE;
         user = new User();
         checkUserDB();
 
@@ -100,6 +101,14 @@ public class EventDetailsFragment extends Fragment {
             }
         });
 
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        UserListManager eventListManager = new UserListManager(event);
 
         // Event Image
         ImageView imagePoster = view.findViewById(R.id.event_image);
@@ -122,6 +131,17 @@ public class EventDetailsFragment extends Fragment {
         // Event Description Display
         TextView description = view.findViewById(R.id.text_description);
         description.setText(event.getDescription());
+
+        Button deletePosterButton = view.findViewById(R.id.posterDeleteButton);
+        deletePosterButton.setVisibility(View.GONE);
+        if (user.getAdmin()) {
+            deletePosterButton.setVisibility(View.VISIBLE);
+
+            deletePosterButton.setOnClickListener(v -> {
+                StorageReference PosterRef = storage.getReferenceFromUrl(event.getPosterPath());
+                PosterRef.delete();
+            });
+        }
 
         // Event Geoloc Req Display
         TextView geoLocReq = view.findViewById(R.id.text_geoloc_req);
@@ -155,50 +175,52 @@ public class EventDetailsFragment extends Fragment {
 
         // Number of people in waitlist
         TextView waitlist = view.findViewById(R.id.text_waitlist);
-        waitlist.setText(eventManager.waitlistSize().toString());
+        waitlist.setText(eventListManager.waitlistSize().toString());
 
-        // setBottomDisplay called after checking user callback
 
-        super.onViewCreated(view, savedInstanceState);
-    }
 
-    public void setBottomDisplay(){
+        // bottom display choices
         LocalDate currentDate = LocalDate.now();
-        LocalDate regStart = convertDate(event.getRegStart(), dateFormatter);
-        LocalDate regEnd = convertDate(event.getRegEnd(), dateFormatter);
-        String waitlistEnded = getContext().getString(R.string.waitlist_ended);
-
-
-        if (user == null){
-            if (currentDate.isAfter(regEnd)){
+        if(user == null){ // no profile connected to deviceID
+            if (currentDate.isAfter(convertDate(event.getRegEnd(), dateFormatter))){
                 // waitlist period ended display
-                displayWaitlistStatus(waitlistEnded);
-            } else if (currentDate.isBefore(regStart)){
+                displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
+            } else if (currentDate.isBefore(convertDate(event.getRegStart(), dateFormatter))){
                 // waitlist period has not started display
                 displayWaitlistStatus("Waitlist opens " + event.getRegStart());
-            } else if (eventManager.waitlistFull()) {
+            } else if (eventListManager.waitlistFull()) {
                 // waitlist full display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_full));
             }  else {
                 // waitlist button display that prompts create profile dialog
                 displayWaitlistButton();
             }
-        } else { // user exists
-            // user enrolled
-            if (eventManager.inRegistered(user)) { // user enrolled
+        } else {
+            // profile is connected to deviceID
+            if(eventListManager.inRegistered(user)) {
+                // user enrolled
                 displayWaitlistStatus("Enrolled");
-            } else if (eventManager.isDeclined(user)) { // user was invited and declined
+            } else if (eventListManager.isDeclined(user)) {
                 // user declined, display waitlist ended
-                displayWaitlistStatus(waitlistEnded);
-            } else if (eventManager.inInvite(user)) { // user invited, hasn't interacted with invite
-                displayInviteButtons();
-            } else if (currentDate.isBefore(regStart)){ // waitlist has not started yet
+                displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
+            } else if (eventListManager.inInvite(user)) {
+                // user invited, accept or decline invite button
+
+                InviteButtons button = new InviteButtons();
+
+                button.setEvent(event);
+                button.setUser(user);
+
+                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                transaction.add(R.id.button_layout, button).commit();
+
+            } else if (currentDate.isBefore(convertDate(event.getRegStart(), dateFormatter))){
                 // waitlist period has not started display
                 displayWaitlistStatus("Waitlist opens " + event.getRegStart());
-            } else if (currentDate.isAfter(regEnd)){
+            } else if (currentDate.isAfter(convertDate(event.getRegEnd(), dateFormatter))){
                 // waitlist period ended display
-                displayWaitlistStatus(waitlistEnded);
-            } else if (eventManager.waitlistFull()) {
+                displayWaitlistStatus(getContext().getString(R.string.waitlist_ended));
+            } else if (eventListManager.waitlistFull()) {
                 // waitlist full display
                 displayWaitlistStatus(getContext().getString(R.string.waitlist_full));
             } else {
@@ -206,22 +228,15 @@ public class EventDetailsFragment extends Fragment {
                 displayWaitlistButton();
             }
         }
-    }
 
-    public void displayInviteButtons(){
-        InviteButtons button = new InviteButtons();
-
-        button.setEvent(event);
-        button.setUser(user);
-
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.add(R.id.button_layout, button).commit();
+        super.onViewCreated(view, savedInstanceState);
     }
 
     public void displayWaitlistButton(){
         WaitlistButtons button = new WaitlistButtons();
 
         button.setUser(user);
+        button.setUserCreated(userCreated);
         button.setEvent(event);
 
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
@@ -241,25 +256,25 @@ public class EventDetailsFragment extends Fragment {
         return LocalDate.parse(stringDate, dateFormatter);
     }
 
-
     public void checkUserDB(){
 
-        DatabaseCallback<User> userCallback = new DatabaseCallback<User>() {
-            @Override
-            public void onCallback(User result) {
-                user = result;
-                setBottomDisplay();
-            }
-            @Override
-            public void onError(Exception e) {
-                user = null;
-                setBottomDisplay();
-                Log.d("EventDetails", "Error getting user in eventDetails");
-            }
-        };
-
-        DatabaseFunctions db = new DatabaseFunctions();
-        db.getUserDB(deviceID.getDeviceID(), userCallback);
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(deviceID.getDeviceID())
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    // User does not exists related to deviceID
+                    if (snapshot.exists()){
+                        userCreated = Boolean.TRUE;
+                        user = snapshot.toObject(User.class);
+                    } else { // User does exist related to deviceID
+                        //user = null;
+                        userCreated = Boolean.FALSE;
+                    }
+                })
+                .addOnFailureListener(fail ->
+                        userCreated = Boolean.FALSE
+                );
     }
 
 }
