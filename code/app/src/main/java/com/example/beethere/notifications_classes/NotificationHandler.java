@@ -59,7 +59,6 @@ public class NotificationHandler {
         }
     }
 
-
     /**
      * Sends "you won the lottery!" notification to a selected user
      * @param deviceID The deviceID of the user who won/selected

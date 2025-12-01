@@ -112,8 +112,6 @@ public class EventDetailsFragment extends Fragment {
                 .error(R.drawable.placeholder_event_poster)
                 .into(imagePoster);
 
-
-
         // Event Name display
         TextView name = view.findViewById(R.id.text_event_name);
         name.setText(event.getTitle());
@@ -175,8 +173,7 @@ public class EventDetailsFragment extends Fragment {
         LocalDate regEnd = convertDate(event.getRegEnd(), dateFormatter);
         String waitlistEnded = getContext().getString(R.string.waitlist_ended);
 
-
-        if (user == null){
+        if (user == null || user.getDeviceid() == null){
             if (currentDate.isAfter(regEnd)){
                 // waitlist period ended display
                 displayWaitlistStatus(waitlistEnded);
@@ -247,7 +244,6 @@ public class EventDetailsFragment extends Fragment {
     public LocalDate convertDate(String stringDate, DateTimeFormatter dateFormatter) {
         return LocalDate.parse(stringDate, dateFormatter);
     }
-
 
     public void checkUserDB(){
 

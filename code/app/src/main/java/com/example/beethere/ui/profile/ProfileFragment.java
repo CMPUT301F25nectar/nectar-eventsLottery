@@ -20,7 +20,6 @@ import com.example.beethere.R;
 import com.example.beethere.User;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.example.beethere.ui.profile.NotificationSettingsFragment;
 
 import org.w3c.dom.Text;
 
@@ -75,6 +74,10 @@ public class ProfileFragment extends Fragment {
             NavHostFragment.findNavController(ProfileFragment.this)
                     .navigate(R.id.navigation_admin_dashboard)
         );
+
+        //how to use
+        howtouse.setOnClickListener(v->
+                NavHostFragment.findNavController(ProfileFragment.this).navigate(R.id.howToUseFragment));
 
         return view;
     }

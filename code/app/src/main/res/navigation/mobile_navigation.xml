@@ -27,8 +27,7 @@
         tools:layout="@layout/fragment_joined">
         <action
             android:id="@+id/joinedToEventDetails"
-            app:destination="@+id/navigation_event_details"
-            />
+            app:destination="@+id/navigation_event_details" />
     </fragment>
 
     <fragment

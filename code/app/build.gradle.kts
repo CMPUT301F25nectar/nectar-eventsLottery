@@ -56,7 +56,6 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
-    //implementation(libs.cardview)
     implementation("com.google.android.material:material:1.10.0")
     //implementation(libs.fragment.testing)
     implementation(libs.cardview)

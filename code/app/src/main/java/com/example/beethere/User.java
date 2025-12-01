@@ -16,9 +16,9 @@ public class User {
     private String email;
     private String phone; //optional
     private String deviceid;
-    private Boolean admin = false; //admin flag
-    private Boolean organizer = false;//organizer flag
-    private Boolean violation = false;
+    private Boolean admin; //admin flag
+    private Boolean organizer;//organizer flag
+    private Boolean violation;
     private Boolean receiveWinningNotifs;
     private Boolean receiveLosingNotifs;
     private Boolean receiveCancelledNotifs;
@@ -35,11 +35,14 @@ public class User {
     public User (String name, String email){
         this.name = name;
         this.email = email;
-        this.receiveWinningNotifs = false;
-        this.receiveLosingNotifs = false;
-        this.receiveCancelledNotifs = false;
-        this.receiveOrganizerNotifs = false;
-        this.receiveAdminNotifs = false;
+        this.admin = Boolean.FALSE;
+        this.organizer = Boolean.FALSE;
+        this.violation = Boolean.FALSE;
+        this.receiveWinningNotifs = Boolean.FALSE;
+        this.receiveLosingNotifs = Boolean.FALSE;
+        this.receiveCancelledNotifs = Boolean.FALSE;
+        this.receiveOrganizerNotifs = Boolean.FALSE;
+        this.receiveAdminNotifs = Boolean.FALSE;
     }
 
     /**

@@ -11,10 +11,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -25,6 +27,7 @@ import com.example.beethere.adapters.InvitedAdapter;
 import com.example.beethere.adapters.WaitListandRegisteredAdapter;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.eventclasses.UserListManager;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
@@ -119,9 +122,12 @@ public class ViewEntrantsFragment extends Fragment {
             }
         };
 
+
         exportCSV.setOnClickListener(v -> {
             try {
-                userListManager.exportCSV();
+                userListManager.setEvent(event);
+                String name = userListManager.exportCSV(getContext());
+                showSnackbar(v, "created file: " + name);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -165,6 +171,20 @@ public class ViewEntrantsFragment extends Fragment {
                 .addOnFailureListener(e -> Log.e("ViewEntrants", "Failed to load event.", e));
 
         return view;
+    }
+
+    public void showSnackbar(View view, String text){
+        Snackbar snackbar = Snackbar.make(view,text, Snackbar.LENGTH_SHORT)
+                .setBackgroundTint(getContext().getColor(R.color.dark_brown))
+                .setAnchorView(R.id.event_entrant_list)
+                .setTextColor(getContext().getColor(R.color.yellow));
+        View snackbarView = snackbar.getView();
+        TextView snackbarText = (TextView) snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+
+        snackbarText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        snackbarText.setTextSize(15);
+        snackbarText.setTypeface(ResourcesCompat.getFont(getContext(), R.font.work_sans_semibold));
+        snackbar.show();
     }
 }
 
