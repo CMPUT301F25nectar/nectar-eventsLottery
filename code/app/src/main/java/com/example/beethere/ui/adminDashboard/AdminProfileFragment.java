@@ -49,9 +49,9 @@ public class AdminProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_admin_view_profiles, container, false);
 
-        allProfilesListView = view.findViewById(R.id.allProfiles);
-        backButton = view.findViewById(R.id.backButton);
-        searchBar = view.findViewById(R.id.all_profiles_search_view);
+        allProfilesListView = view.findViewById(R.id.profiles_list_view);
+        backButton = view.findViewById(R.id.back_button);
+        searchBar = view.findViewById(R.id.admin_profile_search);
 
         db = FirebaseFirestore.getInstance();
         usersList = new ArrayList<>();
