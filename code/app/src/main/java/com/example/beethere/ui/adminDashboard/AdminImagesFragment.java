@@ -5,11 +5,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.beethere.DatabaseCallback;
 import com.example.beethere.DatabaseFunctions;
@@ -27,6 +32,7 @@ public class AdminImagesFragment extends Fragment {
     private AdminImagesAdapter adapter;
     private ArrayList<Event> eventList = new ArrayList<>();
     private ListView imagesListView;
+    private ImageButton backButton;
     private DatabaseFunctions dbFunctions = new DatabaseFunctions();
 
     private FirebaseFirestore db;
@@ -37,11 +43,17 @@ public class AdminImagesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_admin_view_images, container, false);
 
         imagesListView = view.findViewById(R.id.imagesListView);
+        backButton = view.findViewById(R.id.backButton);
 
         adapter = new AdminImagesAdapter(getContext(), eventList);
         imagesListView.setAdapter(adapter);
 
         db = FirebaseFirestore.getInstance();
+
+        backButton.setOnClickListener(v -> {
+            FragmentManager fragmentManager = getParentFragmentManager();
+            fragmentManager.popBackStack();
+        });
 
         fetchEvents();
 
@@ -52,7 +64,14 @@ public class AdminImagesFragment extends Fragment {
             @Override
             public void onCallback(ArrayList<Event> result) {
                 eventList.clear();
-                eventList.addAll(result);
+
+                for (Event e : result) {
+                    // Only add events with real poster paths
+                    if (e.getPosterPath() != null && !e.getPosterPath().isEmpty()) {
+                        eventList.add(e);
+                    }
+                }
+
                 adapter.notifyDataSetChanged();
             }
 
@@ -62,4 +81,5 @@ public class AdminImagesFragment extends Fragment {
             }
         });
     }
+
 }

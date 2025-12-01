@@ -21,6 +21,7 @@ import androidx.navigation.Navigation;
 import com.example.beethere.DatabaseCallback;
 import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.R;
+import com.example.beethere.adapters.AdminImagesAdapter;
 import com.example.beethere.adapters.EventsAdapter;
 import com.example.beethere.eventclasses.Event;
 import com.example.beethere.eventclasses.EventDataViewModel;
@@ -32,15 +33,12 @@ public class AdminEventsFragment extends Fragment {
 
     private ArrayList<Event> eventList;
     private ArrayList<Event> displayedList;
-    private EventsAdapter eventsAdapter;
+    private EventsAdapter adapter;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // inflate view
-        View view = inflater.inflate(R.layout.fragment_admin_view_events, container, false);
-
-        return view;
+        return inflater.inflate(R.layout.fragment_admin_view_events, container, false);
     }
 
     @Override
@@ -49,12 +47,9 @@ public class AdminEventsFragment extends Fragment {
         NavController nav = Navigation.findNavController(view);
 
         Button backButton = view.findViewById(R.id.admin_event_back_button);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentManager fragmentManager = getParentFragmentManager();
-                fragmentManager.popBackStack();
-            }
+        backButton.setOnClickListener(v -> {
+            FragmentManager fragmentManager = getParentFragmentManager();
+            fragmentManager.popBackStack();
         });
 
         SearchView search = view.findViewById(R.id.admin_events_search);
@@ -72,20 +67,17 @@ public class AdminEventsFragment extends Fragment {
             }
         });
 
-        eventList = new ArrayList<Event>();
+        eventList = new ArrayList<>();
         displayedList = new ArrayList<>();
-        eventsAdapter = new EventsAdapter(getContext(), displayedList, Boolean.TRUE);
-        ListView events = view.findViewById(R.id.event_display);
-        events.setAdapter(eventsAdapter);
-        events.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                EventDataViewModel event = new ViewModelProvider(getActivity()).get(EventDataViewModel.class);
-                event.setEvent((Event) parent.getItemAtPosition(position));
+        adapter = new EventsAdapter(getContext(), displayedList, Boolean.TRUE);
+        ListView events = view.findViewById(R.id.admin_event_display);
+        events.setAdapter(adapter);
+        events.setOnItemClickListener((parent, view1, position, id) -> {
+            EventDataViewModel event = new ViewModelProvider(requireActivity()).get(EventDataViewModel.class);
+            event.setEvent((Event) parent.getItemAtPosition(position));
 
-                // TODO
-                nav.navigate(R.id.admin_to_event_details);
-            }
+            // TODO
+            nav.navigate(R.id.admin_to_event_details);
         });
         loadEvents();
 
@@ -94,7 +86,6 @@ public class AdminEventsFragment extends Fragment {
     }
 
     public void loadEvents(){
-        LocalDate currentDate = LocalDate.now();
         DatabaseFunctions functions = new DatabaseFunctions();
         DatabaseCallback<ArrayList<Event>> callback = new DatabaseCallback<>() {
             @Override
@@ -103,7 +94,7 @@ public class AdminEventsFragment extends Fragment {
                 eventList.addAll(result);
                 displayedList.clear();
                 displayedList.addAll(eventList);
-                eventsAdapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
             }
             @Override
             public void onError(Exception e) {
@@ -128,6 +119,6 @@ public class AdminEventsFragment extends Fragment {
                 }
             }
         }
-        eventsAdapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
     }
 }
