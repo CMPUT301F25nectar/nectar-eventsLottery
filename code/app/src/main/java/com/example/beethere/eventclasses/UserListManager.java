@@ -280,25 +280,25 @@ public class UserListManager {
      * Randomly selects max number of users who can register
      * from the waitlist and adds them to the invite list
      */
-    public void selectInvitations(Integer range){
-        // if the registered list would be overfilled if all invites sent were accepted, don't do it
-
-        if(waitlistSize() < range) range = waitlistSize();
-
-        for(int i = 0; i < range; i++){
-            selectNewInvite();
-        }
-
-        // Send lottery notifications
-        NotificationHandler notificationHandler = new NotificationHandler();
-        notificationHandler.sendLotteryNotifications(
-                event.getEventID(),
-                event.getTitle(),
-                event.getInvited(),
-                event.getWaitList(),
-                event.getOrganizer().getDeviceid()
-        );
-    }
+//    public void selectInvitations(Integer range){
+//        // if the registered list would be overfilled if all invites sent were accepted, don't do it
+//
+//        if(waitlistSize() < range) range = waitlistSize();
+//
+//        for(int i = 0; i < range; i++){
+//            selectNewInvite();
+//        }
+//
+//        // Send lottery notifications
+//        NotificationHandler notificationHandler = new NotificationHandler();
+//        notificationHandler.sendLotteryNotifications(
+//                event.getEventID(),
+//                event.getTitle(),
+//                event.getInvited(),
+//                event.getWaitList(),
+//                event.getOrganizer().getDeviceid()
+//        );
+//    }
 
     public Boolean waitlistFull() {
         Boolean result = Boolean.FALSE;

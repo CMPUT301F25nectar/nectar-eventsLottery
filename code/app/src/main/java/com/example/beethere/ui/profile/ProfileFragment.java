@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,13 +21,21 @@ import com.example.beethere.User;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.w3c.dom.Text;
+
 /**
  * In app profile screen to view/edit/delete the current device's profile
  */
 public class ProfileFragment extends Fragment {
     private EditText firstname, lastname, emailid, phone;
     private TextView userdeviceId;
+
+    private View adminLine;
+    private TextView adminHeader;
+    private TextView adminDashboard;
+    private ImageView adminCrown;
     DatabaseFunctions dbFunctions = new DatabaseFunctions();
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -43,6 +52,11 @@ public class ProfileFragment extends Fragment {
         TextView personalSettings = view.findViewById(R.id.personal_settings);
         TextView notificationsSettings = view.findViewById(R.id.notification_settings);
         TextView howtouse = view.findViewById(R.id.row_how_to_use);
+        adminLine = view.findViewById(R.id.admin_line);
+        adminHeader = view.findViewById(R.id.admin_header);
+        adminDashboard = view.findViewById(R.id.admin_dashboard);
+        adminCrown = view.findViewById(R.id.adminCrown);
+
         profile();
         btnsave.setOnClickListener(v -> saveprofile());
         //go to personal settings screen
@@ -54,45 +68,50 @@ public class ProfileFragment extends Fragment {
                 NavHostFragment.findNavController(ProfileFragment.this)
                         .navigate(R.id.notificationSettingsFragment)
         );
-        //admin dashboard
-        //adminDashboard.setOnClickListener(v ->
-               // NavHostFragment.findNavController(ProfileFragment.this)
-        //   .navigate(R.id.TODO)
-       // );
-        //how to use
-        howtouse.setOnClickListener(v->
-                NavHostFragment.findNavController(ProfileFragment.this).navigate(R.id.howToUseFragment));
+
+        adminDashboard.setOnClickListener(v ->
+            NavHostFragment.findNavController(ProfileFragment.this)
+                    .navigate(R.id.navigation_admin_dashboard)
+        );
+
         return view;
     }
     //gets profile information for a device
     private void profile(){
         String deviceID = DeviceId.get(requireContext());
         FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(deviceID)
-                .get()
-                .addOnSuccessListener((DocumentSnapshot snap)->{
-                            if(!snap.exists()){
-                                clear();//clear fields
-                                return;
-                            }
-                            //return nothing, if the profile doesnt exist
-                            User u = snap.toObject(User.class);//user class
-                            if (u==null) {
-                                clear();
-                                return;
-                            }
-                            //split full name into first and last
-                            String fullname = u.getName();
-                            if (fullname!=null){
-                                String[] split = fullname.split(" ",2);
-                                firstname.setText(split[0]);
-                                if (split.length>1) lastname.setText(split[1]);
-                            }
-                            emailid.setText(u.getEmail());
-                            phone.setText(u.getPhone());
-                        }
-                );
+                        .collection("users")
+                        .document(deviceID)
+                        .get()
+                                .addOnSuccessListener((DocumentSnapshot snap)->{
+                                    if(!snap.exists()){
+                                        clear();//clear fields
+                                        return;
+                                    }
+                                    //return nothing, if the profile doesnt exist
+                                    User u = snap.toObject(User.class);//user class
+                                    if (u==null) {
+                                        clear();
+                                        return;
+                                    }
+
+                                    if (Boolean.TRUE.equals(u.getAdmin())) {
+                                        adminLine.setVisibility(View.VISIBLE);
+                                        adminHeader.setVisibility(View.VISIBLE);
+                                        adminDashboard.setVisibility(View.VISIBLE);
+                                        adminCrown.setVisibility(View.VISIBLE);
+                                    }
+                                    //split full name into first and last
+                                    String fullname = u.getName();
+                                    if (fullname!=null){
+                                        String[] split = fullname.split(" ",2);
+                                        firstname.setText(split[0]);
+                                        if (split.length>1) lastname.setText(split[1]);
+                                    }
+                                    emailid.setText(u.getEmail());
+                                    phone.setText(u.getPhone());
+                                }
+                                );
     }
 
     /**
@@ -122,12 +141,13 @@ public class ProfileFragment extends Fragment {
                 .addOnSuccessListener(snap->{
                     Boolean admincurrent = null;
                     Boolean organizercurrent = null;
-                    Boolean violationcurrent = false; //CHANGE MADE HERE
+                    Boolean violationcurrent = null;
                     if(snap.exists()){
                         User exists = snap.toObject(User.class);
                         if (exists!= null) {
                             admincurrent = exists.getAdmin();
                             organizercurrent=exists.getOrganizer();
+                            violationcurrent=exists.getViolation();
                         }
                     }
                     User u = new User();
@@ -155,7 +175,19 @@ public class ProfileFragment extends Fragment {
                 .addOnFailureListener(fail -> Toast.makeText(requireContext(), "Failed updating profile"+ fail.getMessage(), Toast.LENGTH_SHORT).show());
     }
     //deleting the device's profile and clearing the fields
-
+    private void deleteprofile() {
+        String deviceID = DeviceId.get(requireContext());
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(deviceID)
+                .delete()
+                .addOnSuccessListener(unused -> {
+                    clear();
+                    Toast.makeText(requireContext(), "Deleted Profile", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(fail -> Toast.makeText(requireContext(), "Failed deleting profile", Toast.LENGTH_SHORT).show()
+                );
+    }
 
     private void clear() {
         firstname.setText("");

@@ -78,13 +78,12 @@ public class MyEventsAdapter extends ArrayAdapter<Event> {
         LocalDate eventEnd  = LocalDate.parse(event.getEventDateEnd(), dateFormatter);
 
         title.setText(event.getTitle());
-        if (event.getPosterPath() != null) {
-            Glide.with(getContext())
-                    .load(event.getPosterPath())
-                    .placeholder(R.drawable.placeholder_event_poster)
-                    .error(R.drawable.placeholder_event_poster)
-                    .into(poster);
-        }
+        Glide.with(getContext())
+                .load(event.getPosterPath())
+                .placeholder(R.drawable.placeholder_event_poster)
+                .error(R.drawable.placeholder_event_poster)
+                .into(poster);
+
 
         enrollStart.setText(event.getRegStart());
         enrollEnd.setText(event.getRegEnd());

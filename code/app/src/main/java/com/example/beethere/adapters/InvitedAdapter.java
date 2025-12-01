@@ -123,7 +123,7 @@ public class InvitedAdapter extends ArrayAdapter<String> {
                 .setBackgroundTint(getContext().getColor(R.color.dark_brown))
                 .setTextColor(getContext().getColor(R.color.yellow));
         View snackbarView = snackbar.getView();
-        TextView snackbarText = (TextView) snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+        TextView snackbarText = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
 
         snackbarText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         snackbarText.setTextSize(20);

@@ -78,13 +78,12 @@ public class EventsAdapter extends ArrayAdapter<Event> {
                             event.getRegStart(),
                             event.getRegEnd()));
 
-            if (event.getPosterPath() != null) {
-                Glide.with(getContext())
-                        .load(event.getPosterPath())
-                        .placeholder(R.drawable.placeholder_event_poster)
-                        .error(R.drawable.placeholder_event_poster)
-                        .into(poster);
-            }
+            Glide.with(getContext()).clear(poster);
+            Glide.with(getContext())
+                    .load(event.getPosterPath())
+                    .placeholder(R.drawable.placeholder_event_poster)
+                    .error(R.drawable.placeholder_event_poster)
+                    .into(poster);
         }
 
 
@@ -125,7 +124,7 @@ public class EventsAdapter extends ArrayAdapter<Event> {
                         qrFragment.show(activity.getSupportFragmentManager(), "qrCodeDialog");
                     }
                     return true;
-                } else if (id == R.id.admin_delete_event) {
+                } else if (id == R.id.admin_delete_event) { //todo make this work
                     if (getContext() instanceof AppCompatActivity) {
                         ConfirmDeleteFragment confirmDeleteFragment = new ConfirmDeleteFragment(event.getEventID());
                         AppCompatActivity activity = (AppCompatActivity) getContext();
@@ -140,10 +139,7 @@ public class EventsAdapter extends ArrayAdapter<Event> {
                         NavController nav = Navigation.findNavController(
                                 activity.findViewById(R.id.nav_host_fragment)
                         );
-                        // TODO
-
-
-
+                        // TODO option to delete organizer or set their violation to false
                     }
                     return true;
                 }

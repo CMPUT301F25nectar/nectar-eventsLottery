@@ -7,6 +7,7 @@
     android:padding="16dp"
     android:background="?android:attr/selectableItemBackground">
 
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -14,13 +15,13 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/event_name"
+            android:id="@+id/user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Event Name"
+            android:text="User Name"
             android:textStyle="bold"
             android:textSize="16sp"
-            android:textColor="#000000" />
+            android:textColor="@color/dark_brown" />
 
 
         <TextView
@@ -29,29 +30,18 @@
             android:layout_height="wrap_content"
             android:text="Notification message"
             android:textSize="14sp"
-            android:textColor="#666666"
+            android:textColor="@color/faded_brown"
             android:layout_marginTop="4dp" />
 
         <TextView
             android:id="@+id/timestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1d ago"
+            android:text="3d ago"
             android:textSize="12sp"
-            android:textColor="#999999"
+            android:textColor="@color/faded_brown2"
             android:layout_marginTop="4dp" />
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btn_go_to_event"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Go to event"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#8B4513"
-        android:textSize="12sp"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="8dp" />
 
 </LinearLayout>

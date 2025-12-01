@@ -9,8 +9,7 @@
     <ImageView
         android:id="@+id/event_image"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_marginTop="50dp"
+        android:layout_height="175dp"
         android:alpha="0.7"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
@@ -29,15 +28,14 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/event_detail_back_button"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="30dp"
+        android:paddingEnd="12dp"
         android:background="@drawable/button_back_arrow"
         android:backgroundTint="@color/dark_brown"
         android:drawableEnd="@drawable/outline_arrow_back_24"
-        android:paddingStart="20dp"
-        android:paddingEnd="18dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -46,6 +44,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="8dp"
         android:fontFamily="@font/work_sans_bold"
         android:text="@string/placeholder"
