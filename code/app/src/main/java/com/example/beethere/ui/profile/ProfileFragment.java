@@ -52,6 +52,9 @@ public class ProfileFragment extends Fragment {
         Button btnsave = view.findViewById(R.id.button_save_profile);
         TextView personalSettings = view.findViewById(R.id.personal_settings);
         TextView notificationsSettings = view.findViewById(R.id.notification_settings);
+        TextView howtouse = view.findViewById(R.id.row_how_to_use);
+        TextView personalSettings = view.findViewById(R.id.personal_settings);
+        TextView notificationsSettings = view.findViewById(R.id.notification_settings);
         adminLine = view.findViewById(R.id.admin_line);
         adminHeader = view.findViewById(R.id.admin_header);
         adminDashboard = view.findViewById(R.id.admin_dashboard);
