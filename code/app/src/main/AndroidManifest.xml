@@ -15,6 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BeeThere">
 
+
+
+
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
@@ -33,29 +37,17 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
     </application>
-<!--    <service-->
-<!--        android:name = ".notifications_classes.NotificationFirebaseMessagingService"-->
-<!--        android:exported="false">-->
-<!--        <intent-filter>-->
-<!--            <action android:name="com.google.firebase.MESSAGING_EVENT"/>-->
-<!--        </intent-filter>-->
-<!--    </service>-->
+    <!--    <service-->
+    <!--        android:name = ".notifications_classes.NotificationFirebaseMessagingService"-->
+    <!--        android:exported="false">-->
+    <!--        <intent-filter>-->
+    <!--            <action android:name="com.google.firebase.MESSAGING_EVENT"/>-->
+    <!--        </intent-filter>-->
+    <!--    </service>-->
 
-<!--    <application-->
-<!--        android:name=".BeeThereChannel"-->
-<!--        ...>-->
+    <!--    <application-->
+    <!--        android:name=".BeeThereChannel"-->
+    <!--        ...>-->
 
-
-    <!--<service
-        android:name = ".NotificationFirebaseMessagingService"
-        android:exported="false">
-        <intent-filter>
-            <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-        </intent-filter>
-    </service>
--->
-    <!--<application
-        android:name=".MyApplicationChannel"
-    />-->
 
 </manifest>
