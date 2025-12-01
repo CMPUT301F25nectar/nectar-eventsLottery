@@ -96,7 +96,7 @@ public class ProfileFragment extends Fragment {
                                         return;
                                     }
 
-                                    if (u.getAdmin()) {
+                                    if (Boolean.TRUE.equals(u.getAdmin())) {
                                         adminLine.setVisibility(View.VISIBLE);
                                         adminHeader.setVisibility(View.VISIBLE);
                                         adminDashboard.setVisibility(View.VISIBLE);
