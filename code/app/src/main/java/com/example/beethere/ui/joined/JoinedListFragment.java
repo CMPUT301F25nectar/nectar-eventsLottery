@@ -32,7 +32,8 @@ public class JoinedListFragment extends Fragment {
     }
 
     public void setEventList(ArrayList<Event> eventList) {
-        this.eventList = eventList;
+        this.eventList.clear();
+        this.eventList.addAll(eventList);
     }
 
     public EventsAdapter getEventsAdapter() {

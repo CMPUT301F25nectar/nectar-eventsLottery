@@ -74,14 +74,15 @@ public class AllEventsFragment extends Fragment {
         filter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // filter dialog fragment
+                FilterEventsDialog filterEvents = new FilterEventsDialog();
+                filterEvents.show(getParentFragmentManager(), "filter events");
 
-
-                /*displayedList.clear();
-                filterDate(someDate, someDate, "reg");
+                /*displayedList.clear();*/
+                /*filterDate(someDate, someDate, "reg");
                 filterDate(someDate, someDate, "eventDate");
-                filterTime(someTime, someTime);
-                filterTags(someTags);*/
+                filterTime(someTime, someTime);*/
+
+                /*filterTags(someTags);*/
             }
         });
 

@@ -230,8 +230,6 @@ public class JoinedFragment extends Fragment {
             message.setVisibility(GONE);
             layout.setVisibility(VISIBLE);
             displayList.updateEventList(display);
-
-            /*events.setAdapter(eventsAdapter);*/
         }
     }
 
