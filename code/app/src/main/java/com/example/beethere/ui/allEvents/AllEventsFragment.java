@@ -33,7 +33,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 
-public class AllEventsFragment extends Fragment {
+public class AllEventsFragment extends Fragment implements FilterEventsDialog.FilterDialogListener {
 
     private ArrayList<Event> eventList;
     private ArrayList<Event> displayedList;
@@ -74,8 +74,8 @@ public class AllEventsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // filter dialog fragment
-
-
+                FilterEventsDialog dialog = new FilterEventsDialog(AllEventsFragment.this);
+                dialog.show(getParentFragmentManager(), "filterEvents");
 
 
 
@@ -105,6 +105,66 @@ public class AllEventsFragment extends Fragment {
             }
         });
         loadEvents();
+    }
+    @Override
+    public void onFilterApplied(String regStart, String regEnd, String eventStart, String eventEnd,
+                                String timeStart, String timeEnd){
+        displayedList.clear();
+
+        //applying filters
+        for (Event event :eventList) {
+            boolean passesFilter = true;
+
+            //by registration dates
+            if (!regStart.isEmpty() && !regEnd.isEmpty()){
+                LocalDate eventRegStart = convertDate(event.getRegStart());
+                LocalDate eventRegEnd = convertDate(event.getRegEnd());
+                LocalDate filterRegStart = convertDate(regStart);
+                LocalDate filterRegEnd = convertDate(regEnd);
+
+                if (eventRegStart.isBefore(filterRegStart) || eventRegEnd.isAfter(filterRegEnd)) {
+                    passesFilter = false;
+                }
+            }
+            //by event dates
+            if (passesFilter && !eventStart.isEmpty() && !eventEnd.isEmpty()) {
+                LocalDate eventDateStart = convertDate(event.getEventDateStart());
+                LocalDate eventDateEnd = convertDate(event.getEventDateEnd());
+                LocalDate filterEventStart = convertDate(eventStart);
+                LocalDate filterEventEnd = convertDate(eventEnd);
+
+                if (eventDateStart.isBefore(filterEventStart) || eventDateEnd.isAfter(filterEventEnd)) {
+                    passesFilter = false;
+                }
+            }
+
+            //by time
+            if (passesFilter && !timeStart.isEmpty() && !timeEnd.isEmpty()) {
+                LocalTime eventTimeStart = convertTime(event.getEventTimeStart());
+                LocalTime eventTimeEnd = convertTime(event.getEventTimeEnd());
+                LocalTime filterTimeStart = convertTime(timeStart);
+                LocalTime filterTimeEnd = convertTime(timeEnd);
+
+                if (eventTimeStart.isBefore(filterTimeStart) || eventTimeEnd.isAfter(filterTimeEnd)) {
+                    passesFilter = false;
+                }
+            }
+
+            if (passesFilter) {
+                displayedList.add(event);
+            }
+            //by tags
+//            if (passesFilter && !tags.isEmpty()){
+//                String tagArray = tags.split(",");
+//                boolean hasMatchingTag = false;
+//
+//                ArrayList<String> eventTags = event.getTitle().toLowerCase();
+//                String
+//            }
+
+        }
+        eventsAdapter.notifyDataSetChanged();
+
     }
 
     public void loadEvents(){
@@ -184,6 +244,7 @@ public class AllEventsFragment extends Fragment {
         }
 
     }
+
 
     /*private void filterTags(ArrayList<String> filterTags){
 
