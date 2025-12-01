@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="User Name"
-            android:textStyle="bold"
+            android:fontFamily="@font/work_sans_semibold"
             android:textSize="16sp"
             android:textColor="@color/dark_brown" />
 
@@ -30,6 +30,7 @@
             android:layout_height="wrap_content"
             android:text="Notification message"
             android:textSize="14sp"
+            android:fontFamily="@font/work_sans_medium"
             android:textColor="@color/faded_brown"
             android:layout_marginTop="4dp" />
 
@@ -38,6 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="3d ago"
+            android:fontFamily="@font/work_sans"
             android:textSize="12sp"
             android:textColor="@color/faded_brown2"
             android:layout_marginTop="4dp" />

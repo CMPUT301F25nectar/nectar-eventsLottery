@@ -37,9 +37,8 @@ public class DatabaseFunctions {
     }
 
     /**
-     * This methods either adds new users to the database
-     * or edits existing ones if the userID is the same
-     * @param user User object of the user that needs to be added or edited
+     * This methods can be used to add new users or edit existing ones
+     * @param user User class of the user that needs to be added or edited
      */
     public void addUserDB(User user){
         CollectionReference users = db.collection("users");
@@ -76,10 +75,6 @@ public class DatabaseFunctions {
 
     }
 
-    /**
-     * This methods deletes users from the database
-     * @param userID String UserID of the user that needs to be deleted
-     */
     /**
      * This methods deletes users from the database
      * @param user  User object of the user that needs to be deleted
@@ -206,7 +201,7 @@ public class DatabaseFunctions {
 
     /**
      * This methods returns the events a user has created
-     * @param waitlistID User class of user who is the organizer
+     * @param waitlistID String UserID of user who is the organizer
      * @param callback Database Callback to return the database
      */
     public void getCreatedEventsDB(User waitlistID, DatabaseCallback<ArrayList<Event>> callback){
@@ -241,89 +236,6 @@ public class DatabaseFunctions {
                 .addOnFailureListener(fail -> Log.d(TAG, "Error creating notif"));
     }
 
-    /**
-     * This methods returns user from the database that matches the id specified
-     * @param userid String UserID to be found
-     * @param callback Database Callback to return the database result
-     */
-    public void getUserDB(String userid, DatabaseCallback<User>callback){
-        CollectionReference users = db.collection("users");
-        DocumentReference docref = users.document(userid);
-        docref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        callback.onCallback(document.toObject(User.class));
-                    } else {
-                        callback.onError(task.getException());
-                    }
-                } else {
-                    Log.d(TAG, "Error getting documents: ", task.getException());
-                    callback.onError(task.getException());
-                }
-            }
-        });
-    }
-
-    /**
-     * This methods adds user to an event's waitlist or registered list
-     * @param event Event object the user wants to interact with
-     * @param user User object to be added to the event
-     * @param field can be either waitList or registered*/
-    public void addUserToEventDB(Event event, User user, String field){
-        CollectionReference events = db.collection("events");
-        DocumentReference docref = events.document(event.getEventID());
-        docref.update(field, FieldValue.arrayUnion(user)).addOnSuccessListener(unused -> Log.d("AddUser", "User added to event successfully"))
-                .addOnFailureListener(fail -> Log.d(TAG, "Error adding user to event"));
-    }
-
-    /**
-     * This methods removes user from an event's waitlist or registered list
-     * @param event Event object the user wants to interact with
-     * @param user User object to be added to the event
-     * @param field can be either waitList or registered*/
-    public void removeUserFromEventDB(Event event, User user, String field){
-        CollectionReference events = db.collection("events");
-        DocumentReference docref = events.document(event.getEventID());
-        docref.update(field, FieldValue.arrayRemove(user)).addOnSuccessListener(unused -> Log.d("RemoveUser", "User removed from event successfully"))
-                .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from event"));
-    }
-
-    /**
-     * This methods adds user to an event's invited list
-     * can also be called if wanting to edit a user's boolean from true to false
-     * @param event Event object the user wants to interact with
-     * @param userID User's ID string to be added to the event
-     * @param interact True hasn't interacted, False means they declined */
-    public void addInviteDB(Event event, String userID, Boolean interact){
-        CollectionReference events = db.collection("events");
-        DocumentReference docref = events.document(event.getEventID());
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("invited." + userID, interact); // true hasn't interacted, false means they declined
-        docref.update(updates).addOnSuccessListener(unused -> Log.d("AddUser", "User added to event invited successfully"))
-                .addOnFailureListener(fail -> Log.d(TAG, "Error adding user to event invited"));
-    }
-
-    /**
-     * This methods removes user from an event's invited list
-     * @param event Event object the user wants to interact with
-     * @param userID User's ID string to be added to the event*/
-    public void removeInviteDB(Event event, String userID){
-        CollectionReference events = db.collection("events");
-        DocumentReference docref = events.document(event.getEventID());
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("invited." + userID, FieldValue.delete());
-        docref.update(updates).addOnSuccessListener(unused -> Log.d("RemoveUser", "User removed from event invited successfully"))
-                .addOnFailureListener(fail -> Log.d(TAG, "Error removing user from event invited"));
-    }
-
-    /**
-     * This method returns a user's notifications they haven't interacted with via callback
-     * @param deviceId User's ID string to fetch the notifications for
-     * @param callback Database Callback to return the database
-     */
     /**
      * This methods returns user from the database that matches the id specified
      * @param userid String UserID to be found
@@ -442,16 +354,12 @@ public class DatabaseFunctions {
         CollectionReference notifcol = db.collection("notifications");
         notifcol.whereArrayContains("deviceIds", deviceId)
                 //.orderBy("timestamp", Query.Direction.DESCENDING)
-                .addSnapshotListener((queryDocumentSnapshots, error) -> {
-                    if (error != null) {
-                        callback.onError(error);
-                        return;
-                    }
-
-                    if (queryDocumentSnapshots != null) {
+                .get()
+                .addOnCompleteListener(( task) -> {
+                    if (task.isSuccessful()) {
                         List<Notification> notifications = new ArrayList<>();
-                        for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
-                            Notification notif = queryDocumentSnapshots.getDocuments().get(i).toObject(Notification.class);
+                        for (QueryDocumentSnapshot document: task.getResult()){
+                            Notification notif = document.toObject(Notification.class);
                             if (notif != null) {
                                 notifications.add(notif);
                             }
@@ -604,7 +512,6 @@ public class DatabaseFunctions {
 
 
 }
-
 
 
 
