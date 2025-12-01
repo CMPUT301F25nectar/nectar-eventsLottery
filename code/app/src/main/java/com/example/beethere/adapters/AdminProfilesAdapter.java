@@ -2,23 +2,35 @@ package com.example.beethere.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.beethere.DatabaseFunctions;
 import com.example.beethere.R;
 import com.example.beethere.User;
 import com.example.beethere.eventclasses.Event;
+import com.example.beethere.eventclasses.eventDetails.QRCodeFragment;
+import com.example.beethere.ui.myEvents.ConfirmDeleteFragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -48,12 +60,9 @@ public class AdminProfilesAdapter extends ArrayAdapter<User> {
         user = getItem(position);
         if (user == null) return view;
 
-        TextView userName = view.findViewById(R.id.name);
-        TextView userType = view.findViewById(R.id.userType);
-        ImageButton deleteUser = view.findViewById(R.id.deleteUser);
-        SearchView searchBar = view.findViewById(R.id.all_profiles_search_view);
-        ImageButton filer = view.findViewById(R.id.button_filter);
-
+        TextView userName = view.findViewById(R.id.user_name);
+        TextView userType = view.findViewById(R.id.user_type);
+        ImageButton optionsMenuButton = view.findViewById(R.id.menu_button);
         userName.setText(user.getName());
 
         if (Boolean.TRUE.equals(user.getOrganizer()) && !Boolean.TRUE.equals(user.getAdmin())) {
@@ -66,18 +75,45 @@ public class AdminProfilesAdapter extends ArrayAdapter<User> {
 
 
         final User currentUser = getItem(position);
-        deleteUser.setOnClickListener(v -> { // todo, maybe a popup, to either set violation or delete organizer entirely, so just update db from here
-            if (currentUser == null) return;
 
-            // Use DatabaseFunctions to safely delete user
-            DatabaseFunctions dbFunctions = new DatabaseFunctions();
-            dbFunctions.deleteUserDB(currentUser);
+        optionsMenuButton.setOnClickListener(v -> {
+            Context wrapper = new ContextThemeWrapper(getContext(), R.style.CustomPopupMenu);
+            PopupMenu popupMenu = new PopupMenu(wrapper, v);
+            popupMenu.getMenuInflater().inflate(R.menu.admin_profiles_options, popupMenu.getMenu());
 
-            // Update UI
-            users.remove(position);
-            notifyDataSetChanged();
-            showSnackbar(v, "User deleted");
+            MenuItem reportOrganizerItem = popupMenu.getMenu().findItem(R.id.remove_organizer);
+            reportOrganizerItem.setVisible(Boolean.TRUE.equals(currentUser.getOrganizer()));
+
+            MenuItem deleteProfileItem = popupMenu.getMenu().findItem(R.id.delete_profile);
+            SpannableString redText = new SpannableString(deleteProfileItem.getTitle());
+            redText.setSpan(new ForegroundColorSpan(Color.RED), 0, redText.length(), 0);
+            deleteProfileItem.setTitle(redText);
+
+            popupMenu.setOnMenuItemClickListener(menuItem -> {
+                int id = menuItem.getItemId();
+
+                if (id == R.id.delete_profile) {
+                    DatabaseFunctions dbFunctions = new DatabaseFunctions();
+                    dbFunctions.deleteUserDB(currentUser);
+                    users.remove(position);
+                    notifyDataSetChanged();
+                    showSnackbar(v, "User deleted");
+                    return true;
+                }
+
+                if (id == R.id.remove_organizer) {
+                    currentUser.setViolation(Boolean.TRUE);
+                    notifyDataSetChanged();
+                    showSnackbar(v, "Organizer reported");
+                    return true;
+                }
+
+                return false;
+            });
+
+            popupMenu.show();
         });
+
 
         return view;
     }

@@ -23,39 +23,35 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="20dp"
             android:text="All Profiles"
             android:textColor="@color/dark_brown"
             android:textSize="34sp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/space_mono_bold"/>
     </LinearLayout>
 
 
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+    <SearchView
+        android:id="@+id/admin_profile_search"
+        android:layout_width="375dp"
+        android:layout_height="37dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/search_bar"
-        android:padding="12dp">
+        android:closeIcon="@null"
+        android:focusable="true"
+        android:iconifiedByDefault="false"
+        android:queryBackground="@null"
+        android:queryHint="Search"
+        android:searchIcon="@null"
+        android:submitBackground="@null"
+        android:textColor="@color/dark_brown" />
 
-        <EditText
-            android:id="@+id/search_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toStartOf="@id/search_bar"
-            android:hint="Search"
-            android:background="@android:color/transparent"
-            android:textSize="16sp"
-            android:textColor="@color/dark_brown"
-            android:textColorHint="@color/faded_brown" />
-
-    </RelativeLayout>
-
-    <!-- Profiles List -->
     <ListView
         android:id="@+id/profiles_list_view"
         android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:divider="@android:color/transparent"
