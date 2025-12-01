@@ -71,7 +71,7 @@
         app:layout_constraintStart_toEndOf="@+id/button_enrolled"
         app:layout_constraintTop_toBottomOf="@+id/joinedTitle" />
 
-    <FrameLayout
+    <!--<FrameLayout
         android:id="@+id/joined_list_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -79,7 +79,18 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_enrolled"/>
+        app:layout_constraintTop_toBottomOf="@+id/button_enrolled"/>-->
+
+    <ListView
+        android:id="@+id/joined_event_display_2_try"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_enrolled" />
 
     <TextView
         android:id="@+id/joined_fragment_message"

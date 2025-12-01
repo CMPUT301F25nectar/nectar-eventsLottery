@@ -24,8 +24,8 @@ import java.util.ArrayList;
 
 public class JoinedListFragment extends Fragment {
 
-    private ArrayList<Event> eventList = new ArrayList<>();
-    private EventsAdapter eventsAdapter;
+    ArrayList<Event> eventList = new ArrayList<>();
+    /*private */EventsAdapter eventsAdapter;
 
     public ArrayList<Event> getEventList() {
         return eventList;
@@ -34,6 +34,7 @@ public class JoinedListFragment extends Fragment {
     public void setEventList(ArrayList<Event> eventList) {
         this.eventList.clear();
         this.eventList.addAll(eventList);
+        this.eventsAdapter.notifyDataSetChanged();
     }
 
     public EventsAdapter getEventsAdapter() {
@@ -60,15 +61,9 @@ public class JoinedListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_joined_list_display, container, false);
-
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        ListView eventsDisplay = view.findViewById(R.id.joined_event_display_2_try);
         eventsAdapter = new EventsAdapter(getContext(), eventList);
+        ListView eventsDisplay = view.findViewById(R.id.joined_event_display_2_try);
+
         eventsDisplay.setAdapter(eventsAdapter);
 
 
@@ -82,7 +77,12 @@ public class JoinedListFragment extends Fragment {
                 event.setEvent((Event) parent.getItemAtPosition(position));
             }
         });
+        return view;
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
     }
 }
